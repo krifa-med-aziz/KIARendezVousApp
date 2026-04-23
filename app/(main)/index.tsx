@@ -2,14 +2,8 @@ import { Card } from "@/components/ui/Card";
 import { routes } from "@/constants/routes";
 import { router } from "expo-router";
 import { Bell, MapPin, Menu } from "lucide-react-native";
-import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   return (

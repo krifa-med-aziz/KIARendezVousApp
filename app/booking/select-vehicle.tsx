@@ -1,41 +1,16 @@
 import { routes } from "@/constants/routes";
 import { router } from "expo-router";
-import { Bell, Check, ChevronLeft, Plus } from "lucide-react-native";
+import { Bell, ChevronLeft, Plus, Check } from "lucide-react-native";
 import { useState } from "react";
-import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Stepper } from "@/components/Stepper";
+import { DEFAULT_VEHICLE_IMAGE, VEHICLES } from "@/data/mockData";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectVehicleScreen() {
   const [selectedVehicle, setSelectedVehicle] = useState(0);
 
-  const vehicles = [
-    {
-      id: 1,
-      name: "KIA EV6 GT-Line",
-      plate: "B-8822-KPG",
-      mileage: "12,450 km",
-      type: "ELECTRIC",
-      badge: "PLATINUM MEMBER",
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/kia-ev6-7FE08IBpgxmG5EtaEREOHtgIkBfx2t.jpg",
-    },
-    {
-      id: 2,
-      name: "KIA Sportage",
-      plate: "B-451 2-XYZ",
-      mileage: "45,800 km",
-      type: "HYBRID",
-      badge: null,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/kia-sportage-7FE08IBpgxmG5EtaEREOHtgIkBfx2t.jpg",
-    },
-  ];
+  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   return (
     <SafeAreaView className="flex-1 bg-[#fafafa]">
@@ -48,19 +23,13 @@ export default function SelectVehicleScreen() {
           <Text className="text-[14px] font-bold tracking-[1.5px] text-[#1a1a1a]">
             SELECT VEHICLE
           </Text>
-          <Text className="text-[11px] font-semibold tracking-[0.5px] text-[#c41e3a] mt-0.5">
-            STEP 1 OF 5
-          </Text>
         </View>
         <TouchableOpacity onPress={() => router.push(routes.notifications)}>
           <Bell size={24} color="#1a1a1a" />
         </TouchableOpacity>
       </View>
 
-      {/* Progress Bar */}
-      <View className="h-[3px] bg-[#e8e8e8] w-full">
-        <View className="h-full w-1/5 bg-[#c41e3a]" />
-      </View>
+      <Stepper steps={STEPS} currentStep={0} />
 
       <ScrollView
         contentContainerStyle={{
@@ -89,7 +58,7 @@ export default function SelectVehicleScreen() {
         </View>
 
         {/* Vehicle Cards */}
-        {vehicles.map((vehicle, index) => (
+        {VEHICLES.map((vehicle, index) => (
           <TouchableOpacity
             key={vehicle.id}
             className={`bg-white rounded-[20px] p-4 mb-4 flex-row items-center gap-4 border-2 ${
@@ -108,7 +77,7 @@ export default function SelectVehicleScreen() {
 
             {/* Vehicle Image */}
             <Image
-              source={{ uri: vehicle.image }}
+              source={{ uri: vehicle.image || DEFAULT_VEHICLE_IMAGE }}
               className="w-20 h-20 rounded-xl bg-[#e8e8e8]"
             />
 

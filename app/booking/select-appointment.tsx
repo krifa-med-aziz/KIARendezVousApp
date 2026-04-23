@@ -2,19 +2,21 @@ import { routes } from "@/constants/routes";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
+import { Stepper } from "@/components/Stepper";
+import { DATES, MORNING_TIMES, AFTERNOON_TIMES } from "@/data/mockData";
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectAppointmentScreen() {
   const [selectedTime, setSelectedTime] = useState("09:30 AM");
 
-  const times = ["08:30 AM", "09:00 AM", "09:30 AM", "11:00 AM"];
+  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -30,21 +32,12 @@ export default function SelectAppointmentScreen() {
           <Text className="text-[17px] font-semibold text-[#1a1a1a]">
             Select Appointment
           </Text>
-
-          <View className="flex-row mt-2 gap-1">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <View
-                key={i}
-                className={`h-1 w-5 rounded-full ${
-                  i <= 3 ? "bg-[#c41e3a]" : "bg-gray-300"
-                }`}
-              />
-            ))}
-          </View>
         </View>
 
         <View className="w-10" />
       </View>
+
+      <Stepper steps={STEPS} currentStep={3} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Month */}
@@ -70,12 +63,7 @@ export default function SelectAppointmentScreen() {
           className="mb-6"
           contentContainerStyle={{ paddingHorizontal: 20 }}
         >
-          {[
-            { day: "MON", date: "21" },
-            { day: "TUE", date: "22" },
-            { day: "WED", date: "23", active: true },
-            { day: "THU", date: "24" },
-          ].map((d, i) => {
+          {DATES.map((d, i) => {
             const active = d.active;
 
             return (
@@ -123,7 +111,7 @@ export default function SelectAppointmentScreen() {
           </View>
 
           <View className="flex-row flex-wrap justify-between">
-            {times.map((time) => {
+            {MORNING_TIMES.map((time) => {
               const active = selectedTime === time;
 
               return (
@@ -161,7 +149,7 @@ export default function SelectAppointmentScreen() {
           </View>
 
           <View className="flex-row flex-wrap justify-between">
-            {["01:30 PM", "02:00 PM", "03:30 PM", "04:00 PM"].map((time, i) => {
+            {AFTERNOON_TIMES.map((time, i) => {
               const disabled = time === "03:30 PM";
 
               return (

@@ -1,19 +1,19 @@
 import { routes } from "@/constants/routes";
 import {
   Feather,
-  FontAwesome5,
+  FontAwesome,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function VehicleDetailsScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -168,7 +168,7 @@ export default function VehicleDetailsScreen() {
             </Text>
           </View>
           <View className="absolute right-5 top-5">
-            <FontAwesome5 name="bolt" size={48} color="rgba(255,255,255,0.2)" />
+            <FontAwesome name="bolt" size={48} color="rgba(255,255,255,0.2)" />
           </View>
         </View>
 

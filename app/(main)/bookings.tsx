@@ -5,13 +5,13 @@ import { useState } from "react";
 import {
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingsScreen() {
   const [listTab, setListTab] = useState<"upcoming" | "completed" | "canceled">(

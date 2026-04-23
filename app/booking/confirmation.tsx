@@ -5,17 +5,20 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Stepper } from "@/components/Stepper";
 import {
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingConfirmationScreen() {
+  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+
   return (
     <SafeAreaView className="flex-1 bg-[#f8f8f8]">
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -26,14 +29,12 @@ export default function BookingConfirmationScreen() {
           <Feather name="arrow-left" size={24} color="#c41e3a" />
         </TouchableOpacity>
 
-        <Text className="flex-1 ml-3 text-lg font-semibold text-[#1a1a1a]">
+        <Text className="flex-1 text-center mr-6 text-lg font-semibold text-[#1a1a1a]">
           Booking Summary
         </Text>
-
-        <View className="bg-[#c41e3a] px-3 py-1.5 rounded-full">
-          <Text className="text-white text-xs font-semibold">STEP 5/5</Text>
-        </View>
       </View>
+
+      <Stepper steps={STEPS} currentStep={4} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Vehicle */}

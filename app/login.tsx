@@ -8,12 +8,12 @@ import { useState } from "react";
 import {
   Alert,
   ImageBackground,
-  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {
   const { signIn } = useAuth();

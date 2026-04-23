@@ -9,13 +9,13 @@ import {
 import { router } from "expo-router";
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const { userEmail, signOut } = useAuth();

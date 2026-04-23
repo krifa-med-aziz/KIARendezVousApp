@@ -5,13 +5,13 @@ import { useState } from "react";
 import {
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddVehicleScreen() {
   const [activeTab, setActiveTab] = useState("manual");

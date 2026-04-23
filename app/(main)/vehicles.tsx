@@ -1,49 +1,18 @@
 import { routes } from "@/constants/routes";
+import { DEFAULT_VEHICLE_IMAGE, VEHICLES } from "@/data/mockData";
 import { router } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import {
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function VehiclesScreen() {
-  const vehicles = [
-    {
-      id: 1,
-      name: "KIA EV6 GT-Line",
-      plate: "ABC-1234",
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/kia-ev6-7FE08IBpgxmG5EtaEREOHtgIkBfx2t.jpg",
-      battery: "92%",
-      lastService: "Oct 12, 2023",
-      odometer: "12,450 km",
-      showVehicleStatus: true,
-    },
-    {
-      id: 2,
-      name: "KIA Sorento",
-      plate: "SUV-9821",
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/kia-sorento-7FE08IBpgxmG5EtaEREOHtgIkBfx2t.jpg",
-      lastService: "Sep 05, 2023",
-      showVehicleStatus: false,
-    },
-    {
-      id: 3,
-      name: "KIA Sportage",
-      plate: "K-DRIVE-22",
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/kia-sportage-7FE08IBpgxmG5EtaEREOHtgIkBfx2t.jpg",
-      lastService: "Aug 22, 2023",
-      showVehicleStatus: false,
-    },
-  ];
-
   return (
     <SafeAreaView className="flex-1 bg-[#fafafa]">
       {/* Header */}
@@ -69,7 +38,7 @@ export default function VehiclesScreen() {
         </View>
 
         {/* Vehicle Cards */}
-        {vehicles.map((vehicle) => (
+        {VEHICLES.map((vehicle) => (
           <View
             key={vehicle.id}
             className="bg-[#ffffff] rounded-2xl overflow-hidden mb-5 border border-[#f0f0f0]"
@@ -77,7 +46,7 @@ export default function VehiclesScreen() {
             {/* Image Container */}
             <View className="relative w-full h-[200px]">
               <Image
-                source={{ uri: vehicle.image }}
+                source={{ uri: vehicle.image || DEFAULT_VEHICLE_IMAGE }}
                 className="w-full h-full"
                 resizeMode="cover"
               />
@@ -127,7 +96,7 @@ export default function VehiclesScreen() {
                   </View>
                 </View>
 
-                {vehicle.odometer && (
+                {vehicle.mileage && (
                   <View className="flex-row items-start gap-3">
                     <Text className="text-[16px] mt-0.5">📏</Text>
                     <View>
@@ -135,7 +104,7 @@ export default function VehiclesScreen() {
                         ODOMETER
                       </Text>
                       <Text className="text-[13px] font-semibold text-[#1a1a1a]">
-                        {vehicle.odometer}
+                        {vehicle.mileage}
                       </Text>
                     </View>
                   </View>
@@ -143,7 +112,7 @@ export default function VehiclesScreen() {
               </View>
 
               {/* Action Button */}
-              {vehicle.showVehicleStatus ? (
+              {
                 <TouchableOpacity
                   className="bg-[#c41e3a] rounded-3xl py-3 items-center"
                   onPress={() =>
@@ -157,21 +126,7 @@ export default function VehiclesScreen() {
                     VEHICLE STATUS →
                   </Text>
                 </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  className="bg-[#e8e8e8] rounded-3xl py-3 items-center"
-                  onPress={() =>
-                    router.push({
-                      pathname: routes.vehicleDetails,
-                      params: { id: String(vehicle.id) },
-                    })
-                  }
-                >
-                  <Text className="text-[13px] font-bold text-[#666] tracking-[0.5px]">
-                    DETAILS
-                  </Text>
-                </TouchableOpacity>
-              )}
+              }
             </View>
           </View>
         ))}

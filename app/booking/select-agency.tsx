@@ -6,17 +6,21 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Stepper } from "@/components/Stepper";
+import { AGENCIES } from "@/data/mockData";
 import {
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectAgencyScreen() {
+  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -27,12 +31,9 @@ export default function SelectAgencyScreen() {
           <Feather name="arrow-left" size={24} color="#1a1a1a" />
         </TouchableOpacity>
 
-        <View className="flex-1 ml-3">
+        <View className="flex-1 ml-3 items-center">
           <Text className="text-lg font-semibold text-[#1a1a1a]">
             Select Agency
-          </Text>
-          <Text className="text-[11px] text-[#c41e3a] font-medium mt-0.5">
-            STEP 3 OF 5
           </Text>
         </View>
 
@@ -43,6 +44,8 @@ export default function SelectAgencyScreen() {
           <Feather name="bell" size={22} color="#1a1a1a" />
         </TouchableOpacity>
       </View>
+
+      <Stepper steps={STEPS} currentStep={2} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Map */}
@@ -102,7 +105,7 @@ export default function SelectAgencyScreen() {
                 Nearby Agencies
               </Text>
               <Text className="text-sm text-gray-400 mt-1">
-                Found 4 KIA service centers nearby
+                Found {AGENCIES.length} KIA service centers nearby
               </Text>
             </View>
 
@@ -112,22 +115,11 @@ export default function SelectAgencyScreen() {
           </View>
 
           {/* CARD (Reusable but you didn’t make it reusable…) */}
-          {[
-            {
-              name: "KIA Central Agency",
-              distance: "1.2km",
-              highlight: true,
-            },
-            {
-              name: "KIA North Shore Service",
-              distance: "3.5km",
-            },
-            {
-              name: "Metro KIA Express",
-              distance: "5.8km",
-            },
-          ].map((agency, i) => (
-            <View key={i} className="bg-white rounded-2xl mb-4 shadow-sm">
+          {AGENCIES.map((agency) => (
+            <View
+              key={agency.id}
+              className="bg-white rounded-2xl mb-4 shadow-sm"
+            >
               <View className="p-4">
                 {/* Badge */}
                 {agency.highlight && (
@@ -151,7 +143,7 @@ export default function SelectAgencyScreen() {
                     {agency.highlight && (
                       <View className="flex-row items-center mb-1">
                         <FontAwesome name="star" size={14} color="#f5a623" />
-                        <Text className="ml-1 text-sm">4.9</Text>
+                        <Text className="ml-1 text-sm">{agency.rating}</Text>
                       </View>
                     )}
 
@@ -160,13 +152,13 @@ export default function SelectAgencyScreen() {
                     </Text>
 
                     <Text className="text-sm text-gray-400">
-                      Dummy address line here
+                      {agency.address}
                     </Text>
                   </View>
 
                   <Image
                     source={{
-                      uri: "https://images.unsplash.com/photo-1567449303078-57ad995bd329?w=200",
+                      uri: agency.image,
                     }}
                     className="w-[72px] h-[72px] rounded-xl"
                   />
@@ -184,7 +176,7 @@ export default function SelectAgencyScreen() {
                   <View className="flex-row items-center">
                     <Feather name="clock" size={14} color="#666" />
                     <Text className="ml-1 text-sm text-gray-500">
-                      Open until 18:00
+                      Open until {agency.closingTime}
                     </Text>
                   </View>
                 </View>

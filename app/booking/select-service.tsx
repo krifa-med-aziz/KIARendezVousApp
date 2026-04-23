@@ -2,63 +2,17 @@ import { routes } from "@/constants/routes";
 import { router } from "expo-router";
 import { Bell, ChevronLeft } from "lucide-react-native";
 import { useState } from "react";
-import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Stepper } from "@/components/Stepper";
+import { SERVICES } from "@/data/mockData";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectServiceScreen() {
   const [selectedService, setSelectedService] = useState(0);
 
-  const services = [
-    {
-      id: 1,
-      icon: "🔧",
-      title: "Full Maintenance",
-      description:
-        "Comprehensive 150-point inspection, fluid replacements, and total systems diagnostic.",
-      price: 299,
-      recommended: true,
-    },
-    {
-      id: 2,
-      icon: "🛠️",
-      title: "Oil & Filter Change",
-      description: "Synthetic oil swap and premium filter replacement.",
-      price: 89,
-      recommended: false,
-    },
-    {
-      id: 3,
-      icon: "🚗",
-      title: "Brake Service",
-      description: "Pad inspection, rotor resurfacing, and fluid flush.",
-      price: 145,
-      recommended: false,
-    },
-    {
-      id: 4,
-      icon: "⚙️",
-      title: "Tire Rotation",
-      description: "Pattern rotation and precision pressure balancing.",
-      price: 45,
-      recommended: false,
-    },
-    {
-      id: 5,
-      icon: "❄️",
-      title: "AC Check",
-      description: "System recharge and cabin filter sterilization.",
-      price: 120,
-      recommended: false,
-    },
-  ];
+  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
-  const estimatedTotal = services[selectedService].price;
+  const estimatedTotal = SERVICES[selectedService].price;
 
   return (
     <SafeAreaView className="flex-1 bg-[#fafafa]">
@@ -72,9 +26,6 @@ export default function SelectServiceScreen() {
           <Text className="text-sm font-semibold text-[#1a1a1a]">
             Select Service
           </Text>
-          <Text className="text-[11px] font-semibold tracking-wide text-[#c41e3a] mt-0.5">
-            STEP 2 OF 5
-          </Text>
         </View>
 
         <TouchableOpacity onPress={() => router.push(routes.notifications)}>
@@ -82,10 +33,7 @@ export default function SelectServiceScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Progress Bar */}
-      <View className="h-[3px] bg-gray-200 w-full">
-        <View className="h-full w-[40%] bg-[#c41e3a]" />
-      </View>
+      <Stepper steps={STEPS} currentStep={1} />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View className="px-4 pt-5">
@@ -115,7 +63,7 @@ export default function SelectServiceScreen() {
           </View>
 
           {/* Services */}
-          {services.map((service, index) => {
+          {SERVICES.map((service, index) => {
             const isSelected = selectedService === index;
 
             return (
