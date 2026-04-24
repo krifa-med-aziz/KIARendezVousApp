@@ -13,19 +13,25 @@ export default function SelectVehicleScreen() {
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fafafa]">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       {/* Header */}
-      <View className="flex-row justify-between items-center px-4 py-3 bg-white border-b border-[#f0f0f0]">
-        <TouchableOpacity onPress={() => router.back()}>
-          <ChevronLeft size={24} color="#1a1a1a" />
+      <View className="flex-row justify-between items-center px-6 py-4 bg-surface border-b border-border">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="active:opacity-70 p-1 -ml-1"
+        >
+          <ChevronLeft size={24} color="#111827" />
         </TouchableOpacity>
         <View className="items-center">
-          <Text className="text-[14px] font-bold tracking-[1.5px] text-[#1a1a1a]">
+          <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
             SELECT VEHICLE
           </Text>
         </View>
-        <TouchableOpacity onPress={() => router.push(routes.notifications)}>
-          <Bell size={24} color="#1a1a1a" />
+        <TouchableOpacity
+          onPress={() => router.push(routes.notifications)}
+          className="active:opacity-70 p-1 -mr-1"
+        >
+          <Bell size={24} color="#111827" />
         </TouchableOpacity>
       </View>
 
@@ -33,25 +39,26 @@ export default function SelectVehicleScreen() {
 
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: 16,
+          paddingHorizontal: 24,
           paddingTop: 24,
           paddingBottom: 32,
         }}
+        showsVerticalScrollIndicator={false}
       >
         {/* Heading Section */}
         <View className="mb-8">
-          <Text className="text-[28px] font-semibold text-[#1a1a1a] leading-8">
+          <Text className="text-4xl font-medium text-text-primary mb-1">
             Which car are we
           </Text>
-          <View className="flex-row flex-wrap gap-1">
-            <Text className="text-[28px] font-bold text-[#c41e3a] leading-8">
+          <View className="flex-row flex-wrap gap-2">
+            <Text className="text-4xl font-extrabold text-primary">
               servicing
             </Text>
-            <Text className="text-[28px] font-semibold text-[#1a1a1a] leading-8">
+            <Text className="text-4xl font-medium text-text-primary">
               today?
             </Text>
           </View>
-          <Text className="text-[14px] font-normal text-[#666] leading-5 mt-3">
+          <Text className="text-sm font-normal text-text-secondary leading-relaxed mt-4">
             Choose a vehicle from your garage to{"\n"}
             continue with the booking process.
           </Text>
@@ -61,45 +68,45 @@ export default function SelectVehicleScreen() {
         {VEHICLES.map((vehicle, index) => (
           <TouchableOpacity
             key={vehicle.id}
-            className={`bg-white rounded-[20px] p-4 mb-4 flex-row items-center gap-4 border-2 ${
+            className={`bg-surface rounded-2xl p-5 mb-4 flex-row items-center gap-4 border shadow-subtle active:opacity-80 transition-all ${
               selectedVehicle === index
-                ? "border-[#c41e3a]"
-                : "border-[#f0f0f0]"
+                ? "border-primary bg-primary-soft/30"
+                : "border-border"
             }`}
             onPress={() => setSelectedVehicle(index)}
           >
             {/* Selected Checkmark */}
             {selectedVehicle === index && (
-              <View className="absolute top-3 right-3 bg-white rounded-full p-0.5">
-                <Check size={24} color="#c41e3a" fill="#c41e3a" />
+              <View className="absolute top-4 right-4 bg-primary rounded-full p-1 shadow-sm">
+                <Check size={14} color="#fff" strokeWidth={3} />
               </View>
             )}
 
             {/* Vehicle Image */}
             <Image
               source={{ uri: vehicle.image || DEFAULT_VEHICLE_IMAGE }}
-              className="w-20 h-20 rounded-xl bg-[#e8e8e8]"
+              className="w-20 h-20 rounded-xl bg-background border border-border/50"
             />
 
             {/* Vehicle Info */}
-            <View className="flex-1">
-              <Text className="text-[16px] font-bold text-[#1a1a1a] mb-1">
+            <View className="flex-1 pr-6">
+              <Text className="text-lg font-bold text-text-primary mb-1">
                 {vehicle.name}
               </Text>
-              <Text className="text-[12px] font-normal text-[#666] mb-2.5">
+              <Text className="text-sm font-medium text-text-secondary mb-3">
                 {vehicle.plate} • {vehicle.mileage}
               </Text>
 
               {/* Badges */}
               <View className="flex-row gap-2 flex-wrap">
-                <View className="bg-[#ffe4e8] rounded px-2 py-1">
-                  <Text className="text-[10px] font-bold text-[#c41e3a] tracking-[0.5px]">
+                <View className="bg-primary-soft rounded-md px-2 py-1">
+                  <Text className="text-[10px] font-bold text-primary tracking-widest uppercase">
                     {vehicle.type}
                   </Text>
                 </View>
                 {vehicle.badge && (
-                  <View className="bg-[#f0f0f0] rounded px-2 py-1">
-                    <Text className="text-[10px] font-bold text-[#666] tracking-[0.5px]">
+                  <View className="bg-background border border-border rounded-md px-2 py-1">
+                    <Text className="text-[10px] font-bold text-text-secondary tracking-widest uppercase">
                       {vehicle.badge}
                     </Text>
                   </View>
@@ -111,22 +118,24 @@ export default function SelectVehicleScreen() {
 
         {/* Register Another Vehicle */}
         <TouchableOpacity
-          className="bg-white rounded-2xl py-8 px-4 items-center justify-center border-2 border-dashed border-[#e8e8e8] mb-6"
+          className="bg-transparent rounded-2xl py-8 px-4 items-center justify-center border-2 border-dashed border-border mb-8 active:opacity-70"
           onPress={() => router.push(routes.addVehicle)}
         >
-          <Plus size={28} color="#c41e3a" />
-          <Text className="text-[16px] font-semibold text-[#1a1a1a] mt-3">
+          <View className="w-12 h-12 bg-surface rounded-full items-center justify-center shadow-subtle mb-3">
+            <Plus size={24} color="#E60012" />
+          </View>
+          <Text className="text-base font-bold text-text-primary">
             Register another vehicle
           </Text>
         </TouchableOpacity>
 
         {/* Continue Button */}
         <TouchableOpacity
-          className="bg-[#c41e3a] rounded-[28px] py-4 items-center mb-3"
+          className="bg-primary rounded-xl h-14 items-center justify-center mb-4 active:opacity-80 shadow-card"
           onPress={() => router.push(routes.booking.selectService)}
         >
-          <Text className="text-[16px] font-bold text-white">
-            Continue to Service →
+          <Text className="text-lg font-bold text-white">
+            Continue to Service
           </Text>
         </TouchableOpacity>
       </ScrollView>

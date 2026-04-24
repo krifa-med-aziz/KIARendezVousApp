@@ -23,23 +23,23 @@ export default function AddVehicleScreen() {
   const kiaModes = ["Sportage", "Sorento", "EV6", "Picanto", "Rio", "Cerato"];
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fafafa]">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       {/* Header */}
-      <View className="flex-row justify-between items-center px-4 py-3 bg-white border-b border-[#f0f0f0]">
+      <View className="flex-row justify-between items-center px-6 py-4 bg-surface border-b border-border">
         <TouchableOpacity onPress={() => router.back()}>
-          <ChevronLeft size={24} color="#c41e3a" />
+          <ChevronLeft size={24} color="#E60012" />
         </TouchableOpacity>
-        <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+        <Text className="text-lg font-bold text-text-primary">
           Add New Vehicle
         </Text>
         <TouchableOpacity onPress={() => router.push(routes.notifications)}>
-          <Bell size={24} color="#1a1a1a" />
+          <Bell size={24} color="#111827" />
         </TouchableOpacity>
       </View>
 
       <ScrollView className="pb-10">
         {/* Hero Section */}
-        <View className="relative w-full h-[200px] bg-[#1a1a1a]">
+        <View className="relative w-full h-[220px] bg-text-primary">
           <Image
             source={{
               uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Add%20Vehicle%20%28Dual%20Input%29-kcRuiht7pIwm5yBcP57AECBgSlhidy.png",
@@ -47,47 +47,47 @@ export default function AddVehicleScreen() {
             className="w-full h-full"
             resizeMode="cover"
           />
-          <View className="absolute inset-0 bg-black/30 justify-end px-5 pb-5">
-            <Text className="text-[11px] font-bold tracking-[1.5px] text-white/70 mb-2">
-              REGISTRATION
+          <View className="absolute inset-0 bg-black/40 justify-end px-6 pb-6">
+            <Text className="text-xs font-bold tracking-widest text-white/80 mb-2 uppercase">
+              Registration
             </Text>
-            <Text className="text-[28px] font-bold text-white">
+            <Text className="text-3xl font-extrabold text-white">
               Bring your KIA home.
             </Text>
           </View>
         </View>
 
         {/* Tabs */}
-        <View className="flex-row border-b border-[#e0e0e0] bg-white">
+        <View className="flex-row border-b border-border bg-surface">
           <TouchableOpacity
-            className={`flex-1 flex-row items-center justify-center py-4 gap-2 border-b-2 ${
-              activeTab === "manual" ? "border-[#c41e3a]" : "border-transparent"
+            className={`flex-1 flex-row items-center justify-center py-5 gap-2 border-b-2 ${
+              activeTab === "manual" ? "border-primary" : "border-transparent"
             }`}
             onPress={() => setActiveTab("manual")}
           >
-            <Text className="text-[16px]">⋯</Text>
+            <Text className="text-lg text-text-secondary">⋯</Text>
             <Text
-              className={`text-[14px] ${
+              className={`text-sm ${
                 activeTab === "manual"
-                  ? "text-[#c41e3a] font-semibold"
-                  : "text-[#999] font-medium"
+                  ? "text-primary font-bold"
+                  : "text-text-secondary font-medium"
               }`}
             >
               Manual Entry
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`flex-1 flex-row items-center justify-center py-4 gap-2 border-b-2 ${
-              activeTab === "scan" ? "border-[#c41e3a]" : "border-transparent"
+            className={`flex-1 flex-row items-center justify-center py-5 gap-2 border-b-2 ${
+              activeTab === "scan" ? "border-primary" : "border-transparent"
             }`}
             onPress={() => setActiveTab("scan")}
           >
-            <Text className="text-[16px]">📄</Text>
+            <Text className="text-lg text-text-secondary">📄</Text>
             <Text
-              className={`text-[14px] ${
+              className={`text-sm ${
                 activeTab === "scan"
-                  ? "text-[#c41e3a] font-semibold"
-                  : "text-[#999] font-medium"
+                  ? "text-primary font-bold"
+                  : "text-text-secondary font-medium"
               }`}
             >
               Document Scan
@@ -97,38 +97,38 @@ export default function AddVehicleScreen() {
 
         {/* Form */}
         {activeTab === "manual" && (
-          <View className="px-5 pt-6">
+          <View className="px-6 pt-8">
             {/* Vehicle Model Field */}
             <View className="mb-6">
               <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-[14px] font-semibold text-[#1a1a1a]">
+                <Text className="text-sm font-semibold text-text-primary">
                   Vehicle Model
                 </Text>
-                <Text className="text-[10px] font-bold tracking-[0.5px] text-[#999]">
+                <Text className="text-[10px] font-bold tracking-widest text-text-muted uppercase">
                   REQUIRED
                 </Text>
               </View>
               <TouchableOpacity
-                className="bg-[#f0f0f0] rounded-lg px-4 py-3 flex-row justify-between items-center"
+                className="h-14 bg-background border border-border rounded-xl px-4 flex-row justify-between items-center"
                 onPress={() => setShowModelDropdown(!showModelDropdown)}
               >
-                <Text className="text-[14px] text-[#666]">
+                <Text className="text-sm text-text-primary">
                   {selectedModel || "Select KIA Model"}
                 </Text>
-                <Text className="text-[16px] text-[#999]">∨</Text>
+                <Text className="text-lg text-text-muted">∨</Text>
               </TouchableOpacity>
               {showModelDropdown && (
-                <View className="absolute top-[100%] left-0 right-0 bg-white rounded-lg mt-1 z-50 border border-[#e0e0e0]">
+                <View className="absolute top-20 left-0 right-0 bg-surface rounded-xl z-50 border border-border shadow-card overflow-hidden">
                   {kiaModes.map((model) => (
                     <TouchableOpacity
                       key={model}
-                      className="px-4 py-3 border-b border-[#f0f0f0]"
+                      className="px-4 py-4 border-b border-border last:border-0 active:bg-background"
                       onPress={() => {
                         setSelectedModel(model);
                         setShowModelDropdown(false);
                       }}
                     >
-                      <Text className="text-[14px] text-[#1a1a1a]">
+                      <Text className="text-sm font-medium text-text-primary">
                         {model}
                       </Text>
                     </TouchableOpacity>
@@ -140,17 +140,17 @@ export default function AddVehicleScreen() {
             {/* Matricule / Plate Number Field */}
             <View className="mb-6">
               <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-[14px] font-semibold text-[#1a1a1a]">
+                <Text className="text-sm font-semibold text-text-primary">
                   Matricule / Plate Number
                 </Text>
-                <Text className="text-[10px] font-bold tracking-[0.5px] text-[#999]">
+                <Text className="text-[10px] font-bold tracking-widest text-text-muted uppercase">
                   REQUIRED
                 </Text>
               </View>
               <TextInput
-                className="bg-[#f0f0f0] rounded-lg px-4 py-3 text-[14px] text-[#1a1a1a]"
+                className="h-14 bg-background border border-border rounded-xl px-4 text-sm text-text-primary focus:border-primary"
                 placeholder="e.g. ABC-1234"
-                placeholderTextColor="#b0b0b0"
+                placeholderTextColor="#9CA3AF"
                 value={plateNumber}
                 onChangeText={setPlateNumber}
               />
@@ -160,36 +160,36 @@ export default function AddVehicleScreen() {
             <View className="mb-6">
               <View className="flex-row justify-between items-center mb-2">
                 <View className="flex-row items-center gap-1.5">
-                  <Text className="text-[14px] font-semibold text-[#1a1a1a]">
+                  <Text className="text-sm font-semibold text-text-primary">
                     VIN Number
                   </Text>
-                  <Info size={16} color="#999" />
+                  <Info size={16} color="#6B7280" />
                 </View>
-                <Text className="text-[10px] font-bold tracking-[0.5px] text-[#999]">
+                <Text className="text-[10px] font-bold tracking-widest text-text-muted uppercase">
                   OPTIONAL
                 </Text>
               </View>
               <TextInput
-                className="bg-[#f0f0f0] rounded-lg px-4 py-3 text-[14px] text-[#1a1a1a]"
+                className="h-14 bg-background border border-border rounded-xl px-4 text-sm text-text-primary focus:border-primary"
                 placeholder="17-digit Chassis Number"
-                placeholderTextColor="#b0b0b0"
+                placeholderTextColor="#9CA3AF"
                 value={vinNumber}
                 onChangeText={setVinNumber}
               />
-              <Text className="text-[12px] text-[#999] mt-2 leading-4">
+              <Text className="text-xs text-text-secondary mt-2">
                 Found on the driver&apos;s side dashboard or vehicle
                 registration papers.
               </Text>
             </View>
 
             {/* Secure Registration Info Box */}
-            <View className="flex-row bg-[#ffe4e8] rounded-xl p-4 gap-3 mb-6">
-              <Shield size={20} color="#c41e3a" />
+            <View className="flex-row bg-primary-soft rounded-xl p-5 gap-4 mb-8">
+              <Shield size={24} color="#E60012" />
               <View className="flex-1 gap-1">
-                <Text className="text-[14px] font-bold text-[#c41e3a]">
+                <Text className="text-sm font-bold text-primary">
                   Secure Registration
                 </Text>
-                <Text className="text-[13px] font-normal text-[#c41e3a] leading-[18px]">
+                <Text className="text-sm text-primary/80">
                   Linking your vehicle unlocks personalized maintenance
                   schedules and digital service history.
                 </Text>
@@ -198,7 +198,7 @@ export default function AddVehicleScreen() {
 
             {/* Save Vehicle Button */}
             <TouchableOpacity
-              className="bg-[#c41e3a] rounded-[28px] py-4 items-center -mx-5 -mb-6 mt-6"
+              className="bg-primary rounded-xl h-14 items-center justify-center mb-6 active:opacity-80"
               onPress={() => {
                 if (!selectedModel || !plateNumber.trim()) {
                   Alert.alert(
@@ -214,16 +214,14 @@ export default function AddVehicleScreen() {
                 );
               }}
             >
-              <Text className="text-[16px] font-bold text-white">
-                Save Vehicle →
-              </Text>
+              <Text className="text-lg font-bold text-white">Save Vehicle</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {activeTab === "scan" && (
-          <View className="px-5 pt-6">
-            <Text className="text-[14px] text-[#999] text-center py-10">
+          <View className="px-6 pt-8 items-center">
+            <Text className="text-sm text-text-secondary text-center">
               Document Scan feature coming soon
             </Text>
           </View>

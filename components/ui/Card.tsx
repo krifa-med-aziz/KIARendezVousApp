@@ -12,7 +12,7 @@ export const Card: React.FC<CardProps> = ({
 }: any) => {
   return (
     <View
-      className={`bg-surface rounded-2xl p-4 mb-4 shadow-[0_2px_4px_rgba(0,0,0,0.05)] border border-[rgba(0,0,0,0.05)] ${className || ""}`}
+      className={`bg-surface rounded-2xl p-5 mb-4 shadow-subtle border border-border ${className || ""}`}
       {...props}
     >
       {children}

@@ -37,18 +37,25 @@ export default function Signup() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="px-6 pt-6 pb-10">
-        <Text className="text-[11px] font-semibold tracking-[1px] text-primary text-center mb-6">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <ScrollView
+        className="px-6 pt-6 pb-10"
+        showsVerticalScrollIndicator={false}
+      >
+        <Text className="text-xs font-bold tracking-widest text-primary text-center mb-6 uppercase">
           CREATE ACCOUNT
         </Text>
 
         <View className="items-center mb-4">
-          <Text className="text-[36px] text-text font-medium">Join the</Text>
-          <Text className="text-[36px] text-primary font-bold">KIA Family</Text>
+          <Text className="text-4xl text-text-primary font-medium mb-1">
+            Join the
+          </Text>
+          <Text className="text-4xl text-primary font-extrabold">
+            KIA Family
+          </Text>
         </View>
 
-        <Text className="text-[14px] font-normal text-textSecondary text-center leading-5 mb-8">
+        <Text className="text-sm text-text-secondary text-center leading-6 mb-8">
           Get started with managing your vehicle{"\n"}
           and booking services easily.
         </Text>
@@ -70,7 +77,7 @@ export default function Signup() {
           autoCapitalize="none"
         />
 
-        <Text className="text-[11px] font-semibold tracking-[1px] text-text mb-2">
+        <Text className="text-sm font-semibold text-text-primary mb-2 mt-2">
           PASSWORD
         </Text>
         <Input
@@ -81,17 +88,20 @@ export default function Signup() {
           secureTextEntry={!showPassword}
           containerClassName="mb-6 -mt-4"
           rightElement={
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              className="p-2"
+            >
               {showPassword ? (
-                <Eye size={20} color="#666666" />
+                <Eye size={20} color="#9CA3AF" />
               ) : (
-                <EyeOff size={20} color="#666666" />
+                <EyeOff size={20} color="#9CA3AF" />
               )}
             </TouchableOpacity>
           }
         />
 
-        <Text className="text-[11px] font-semibold tracking-[1px] text-text mb-2">
+        <Text className="text-sm font-semibold text-text-primary mb-2 mt-2">
           CONFIRM PASSWORD
         </Text>
         <Input
@@ -104,30 +114,29 @@ export default function Signup() {
           rightElement={
             <TouchableOpacity
               onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="p-2"
             >
               {showConfirmPassword ? (
-                <Eye size={20} color="#666666" />
+                <Eye size={20} color="#9CA3AF" />
               ) : (
-                <EyeOff size={20} color="#666666" />
+                <EyeOff size={20} color="#9CA3AF" />
               )}
             </TouchableOpacity>
           }
         />
 
         <PrimaryButton
-          label="Sign Up →"
+          label="Sign Up"
           onPress={handleSignup}
-          className="mb-6"
+          className="mb-8"
         />
 
-        <View className="flex-row justify-center items-center">
-          <Text className="text-[14px] font-normal text-textSecondary">
+        <View className="flex-row justify-center items-center pb-6">
+          <Text className="text-sm font-medium text-text-secondary">
             Already have an account?{" "}
           </Text>
           <TouchableOpacity onPress={() => router.push(routes.login as any)}>
-            <Text className="text-[14px] font-semibold text-primary">
-              Log In
-            </Text>
+            <Text className="text-sm font-bold text-primary">Log In</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

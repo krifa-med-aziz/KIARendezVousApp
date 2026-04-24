@@ -1,5 +1,11 @@
 import { routes } from "@/constants/routes";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Bell,
+  Calendar,
+  ChevronLeft,
+  Clock,
+  History,
+} from "lucide-react-native";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -19,145 +25,148 @@ export default function BookingsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f8f8f8]">
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-4 bg-white">
+      <View className="flex-row items-center justify-between px-6 py-4 bg-surface border-b border-border">
         <TouchableOpacity
-          className="p-1"
+          className="p-1 -ml-1 active:opacity-70"
           onPress={() => router.push("/(main)")}
         >
-          <Feather name="arrow-left" size={24} color="#c41e3a" />
+          <ChevronLeft size={24} color="#111827" />
         </TouchableOpacity>
-        <Text className="text-[18px] font-semibold text-[#1a1a1a]">
+        <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
           Booking History
         </Text>
         <TouchableOpacity
-          className="p-1"
+          className="p-1 -mr-1 active:opacity-70"
           onPress={() => router.push(routes.notifications)}
         >
-          <Feather name="bell" size={22} color="#1a1a1a" />
+          <Bell size={24} color="#111827" />
         </TouchableOpacity>
       </View>
 
-      {/* Tab Bar */}
-      <View className="flex-row px-5 pb-5 gap-2 bg-white">
-        <TouchableOpacity
-          className={
-            listTab === "upcoming"
-              ? "px-6 py-3 rounded-full bg-[#c41e3a]"
-              : "px-6 py-3 rounded-full bg-white"
-          }
-          onPress={() => setListTab("upcoming")}
-        >
-          <Text
+      <View className="bg-surface">
+        {/* Tab Bar */}
+        <View className="flex-row px-6 py-4 gap-3 bg-surface border-b border-border/50">
+          <TouchableOpacity
             className={
               listTab === "upcoming"
-                ? "text-white text-[14px] font-medium"
-                : "text-[#666] text-[14px] font-medium"
+                ? "px-5 py-2.5 rounded-xl bg-primary shadow-subtle"
+                : "px-5 py-2.5 rounded-xl bg-background border border-border"
             }
+            onPress={() => setListTab("upcoming")}
           >
-            Upcoming
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className={
-            listTab === "completed"
-              ? "px-6 py-3 rounded-full bg-[#c41e3a]"
-              : "px-6 py-3 rounded-full bg-white"
-          }
-          onPress={() => setListTab("completed")}
-        >
-          <Text
+            <Text
+              className={
+                listTab === "upcoming"
+                  ? "text-white text-xs font-bold tracking-widest uppercase"
+                  : "text-text-secondary text-xs font-bold tracking-widest uppercase"
+              }
+            >
+              Upcoming
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             className={
               listTab === "completed"
-                ? "text-white text-[14px] font-medium"
-                : "text-[#666] text-[14px] font-medium"
+                ? "px-5 py-2.5 rounded-xl bg-primary shadow-subtle"
+                : "px-5 py-2.5 rounded-xl bg-background border border-border"
             }
+            onPress={() => setListTab("completed")}
           >
-            Completed
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className={
-            listTab === "canceled"
-              ? "px-6 py-3 rounded-full bg-[#c41e3a]"
-              : "px-6 py-3 rounded-full bg-white"
-          }
-          onPress={() => setListTab("canceled")}
-        >
-          <Text
+            <Text
+              className={
+                listTab === "completed"
+                  ? "text-white text-xs font-bold tracking-widest uppercase"
+                  : "text-text-secondary text-xs font-bold tracking-widest uppercase"
+              }
+            >
+              Completed
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             className={
               listTab === "canceled"
-                ? "text-white text-[14px] font-medium"
-                : "text-[#666] text-[14px] font-medium"
+                ? "px-5 py-2.5 rounded-xl bg-primary shadow-subtle"
+                : "px-5 py-2.5 rounded-xl bg-background border border-border"
             }
+            onPress={() => setListTab("canceled")}
           >
-            Canceled
-          </Text>
-        </TouchableOpacity>
+            <Text
+              className={
+                listTab === "canceled"
+                  ? "text-white text-xs font-bold tracking-widest uppercase"
+                  : "text-text-secondary text-xs font-bold tracking-widest uppercase"
+              }
+            >
+              Canceled
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {listTab !== "upcoming" ? (
-          <View className="px-6 py-8">
-            <Text className="text-[14px] text-[#888] text-center leading-5">
-              No {listTab} bookings in this demo. Switch to Upcoming to see
+          <View className="px-6 py-12 items-center">
+            <History size={48} color="#D1D5DB" className="mb-4" />
+            <Text className="text-base text-text-secondary text-center leading-relaxed">
+              No {listTab} bookings in this demo.{"\n"}Switch to Upcoming to see
               sample data.
             </Text>
           </View>
         ) : null}
 
         {listTab === "upcoming" ? (
-          <>
+          <View className="p-6">
             {/* Booking Card 1 */}
-            <View className="mx-5 mt-5 bg-white rounded-2xl p-5 shadow-sm elevation-[2]">
-              <View className="flex-row mb-4">
+            <View className="bg-surface border border-border rounded-2xl p-6 shadow-subtle mb-6">
+              <View className="flex-row mb-6">
                 <Image
                   source={{
                     uri: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=200&h=200&fit=crop",
                   }}
-                  className="w-[72px] h-[72px] rounded-xl bg-[#f0f0f0]"
+                  className="w-20 h-20 rounded-xl bg-background"
                 />
-                <View className="flex-1 ml-3.5 justify-center">
-                  <View className="self-end bg-[#fef0f0] px-2.5 py-1 rounded-lg mb-1">
-                    <Text className="text-[10px] font-semibold text-[#c41e3a] tracking-[0.5px]">
+                <View className="flex-1 ml-4 justify-center">
+                  <View className="self-end bg-background border border-border px-3 py-1.5 rounded-md mb-2">
+                    <Text className="text-[10px] font-bold text-text-secondary tracking-widest uppercase">
                       CONFIRMED
                     </Text>
                   </View>
-                  <Text className="text-[18px] font-semibold text-[#1a1a1a] mb-0.5">
+                  <Text className="text-lg font-bold text-text-primary mb-1">
                     Full Periodic Service
                   </Text>
-                  <Text className="text-[14px] text-[#888]">
+                  <Text className="text-xs font-bold text-text-muted uppercase tracking-widest">
                     KIA EV9 • GT-Line
                   </Text>
                 </View>
               </View>
 
-              <View className="flex-row bg-[#fafafa] rounded-xl p-3.5 mb-4">
+              <View className="flex-row bg-background/50 rounded-xl p-4 mb-6 border border-border/50">
                 <View className="flex-row items-center flex-1">
-                  <View className="w-8 h-8 justify-center items-center mr-2">
-                    <Feather name="calendar" size={16} color="#c41e3a" />
+                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
+                    <Calendar size={18} color="#E60012" />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-medium text-[#888] tracking-[0.5px]">
+                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
                       DATE
                     </Text>
-                    <Text className="text-[14px] font-semibold text-[#1a1a1a] mt-0.5">
+                    <Text className="text-sm font-bold text-text-primary">
                       Oct 24, 2023
                     </Text>
                   </View>
                 </View>
                 <View className="flex-row items-center flex-1">
-                  <View className="w-8 h-8 justify-center items-center mr-2">
-                    <Feather name="clock" size={16} color="#888" />
+                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
+                    <Clock size={18} color="#6B7280" />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-medium text-[#888] tracking-[0.5px]">
+                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
                       TIME
                     </Text>
-                    <Text className="text-[14px] font-semibold text-[#1a1a1a] mt-0.5">
+                    <Text className="text-sm font-bold text-text-primary">
                       09:30 AM
                     </Text>
                   </View>
@@ -166,20 +175,27 @@ export default function BookingsScreen() {
 
               <View className="flex-row gap-3">
                 <TouchableOpacity
-                  className="flex-1 bg-[#c41e3a] py-3.5 rounded-full items-center"
+                  className="flex-1 bg-primary h-14 rounded-xl items-center justify-center active:opacity-80 shadow-subtle"
                   onPress={() => router.push(routes.booking.selectAppointment)}
                 >
-                  <Text className="text-white text-[14px] font-semibold">
+                  <Text className="text-sm text-white font-bold tracking-widest uppercase">
                     Reschedule
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="flex-[0.6] bg-[#f0f0f0] py-3.5 rounded-full items-center"
+                  className="flex-[0.7] bg-background border border-border h-14 rounded-xl items-center justify-center active:bg-text-secondary/10"
                   onPress={() =>
-                    Alert.alert("Cancel booking", "Demo only — no change made.")
+                    Alert.alert(
+                      "Cancel booking",
+                      "Are you sure you want to cancel this booking?",
+                      [
+                        { text: "No", style: "cancel" },
+                        { text: "Yes, Cancel", style: "destructive" },
+                      ],
+                    )
                   }
                 >
-                  <Text className="text-[#1a1a1a] text-[14px] font-medium">
+                  <Text className="text-text-primary text-sm font-bold tracking-widest uppercase">
                     Cancel
                   </Text>
                 </TouchableOpacity>
@@ -187,52 +203,52 @@ export default function BookingsScreen() {
             </View>
 
             {/* Booking Card 2 */}
-            <View className="mx-5 mt-5 bg-white rounded-2xl p-5 shadow-sm elevation-[2]">
-              <View className="flex-row mb-4">
+            <View className="bg-surface border border-border rounded-2xl p-6 shadow-subtle">
+              <View className="flex-row mb-6">
                 <Image
                   source={{
                     uri: "https://images.unsplash.com/photo-1606611013016-969c19ba27bb?w=200&h=200&fit=crop",
                   }}
-                  className="w-[72px] h-[72px] rounded-xl bg-[#f0f0f0]"
+                  className="w-20 h-20 rounded-xl bg-background"
                 />
-                <View className="flex-1 ml-3.5 justify-center">
-                  <View className="self-end bg-[#f5f5f5] px-2.5 py-1 rounded-lg mb-1">
-                    <Text className="text-[10px] font-semibold text-[#888] tracking-[0.5px]">
+                <View className="flex-1 ml-4 justify-center">
+                  <View className="self-end bg-background border border-border px-3 py-1.5 rounded-md mb-2">
+                    <Text className="text-[10px] font-bold text-text-secondary tracking-widest uppercase">
                       IN QUEUE
                     </Text>
                   </View>
-                  <Text className="text-[18px] font-semibold text-[#1a1a1a] mb-0.5">
+                  <Text className="text-lg font-bold text-text-primary mb-1">
                     Brake Inspection
                   </Text>
-                  <Text className="text-[14px] text-[#888]">
+                  <Text className="text-xs font-bold text-text-muted uppercase tracking-widest">
                     KIA Sportage • 2022
                   </Text>
                 </View>
               </View>
 
-              <View className="flex-row bg-[#fafafa] rounded-xl p-3.5 mb-4">
+              <View className="flex-row bg-background/50 rounded-xl p-4 mb-6 border border-border/50">
                 <View className="flex-row items-center flex-1">
-                  <View className="w-8 h-8 justify-center items-center mr-2 border border-[#e8e8e8] rounded-md">
-                    <Feather name="calendar" size={16} color="#c41e3a" />
+                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
+                    <Calendar size={18} color="#E60012" />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-medium text-[#888] tracking-[0.5px]">
+                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
                       DATE
                     </Text>
-                    <Text className="text-[14px] font-semibold text-[#1a1a1a] mt-0.5">
+                    <Text className="text-sm font-bold text-text-primary">
                       Nov 02, 2023
                     </Text>
                   </View>
                 </View>
                 <View className="flex-row items-center flex-1">
-                  <View className="w-8 h-8 justify-center items-center mr-2">
-                    <Feather name="clock" size={16} color="#888" />
+                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
+                    <Clock size={18} color="#6B7280" />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-medium text-[#888] tracking-[0.5px]">
+                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
                       TIME
                     </Text>
-                    <Text className="text-[14px] font-semibold text-[#1a1a1a] mt-0.5">
+                    <Text className="text-sm font-bold text-text-primary">
                       14:00 PM
                     </Text>
                   </View>
@@ -241,32 +257,39 @@ export default function BookingsScreen() {
 
               <View className="flex-row gap-3">
                 <TouchableOpacity
-                  className="flex-1 bg-[#c41e3a] py-3.5 rounded-full items-center"
+                  className="flex-1 bg-primary h-14 rounded-xl items-center justify-center active:opacity-80 shadow-subtle"
                   onPress={() => router.push(routes.booking.selectAppointment)}
                 >
-                  <Text className="text-white text-[14px] font-semibold">
+                  <Text className="text-sm text-white font-bold tracking-widest uppercase">
                     Reschedule
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="flex-[0.6] bg-[#f0f0f0] py-3.5 rounded-full items-center"
+                  className="flex-[0.7] bg-background border border-border h-14 rounded-xl items-center justify-center active:bg-text-secondary/10"
                   onPress={() =>
-                    Alert.alert("Cancel booking", "Demo only — no change made.")
+                    Alert.alert(
+                      "Cancel booking",
+                      "Are you sure you want to cancel this booking?",
+                      [
+                        { text: "No", style: "cancel" },
+                        { text: "Yes, Cancel", style: "destructive" },
+                      ],
+                    )
                   }
                 >
-                  <Text className="text-[#1a1a1a] text-[14px] font-medium">
+                  <Text className="text-text-primary text-sm font-bold tracking-widest uppercase">
                     Cancel
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
-          </>
+          </View>
         ) : null}
 
         {/* Scroll Hint */}
-        <View className="items-center py-12">
-          <MaterialCommunityIcons name="history" size={32} color="#ccc" />
-          <Text className="text-[14px] text-[#bbb] mt-3">
+        <View className="items-center py-8 opacity-50">
+          <History size={32} color="#9CA3AF" />
+          <Text className="text-xs font-medium text-text-muted mt-3">
             Scroll down to view past service insights
           </Text>
         </View>

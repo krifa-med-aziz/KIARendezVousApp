@@ -1,9 +1,17 @@
 import { routes } from "@/constants/routes";
 import {
-  Feather,
-  FontAwesome,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+  ArrowLeft,
+  BatteryCharging,
+  Calendar,
+  CalendarDays,
+  Car,
+  ChevronRight,
+  Droplet,
+  Gauge,
+  History,
+  Wrench,
+  Zap,
+} from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   Image,
@@ -19,15 +27,18 @@ export default function VehicleDetailsScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fff]">
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
 
       {/* Header */}
-      <View className="flex-row items-center px-4 py-4 bg-white">
-        <TouchableOpacity className="p-1" onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color="#c41e3a" />
+      <View className="flex-row items-center px-6 py-4 bg-background">
+        <TouchableOpacity
+          className="active:opacity-70 p-1 -ml-1"
+          onPress={() => router.back()}
+        >
+          <ArrowLeft size={24} color="#E60012" />
         </TouchableOpacity>
-        <Text className="flex-1 text-[14px] font-semibold text-[#1a1a1a] ml-3 tracking-[0.5px]">
+        <Text className="flex-1 text-sm font-bold text-text-primary ml-3 tracking-widest uppercase">
           VEHICLE DETAILS{id ? ` · #${id}` : ""}
         </Text>
         <View className="w-8" />
@@ -35,17 +46,17 @@ export default function VehicleDetailsScreen() {
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Vehicle Image */}
-        <View className="h-[280px] bg-[#1a1a1a] relative">
+        <View className="h-[280px] bg-text-primary relative mx-6 rounded-2xl overflow-hidden shadow-subtle mb-6 mt-2">
           <Image
             source={{
               uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Vehicle%20Details-WBZHAr69OSLSNhArv5SteJex8xq0ws.png",
             }}
-            className="w-full h-[350px] absolute -top-5"
+            className="w-full h-full absolute top-0"
             resizeMode="cover"
           />
-          <View className="flex-1 justify-end p-5">
-            <View className="self-start bg-[#c41e3a] px-3.5 py-2 rounded">
-              <Text className="text-[11px] font-semibold text-white tracking-[0.5px]">
+          <View className="flex-1 justify-end p-5 bg-black/10">
+            <View className="self-start bg-primary/95 backdrop-blur-md px-4 py-2 rounded-lg">
+              <Text className="text-xs font-bold text-white tracking-widest uppercase">
                 ELECTRIC PERFORMANCE
               </Text>
             </View>
@@ -53,163 +64,157 @@ export default function VehicleDetailsScreen() {
         </View>
 
         {/* Vehicle Name */}
-        <View className="px-5 pt-5 pb-4">
-          <Text className="text-[32px] font-bold text-[#1a1a1a]">
-            KIA EV6 <Text className="text-[#c41e3a]">GT-Line</Text>
+        <View className="px-6 pb-6">
+          <Text className="text-4xl font-extrabold text-text-primary">
+            KIA EV6 <Text className="text-primary font-bold">GT-Line</Text>
           </Text>
         </View>
 
         {/* Info Grid */}
-        <View className="flex-row flex-wrap px-4 gap-3">
-          <View className="w-[48%] bg-white rounded-2xl p-4 border border-[#f0f0f0]">
-            <MaterialCommunityIcons
-              name="card-text-outline"
-              size={24}
-              color="#c41e3a"
-            />
-            <Text className="text-[11px] font-medium text-[#888] tracking-[0.5px] mt-3 mb-1">
+        <View className="flex-row flex-wrap px-6 gap-4">
+          <View className="w-[47%] bg-surface rounded-2xl p-5 border border-border shadow-subtle">
+            <Car size={24} color="#E60012" />
+            <Text className="text-[10px] font-bold text-text-muted tracking-widest mt-4 mb-1 uppercase">
               PLATE NUMBER
             </Text>
-            <Text className="text-[20px] font-bold text-[#1a1a1a]">
+            <Text className="text-xl font-bold text-text-primary">
               ABC-1234
             </Text>
           </View>
-          <View className="w-[48%] bg-white rounded-2xl p-4 border border-[#f0f0f0]">
-            <MaterialCommunityIcons
-              name="speedometer"
-              size={24}
-              color="#c41e3a"
-            />
-            <Text className="text-[11px] font-medium text-[#888] tracking-[0.5px] mt-3 mb-1">
+          <View className="w-[47%] bg-surface rounded-2xl p-5 border border-border shadow-subtle">
+            <Gauge size={24} color="#E60012" />
+            <Text className="text-[10px] font-bold text-text-muted tracking-widest mt-4 mb-1 uppercase">
               ODOMETER
             </Text>
-            <Text className="text-[20px] font-bold text-[#1a1a1a]">
+            <Text className="text-xl font-bold text-text-primary">
               12,450{" "}
-              <Text className="text-[14px] font-medium text-[#888]">km</Text>
+              <Text className="text-sm font-medium text-text-secondary">
+                km
+              </Text>
             </Text>
           </View>
-          <View className="w-[48%] bg-white rounded-2xl p-4 border border-[#f0f0f0]">
-            <MaterialCommunityIcons
-              name="battery-charging-80"
-              size={24}
-              color="#c41e3a"
-            />
-            <Text className="text-[11px] font-medium text-[#888] tracking-[0.5px] mt-3 mb-1">
+          <View className="w-[47%] bg-surface rounded-2xl p-5 border border-border shadow-subtle">
+            <BatteryCharging size={24} color="#E60012" />
+            <Text className="text-[10px] font-bold text-text-muted tracking-widest mt-4 mb-1 uppercase">
               BATTERY
             </Text>
-            <Text className="text-[20px] font-bold text-[#1a1a1a]">84%</Text>
+            <Text className="text-xl font-bold text-text-primary">84%</Text>
           </View>
-          <View className="w-[48%] bg-white rounded-2xl p-4 border border-[#f0f0f0]">
-            <MaterialCommunityIcons name="history" size={24} color="#c41e3a" />
-            <Text className="text-[11px] font-medium text-[#888] tracking-[0.5px] mt-3 mb-1">
+          <View className="w-[47%] bg-surface rounded-2xl p-5 border border-border shadow-subtle">
+            <History size={24} color="#E60012" />
+            <Text className="text-[10px] font-bold text-text-muted tracking-widest mt-4 mb-1 uppercase">
               LAST SERVICE
             </Text>
-            <Text className="text-[20px] font-bold text-[#1a1a1a]">
-              Oct 12, 2023
-            </Text>
+            <Text className="text-xl font-bold text-text-primary">Oct 12</Text>
           </View>
         </View>
 
         {/* Vehicle Health */}
-        <View className="mx-4 mt-4 bg-white rounded-2xl p-5 border border-[#f0f0f0]">
-          <View className="flex-row justify-between items-start mb-5">
-            <Text className="text-[22px] font-bold text-[#1a1a1a] leading-7">
+        <View className="mx-6 mt-6 bg-surface rounded-2xl p-6 border border-border shadow-subtle">
+          <View className="flex-row justify-between items-start mb-6">
+            <Text className="text-2xl font-extrabold text-text-primary leading-8">
               Vehicle{"\n"}Health
             </Text>
-            <View className="bg-[#c41e3a] px-4 py-2.5 rounded-lg">
-              <Text className="text-[12px] font-bold text-white text-center leading-4">
-                OPTIMAL{"\n"}CONDITION
+            <View className="bg-primary-soft px-4 py-2 rounded-xl">
+              <Text className="text-xs font-bold text-primary tracking-widest text-center uppercase">
+                OPTIMAL
               </Text>
             </View>
           </View>
 
-          <View className="flex-row items-center py-3">
-            <View className="w-11 h-11 rounded-xl bg-[#fef5f5] justify-center items-center mr-3.5">
-              <MaterialCommunityIcons name="tire" size={22} color="#c41e3a" />
+          <View className="flex-row items-center py-3 border-b border-border/50">
+            <View className="w-12 h-12 rounded-xl bg-background justify-center items-center mr-4 border border-border/50">
+              <Car size={20} color="#E60012" />
             </View>
             <View className="flex-1">
-              <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+              <Text className="text-base font-bold text-text-primary">
                 Tire Pressure
               </Text>
-              <Text className="text-[13px] text-[#888] mt-0.5">
+              <Text className="text-sm text-text-secondary mt-0.5">
                 All tires balanced
               </Text>
             </View>
-            <Text className="text-[16px] font-bold text-[#1a1a1a]">36 PSI</Text>
+            <Text className="text-base font-extrabold text-text-primary">
+              36 PSI
+            </Text>
           </View>
 
-          <View className="flex-row items-center py-3">
-            <View className="w-11 h-11 rounded-xl bg-[#fef5f5] justify-center items-center mr-3.5">
-              <MaterialCommunityIcons
-                name="car-brake-fluid-level"
-                size={22}
-                color="#c41e3a"
-              />
+          <View className="flex-row items-center py-3 mt-1">
+            <View className="w-12 h-12 rounded-xl bg-background justify-center items-center mr-4 border border-border/50">
+              <Droplet size={20} color="#E60012" />
             </View>
             <View className="flex-1">
-              <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+              <Text className="text-base font-bold text-text-primary">
                 Brake Fluid
               </Text>
-              <Text className="text-[13px] text-[#888] mt-0.5">Level 92%</Text>
+              <Text className="text-sm text-text-secondary mt-0.5">
+                Level 92%
+              </Text>
             </View>
-            <Text className="text-[16px] font-bold text-[#1a1a1a]">Good</Text>
+            <Text className="text-base font-extrabold text-text-primary">
+              Good
+            </Text>
           </View>
         </View>
 
         {/* V2L Ready Card */}
-        <View className="mx-4 mt-4 bg-[#4a4a4a] rounded-2xl p-6 flex-row overflow-hidden min-h-[160px]">
-          <View className="flex-1 justify-center">
-            <Text className="text-[32px] font-bold text-white leading-9 mb-3">
+        <View className="mx-6 mt-6 bg-text-primary rounded-2xl p-7 flex-row overflow-hidden min-h-[160px] shadow-card">
+          <View className="flex-1 justify-center relative z-10">
+            <Text className="text-3xl font-extrabold text-white leading-9 mb-2">
               V2L{"\n"}Ready
             </Text>
-            <Text className="text-[13px] text-white/70 leading-[18px]">
+            <Text className="text-sm text-white/70 leading-relaxed pr-8">
               Vehicle-to-Load technology is active and ready to power your
               devices.
             </Text>
           </View>
-          <View className="absolute right-5 top-5">
-            <FontAwesome name="bolt" size={48} color="rgba(255,255,255,0.2)" />
+          <View className="absolute -right-4 top-2">
+            <Zap size={100} color="rgba(255,255,255,0.1)" strokeWidth={1} />
           </View>
         </View>
 
         {/* Service Timeline */}
-        <View className="px-4 pt-6">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-[20px] font-bold text-[#1a1a1a]">
+        <View className="px-6 pt-8">
+          <View className="flex-row justify-between items-center mb-5">
+            <Text className="text-xl font-bold text-text-primary">
               Service Timeline
             </Text>
             <TouchableOpacity>
-              <Text className="text-[13px] font-semibold text-[#c41e3a] tracking-[0.5px]">
+              <Text className="text-sm font-bold text-primary tracking-wider">
                 VIEW ALL
               </Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity className="flex-row items-center bg-[#f8f8f8] rounded-2xl p-4">
-            <View className="items-center mr-4 pr-4 border-r border-[#e8e8e8]">
-              <Text className="text-[12px] font-medium text-[#888]">OCT</Text>
-              <Text className="text-[24px] font-bold text-[#1a1a1a]">12</Text>
+          <TouchableOpacity className="flex-row items-center bg-surface border border-border shadow-subtle rounded-2xl p-5 mb-4 active:bg-background">
+            <View className="items-center mr-5 pr-5 border-r border-border">
+              <Text className="text-xs font-bold text-text-muted tracking-widest uppercase">
+                OCT
+              </Text>
+              <Text className="text-3xl font-extrabold text-text-primary mt-1">
+                12
+              </Text>
             </View>
             <View className="flex-1">
-              <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+              <Text className="text-base font-bold text-text-primary mb-1">
                 12,000 km Checkup
               </Text>
-              <Text className="text-[13px] text-[#888] mt-0.5">
+              <Text className="text-sm text-text-secondary leading-5">
                 Full diagnostic, Software update
               </Text>
             </View>
-            <Feather name="chevron-right" size={20} color="#ccc" />
+            <ChevronRight size={20} color="#9CA3AF" />
           </TouchableOpacity>
         </View>
 
         {/* Book Service Button */}
-        <View className="px-4 pt-6 pb-8">
+        <View className="px-6 pt-4 pb-12">
           <TouchableOpacity
-            className="flex-row items-center justify-center bg-[#c41e3a] py-4 rounded-full"
+            className="flex-row items-center justify-center bg-primary h-14 rounded-xl active:opacity-80 shadow-card"
             onPress={() => router.push(routes.booking.selectVehicle)}
           >
-            <Feather name="calendar" size={20} color="#fff" />
-            <Text className="text-[15px] font-bold text-white ml-2.5 tracking-[1px]">
+            <CalendarDays size={20} color="#fff" />
+            <Text className="text-lg font-bold text-white ml-3 tracking-wide">
               BOOK SERVICE
             </Text>
           </TouchableOpacity>

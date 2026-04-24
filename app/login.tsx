@@ -39,33 +39,36 @@ export default function Login() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="px-6 pt-6 pb-12">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <ScrollView
+        className="px-6 pt-6 pb-12"
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
-        <Text className="text-[11px] font-semibold tracking-[0.5px] uppercase text-primary text-center mb-6">
+        <Text className="text-xs font-bold tracking-widest uppercase text-primary text-center mb-6">
           LOGIN
         </Text>
 
         {/* KIA Service Badge */}
         <View className="items-center mb-8">
-          <Text className="text-[12px] font-semibold tracking-[1.5px] text-primary bg-primaryLight px-3 py-1 rounded-sm">
+          <Text className="text-xs font-bold tracking-widest text-primary bg-primary-soft px-4 py-1.5 rounded-full uppercase">
             KIA SERVICE
           </Text>
         </View>
 
         {/* Main Heading */}
         <View className="items-center mb-4">
-          <Text className="text-[32px] font-medium leading-[40px] tracking-[-0.5px] text-text">
+          <Text className="text-4xl font-medium text-text-primary mb-1">
             Drive with
           </Text>
-          <Text className="text-[32px] font-bold leading-[40px] tracking-[-0.5px] text-primary">
+          <Text className="text-4xl font-extrabold text-primary">
             Confidence
           </Text>
         </View>
 
         {/* Description */}
-        <Text className="text-[14px] text-textSecondary text-center leading-5 mb-10">
-          Manage your vehicle&apos;s health and{"\n"}
+        <Text className="text-sm text-text-secondary text-center leading-6 mb-10">
+          Manage your vehicle's health and{"\n"}
           book services with ease.
         </Text>
 
@@ -81,7 +84,7 @@ export default function Login() {
 
         {/* Password Field */}
         <View className="flex-row justify-between items-center mb-1.5">
-          <Text className="text-[11px] font-semibold tracking-[0.5px] text-textSecondary">
+          <Text className="text-sm font-semibold text-text-primary">
             PASSWORD
           </Text>
           <TouchableOpacity
@@ -92,7 +95,7 @@ export default function Login() {
               )
             }
           >
-            <Text className="text-[12px] font-medium tracking-[0.5px] uppercase text-primary">
+            <Text className="text-sm font-bold text-primary hover:opacity-80">
               Forgot Password?
             </Text>
           </TouchableOpacity>
@@ -105,26 +108,29 @@ export default function Login() {
           secureTextEntry={!showPassword}
           containerClassName="mb-6 -mt-4"
           rightElement={
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              className="p-2"
+            >
               {showPassword ? (
-                <Eye size={20} color="#666666" />
+                <Eye size={20} color="#9CA3AF" />
               ) : (
-                <EyeOff size={20} color="#666666" />
+                <EyeOff size={20} color="#9CA3AF" />
               )}
             </TouchableOpacity>
           }
         />
 
         <PrimaryButton
-          label="Log In →"
+          label="Log In"
           onPress={handleEmailLogin}
-          className="mb-6"
+          className="mb-8 mt-2"
         />
 
         {/* Or Continue With Section */}
-        <View className="flex-row items-center mb-6">
+        <View className="flex-row items-center mb-8">
           <View className="flex-1 h-[1px] bg-border" />
-          <Text className="text-[11px] font-semibold tracking-[0.5px] uppercase text-textMuted mx-3">
+          <Text className="text-xs font-bold tracking-wider uppercase text-text-muted mx-4">
             OR CONTINUE WITH
           </Text>
           <View className="flex-1 h-[1px] bg-border" />
@@ -135,36 +141,32 @@ export default function Login() {
           source={{
             uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/car-bg-7FE08IBpgxmG5EtaEREOHtgIkBfx2t.jpg",
           }}
-          className="rounded-xl overflow-hidden mb-6 py-10 px-6 bg-[#e8e8e8]"
-          imageStyle={{ opacity: 0.3 }}
+          className="rounded-2xl overflow-hidden mb-8 py-8 px-6 bg-text-primary"
+          imageStyle={{ opacity: 0.2 }}
         >
-          <View className="flex-row gap-3 justify-center">
+          <View className="flex-row gap-4 justify-center">
             <TouchableOpacity
-              className="bg-[rgba(100,100,100,0.6)] rounded-xl px-8 py-3 min-w-[120px] items-center"
+              className="bg-white/20 border border-white/30 rounded-xl h-14 flex-1 items-center justify-center backdrop-blur-md active:opacity-80"
               onPress={() => handleSocial("Google")}
             >
-              <Text className="text-[14px] font-semibold text-surface">
-                Google
-              </Text>
+              <Text className="text-base font-bold text-white">Google</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="bg-[rgba(100,100,100,0.6)] rounded-xl px-8 py-3 min-w-[120px] items-center"
+              className="bg-white/20 border border-white/30 rounded-xl h-14 flex-1 items-center justify-center backdrop-blur-md active:opacity-80"
               onPress={() => handleSocial("Apple")}
             >
-              <Text className="text-[14px] font-semibold text-surface">
-                Apple
-              </Text>
+              <Text className="text-base font-bold text-white">Apple</Text>
             </TouchableOpacity>
           </View>
         </ImageBackground>
 
         {/* Sign Up Link */}
-        <View className="flex-row justify-center items-center">
-          <Text className="text-[14px] text-textSecondary">
-            Don&apos;t have an account?{" "}
+        <View className="flex-row justify-center items-center pb-6">
+          <Text className="text-sm font-medium text-text-secondary">
+            Don't have an account?{" "}
           </Text>
           <TouchableOpacity onPress={() => router.push(routes.signup as any)}>
-            <Text className="text-[14px] font-semibold text-primary">
+            <Text className="text-sm font-bold text-primary">
               Create an Account
             </Text>
           </TouchableOpacity>

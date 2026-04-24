@@ -3,8 +3,7 @@ export const VEHICLES = [
     id: 1,
     name: "KIA EV6 GT-Line",
     plate: "ABC-1234",
-    image:
-      "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80",
+    image: "../assets/cars/KIA EV6 GT-Line.avif",
     type: "ELECTRIC",
     battery: "92%",
     lastService: "Oct 12, 2023",
@@ -15,8 +14,7 @@ export const VEHICLES = [
     id: 2,
     name: "KIA Sorento",
     plate: "SUV-9821",
-    image:
-      "https://images.unsplash.com/photo-1603386329225-868f9b1ee6a2?auto=format&fit=crop&w=1200&q=80",
+    image: "../assets/cars/KIA Sorento.avif",
     type: "SUV",
     lastService: "Sep 05, 2023",
     mileage: "45,800 km",
@@ -25,8 +23,7 @@ export const VEHICLES = [
     id: 3,
     name: "KIA Sportage",
     plate: "K-DRIVE-22",
-    image:
-      "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1200&q=80",
+    image: "../assets/cars/KIA Sportage.avif",
     type: "SUV",
     lastService: "Aug 22, 2023",
     mileage: "31,200 km",
@@ -39,7 +36,7 @@ export const DEFAULT_VEHICLE_IMAGE =
 export const SERVICES = [
   {
     id: 1,
-    icon: "🔧",
+    icon: "Wrench",
     title: "Full Maintenance",
     description:
       "Comprehensive 150-point inspection, fluid replacements, and total systems diagnostic.",
@@ -48,7 +45,7 @@ export const SERVICES = [
   },
   {
     id: 2,
-    icon: "🛠️",
+    icon: "Droplet",
     title: "Oil & Filter Change",
     description: "Synthetic oil swap and premium filter replacement.",
     price: 89,
@@ -56,7 +53,7 @@ export const SERVICES = [
   },
   {
     id: 3,
-    icon: "🚗",
+    icon: "Disc",
     title: "Brake Service",
     description: "Pad inspection, rotor resurfacing, and fluid flush.",
     price: 145,
@@ -64,7 +61,7 @@ export const SERVICES = [
   },
   {
     id: 4,
-    icon: "⚙️",
+    icon: "RotateCcw",
     title: "Tire Rotation",
     description: "Pattern rotation and precision pressure balancing.",
     price: 45,
@@ -72,7 +69,7 @@ export const SERVICES = [
   },
   {
     id: 5,
-    icon: "❄️",
+    icon: "Snowflake",
     title: "AC Check",
     description: "System recharge and cabin filter sterilization.",
     price: 120,

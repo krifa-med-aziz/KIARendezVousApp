@@ -1,4 +1,11 @@
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  ArrowLeft,
+  CalendarCheck,
+  CheckCircle2,
+  Settings,
+  Tag,
+  Wrench,
+} from "lucide-react-native";
 import { router } from "expo-router";
 import {
   Image,
@@ -12,93 +19,106 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotificationsScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-[#f8f8f8]">
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-4 bg-white">
-        <TouchableOpacity className="p-1" onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color="#c41e3a" />
+      <View className="flex-row items-center justify-between px-6 py-4 bg-surface border-b border-border">
+        <TouchableOpacity
+          className="p-1 -ml-1 active:opacity-70"
+          onPress={() => router.back()}
+        >
+          <ArrowLeft size={24} color="#E60012" />
         </TouchableOpacity>
-        <Text className="text-[18px] font-semibold text-[#1a1a1a]">
+        <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
           Notifications
         </Text>
         <TouchableOpacity
-          className="p-1"
+          className="p-1 -mr-1 active:opacity-70"
           onPress={() => router.push("/(main)/profile")}
         >
-          <Feather name="settings" size={22} color="#c41e3a" />
+          <Settings size={24} color="#111827" />
         </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Today Section */}
-        <Text className="text-[12px] font-semibold text-[#999] tracking-[1px] px-5 pt-6 pb-3">
+        <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase px-6 pt-8 pb-4">
           TODAY
         </Text>
 
         {/* Service Confirmed Notification */}
-        <View className="mx-5 bg-white rounded-2xl mb-3 overflow-hidden relative">
+        <View className="mx-6 bg-surface rounded-2xl mb-4 overflow-hidden relative shadow-subtle border border-border">
+          <View className="absolute left-0 top-0 bottom-0 w-1 bg-primary z-10" />
           <View className="flex-row p-4 pl-5">
-            <View className="w-12 h-12 rounded-xl bg-[#fef0f0] justify-center items-center mr-3.5">
-              <Feather name="calendar" size={20} color="#c41e3a" />
+            <View className="w-12 h-12 rounded-xl bg-primary-soft justify-center items-center mr-4">
+              <CalendarCheck size={20} color="#E60012" />
             </View>
             <View className="flex-1">
-              <View className="flex-row justify-between items-center mb-1">
-                <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+              <View className="flex-row justify-between items-center mb-1.5">
+                <Text className="text-base font-bold text-text-primary">
                   Service Confirmed
                 </Text>
                 <View className="flex-row items-center">
-                  <Text className="text-[12px] text-[#999]">2H A</Text>
-                  <View className="w-2 h-2 rounded-full bg-[#c41e3a] ml-1.5" />
+                  <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase">
+                    2H AGO
+                  </Text>
+                  <View className="w-1.5 h-1.5 rounded-full bg-primary ml-2" />
                 </View>
               </View>
-              <Text className="text-[14px] text-[#666] leading-5">
+              <Text className="text-sm font-medium text-text-secondary leading-relaxed">
                 Your booking for Oct 24th is set. Our technician is ready for
                 your arrival.
               </Text>
             </View>
           </View>
-          <View className="absolute left-0 top-0 bottom-0 w-1 bg-[#c41e3a] rounded-tl-2xl rounded-bl-2xl" />
         </View>
 
         {/* Vehicle Health Alert Notification */}
-        <View className="mx-5 bg-white rounded-2xl p-4 flex-row mb-3">
-          <View className="w-12 h-12 rounded-xl bg-[#f5f5f5] justify-center items-center mr-3.5">
-            <MaterialCommunityIcons name="car-cog" size={22} color="#666" />
+        <View className="mx-6 bg-surface rounded-2xl p-4 flex-row mb-4 shadow-subtle border border-border">
+          <View className="w-12 h-12 rounded-xl bg-background border border-border justify-center items-center mr-4">
+            <Wrench size={22} color="#6B7280" />
           </View>
           <View className="flex-1">
-            <View className="flex-row justify-between items-center mb-1">
-              <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+            <View className="flex-row justify-between items-center mb-1.5">
+              <Text className="text-base font-bold text-text-primary">
                 Vehicle Health Alert
               </Text>
-              <Text className="text-[12px] text-[#bbb]">5H AGO</Text>
+              <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase">
+                5H AGO
+              </Text>
             </View>
-            <Text className="text-[14px] text-[#666] leading-5">
-              It&apos;s time for your EV6&apos;s tire rotation to maintain
-              optimal range and safety.
+            <Text className="text-sm font-medium text-text-secondary leading-relaxed">
+              It's time for your EV6's tire rotation to maintain optimal range
+              and safety.
             </Text>
           </View>
         </View>
 
         {/* Promotional Banner */}
-        <View className="mx-5 rounded-[20px] overflow-hidden h-[180px] mb-3">
+        <View className="mx-6 rounded-2xl overflow-hidden h-[200px] mb-4 shadow-card border border-border">
           <Image
             source={{
               uri: "https://images.unsplash.com/photo-1449965408869-euj3c9c8f5e6?w=800&h=400&fit=crop",
             }}
             className="w-full h-full absolute"
           />
-          <View className="flex-1 bg-black/40 p-5 justify-center">
-            <Text className="text-[32px] font-bold text-white mb-2">
+          <View className="absolute inset-0 bg-black/60" />
+          <View className="flex-1 p-6 justify-center">
+            <View className="bg-primary/90 self-start px-3 py-1 rounded-md mb-3">
+              <Text className="text-[10px] font-bold text-white tracking-widest uppercase">
+                SUMMER OFFER
+              </Text>
+            </View>
+            <Text className="text-3xl font-extrabold text-white mb-2 tracking-tight">
               15% OFF
             </Text>
-            <Text className="text-[14px] text-white/90 leading-5 mb-4">
-              Get 15% off your next full periodic maintenance service at
-              authorized centers.
+            <Text className="text-sm font-medium text-white/90 leading-relaxed mb-5">
+              Get 15% off your next periodic maintenance service at authorized
+              centers.
             </Text>
-            <TouchableOpacity className="self-start bg-white px-6 py-3 rounded-full">
-              <Text className="text-[13px] font-semibold text-[#1a1a1a] tracking-[0.5px]">
+            <TouchableOpacity className="self-start bg-white h-10 px-6 rounded-lg justify-center active:opacity-90">
+              <Text className="text-xs font-bold text-text-primary tracking-widest uppercase">
                 CLAIM REWARD
               </Text>
             </TouchableOpacity>
@@ -106,23 +126,25 @@ export default function NotificationsScreen() {
         </View>
 
         {/* Earlier Section */}
-        <Text className="text-[12px] font-semibold text-[#999] tracking-[1px] px-5 pt-6 pb-3">
+        <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase px-6 pt-8 pb-4">
           EARLIER
         </Text>
 
         {/* Service Completed Notification */}
-        <View className="mx-5 bg-white rounded-2xl p-4 flex-row mb-3">
-          <View className="w-12 h-12 rounded-3xl bg-[#f8f8f8] justify-center items-center mr-3.5">
-            <Feather name="check-circle" size={20} color="#999" />
+        <View className="mx-6 bg-surface rounded-2xl p-4 flex-row mb-4 shadow-subtle border border-border opacity-75">
+          <View className="w-12 h-12 rounded-xl bg-background border border-border justify-center items-center mr-4">
+            <CheckCircle2 size={20} color="#9CA3AF" />
           </View>
           <View className="flex-1">
-            <View className="flex-row justify-between items-center mb-1">
-              <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+            <View className="flex-row justify-between items-center mb-1.5">
+              <Text className="text-base font-bold text-text-primary">
                 Service Completed
               </Text>
-              <Text className="text-[12px] text-[#bbb]">2D AGO</Text>
+              <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase">
+                2D AGO
+              </Text>
             </View>
-            <Text className="text-[14px] text-[#666] leading-5">
+            <Text className="text-sm font-medium text-text-secondary leading-relaxed">
               Your EV6 was successfully serviced. You can view the full digital
               report now.
             </Text>
@@ -130,25 +152,25 @@ export default function NotificationsScreen() {
         </View>
 
         {/* Welcome Notification */}
-        <View className="mx-5 bg-white rounded-2xl p-4 flex-row mb-3">
-          <View className="w-12 h-12 rounded-3xl bg-[#f8f8f8] justify-center items-center mr-3.5">
-            <MaterialCommunityIcons name="tag-outline" size={20} color="#999" />
+        <View className="mx-6 bg-surface rounded-2xl p-4 flex-row mb-12 shadow-subtle border border-border opacity-75">
+          <View className="w-12 h-12 rounded-xl bg-background border border-border justify-center items-center mr-4">
+            <Tag size={20} color="#9CA3AF" />
           </View>
           <View className="flex-1">
-            <View className="flex-row justify-between items-center mb-1">
-              <Text className="text-[16px] font-semibold text-[#1a1a1a]">
+            <View className="flex-row justify-between items-center mb-1.5">
+              <Text className="text-base font-bold text-text-primary">
                 Welcome to KIA Care
               </Text>
-              <Text className="text-[12px] text-[#bbb]">1W AGO</Text>
+              <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase">
+                1W AGO
+              </Text>
             </View>
-            <Text className="text-[14px] text-[#666] leading-5">
+            <Text className="text-sm font-medium text-text-secondary leading-relaxed">
               Thank you for joining the KIA service ecosystem. Explore your
               benefits today.
             </Text>
           </View>
         </View>
-
-        <View className="h-8" />
       </ScrollView>
     </SafeAreaView>
   );

@@ -19,10 +19,11 @@ export function PrimaryButton({
   disabled,
 }: Props) {
   const getContainerClasses = () => {
-    let classes = "rounded-full py-4 px-6 items-center justify-center ";
+    let classes = "h-14 rounded-xl items-center justify-center ";
 
     if (variant === "primary") classes += "bg-primary ";
-    else if (variant === "secondary") classes += "bg-inputBackground ";
+    else if (variant === "secondary")
+      classes += "bg-background border border-border ";
     else if (variant === "ghost")
       classes += "bg-transparent border border-border ";
 
@@ -32,10 +33,10 @@ export function PrimaryButton({
   };
 
   const getLabelClasses = () => {
-    let classes = "text-[16px] font-semibold ";
+    let classes = "text-lg font-bold ";
 
-    if (variant === "primary") classes += "text-surface ";
-    else if (variant === "secondary") classes += "text-text ";
+    if (variant === "primary") classes += "text-white ";
+    else if (variant === "secondary") classes += "text-text-primary ";
     else if (variant === "ghost") classes += "text-primary ";
 
     return classes + (labelClassName || "");
@@ -46,7 +47,7 @@ export function PrimaryButton({
       className={getContainerClasses()}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.85}
+      activeOpacity={0.8}
     >
       <Text className={getLabelClasses()}>{label}</Text>
     </TouchableOpacity>

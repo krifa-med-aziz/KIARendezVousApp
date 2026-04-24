@@ -19,20 +19,18 @@ export const Input: React.FC<InputProps> = ({
   return (
     <View className={`mb-6 ${containerClassName || ""}`}>
       {!!label && (
-        <Text className="text-[11px] font-semibold tracking-[1px] text-text mb-2">
+        <Text className="text-sm font-semibold text-text-primary mb-2">
           {label}
         </Text>
       )}
       <View
-        className={`flex-row items-center bg-inputBackground rounded-lg overflow-hidden ${
-          error ? "border border-error" : ""
+        className={`flex-row items-center h-14 bg-background border rounded-xl overflow-hidden ${
+          error ? "border-red-500" : "border-border focus:border-primary"
         }`}
       >
         <TextInput
-          className={`flex-1 px-4 py-[14px] text-[14px] font-normal text-text ${
-            className || ""
-          }`}
-          placeholderTextColor="#999999"
+          className={`flex-1 px-4 h-full text-text-primary ${className || ""}`}
+          placeholderTextColor="#9CA3AF"
           {...props}
         />
         {rightElement && (

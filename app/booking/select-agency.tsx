@@ -1,10 +1,17 @@
 import { routes } from "@/constants/routes";
 import {
-  Feather,
-  FontAwesome,
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+  ArrowLeft,
+  Bell,
+  Clock,
+  List,
+  Map as MapIcon,
+  MapPin,
+  Minus,
+  Navigation,
+  Plus,
+  SlidersHorizontal,
+  Star,
+} from "lucide-react-native";
 import { router } from "expo-router";
 import { Stepper } from "@/components/Stepper";
 import { AGENCIES } from "@/data/mockData";
@@ -22,26 +29,29 @@ export default function SelectAgencyScreen() {
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
 
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-3 bg-white">
-        <TouchableOpacity onPress={() => router.back()} className="p-1">
-          <Feather name="arrow-left" size={24} color="#1a1a1a" />
+      <View className="flex-row items-center justify-between px-6 py-4 bg-surface border-b border-border">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="active:opacity-70 p-1 -ml-1"
+        >
+          <ArrowLeft size={24} color="#111827" />
         </TouchableOpacity>
 
         <View className="flex-1 ml-3 items-center">
-          <Text className="text-lg font-semibold text-[#1a1a1a]">
+          <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
             Select Agency
           </Text>
         </View>
 
         <TouchableOpacity
           onPress={() => router.push(routes.notifications)}
-          className="p-1"
+          className="active:opacity-70 p-1 -mr-1"
         >
-          <Feather name="bell" size={22} color="#1a1a1a" />
+          <Bell size={24} color="#111827" />
         </TouchableOpacity>
       </View>
 
@@ -49,7 +59,7 @@ export default function SelectAgencyScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Map */}
-        <View className="h-[320px] bg-gray-200 relative">
+        <View className="h-[320px] bg-background relative border-b border-border">
           <Image
             source={{
               uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Booking_%20Select%20Agency%20%28Improved%29-m6igd2nYyViot3cCUImMbSvj4IRZ5N.png",
@@ -57,80 +67,82 @@ export default function SelectAgencyScreen() {
             className="absolute w-full h-full -top-12"
           />
 
-          <View className="flex-1 bg-gray-300/30">
+          <View className="flex-1 bg-text-primary/5">
             {/* Tooltip */}
-            <View className="absolute top-[100px] left-[100px] bg-white px-3 py-2 rounded shadow">
-              <Text className="text-xs text-[#1a1a1a] font-medium">
+            <View className="absolute top-[100px] left-[100px] bg-text-primary px-4 py-2.5 rounded-xl shadow-card">
+              <Text className="text-xs text-white font-bold tracking-wide">
                 KIA Central Agency
               </Text>
             </View>
 
             {/* Location */}
-            <TouchableOpacity className="absolute right-4 top-40 w-11 h-11 bg-white rounded-full items-center justify-center shadow">
-              <MaterialIcons name="my-location" size={22} color="#666" />
+            <TouchableOpacity className="absolute right-4 top-40 w-12 h-12 bg-surface rounded-xl items-center justify-center shadow-subtle border border-border active:opacity-80">
+              <MapPin size={22} color="#111827" />
             </TouchableOpacity>
 
             {/* Zoom */}
-            <View className="absolute right-4 top-[212px] bg-white rounded shadow overflow-hidden">
-              <TouchableOpacity className="w-11 h-10 items-center justify-center">
-                <Feather name="plus" size={20} color="#666" />
+            <View className="absolute right-4 top-[216px] bg-surface rounded-xl shadow-subtle border border-border overflow-hidden">
+              <TouchableOpacity className="w-12 h-12 items-center justify-center active:bg-background">
+                <Plus size={20} color="#111827" />
               </TouchableOpacity>
-              <View className="h-[1px] bg-gray-200" />
-              <TouchableOpacity className="w-11 h-10 items-center justify-center">
-                <Feather name="minus" size={20} color="#666" />
+              <View className="h-[1px] bg-border mx-2" />
+              <TouchableOpacity className="w-12 h-12 items-center justify-center active:bg-background">
+                <Minus size={20} color="#111827" />
               </TouchableOpacity>
             </View>
 
             {/* Toggle */}
-            <View className="absolute bottom-4 left-4 flex-row bg-white rounded-full p-1 shadow">
-              <TouchableOpacity className="flex-row items-center bg-[#c41e3a] px-5 py-2 rounded-full">
-                <FontAwesome name="map" size={14} color="#fff" />
-                <Text className="text-white ml-2 text-sm">Map</Text>
+            <View className="absolute bottom-4 left-4 flex-row bg-surface rounded-xl p-1 shadow-subtle border border-border">
+              <TouchableOpacity className="flex-row items-center bg-primary px-6 py-2.5 rounded-lg">
+                <MapIcon size={16} color="#fff" />
+                <Text className="text-white ml-2 text-sm font-bold">Map</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity className="flex-row items-center px-5 py-2">
-                <Feather name="list" size={16} color="#666" />
-                <Text className="text-gray-500 ml-2 text-sm">List</Text>
+              <TouchableOpacity className="flex-row items-center px-6 py-2.5 rounded-lg active:bg-background">
+                <List size={16} color="#6B7280" />
+                <Text className="text-text-secondary ml-2 text-sm font-bold">
+                  List
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
 
         {/* Agencies */}
-        <View className="p-4">
+        <View className="p-6">
           {/* Header */}
-          <View className="flex-row justify-between mb-4">
+          <View className="flex-row justify-between mb-6">
             <View>
-              <Text className="text-xl font-semibold text-[#1a1a1a]">
+              <Text className="text-2xl font-extrabold text-text-primary">
                 Nearby Agencies
               </Text>
-              <Text className="text-sm text-gray-400 mt-1">
+              <Text className="text-sm font-medium text-text-secondary mt-1">
                 Found {AGENCIES.length} KIA service centers nearby
               </Text>
             </View>
 
-            <TouchableOpacity className="p-1">
-              <Feather name="sliders" size={20} color="#1a1a1a" />
+            <TouchableOpacity className="p-2 bg-surface rounded-xl border border-border shadow-subtle h-12 w-12 items-center justify-center active:opacity-70">
+              <SlidersHorizontal size={20} color="#111827" />
             </TouchableOpacity>
           </View>
 
-          {/* CARD (Reusable but you didn’t make it reusable…) */}
+          {/* List */}
           {AGENCIES.map((agency) => (
             <View
               key={agency.id}
-              className="bg-white rounded-2xl mb-4 shadow-sm"
+              className="bg-surface rounded-2xl mb-5 shadow-subtle border border-border"
             >
-              <View className="p-4">
+              <View className="p-5">
                 {/* Badge */}
                 {agency.highlight && (
-                  <View className="flex-row mb-2">
-                    <View className="bg-[#c41e3a] px-2 py-1 rounded-full mr-2">
-                      <Text className="text-white text-[10px] font-semibold">
+                  <View className="flex-row mb-3">
+                    <View className="bg-primary px-3 py-1 rounded-md mr-2">
+                      <Text className="text-white text-[10px] font-bold tracking-widest uppercase">
                         TOP RATED
                       </Text>
                     </View>
-                    <View className="border border-[#c41e3a] px-2 py-1 rounded-full">
-                      <Text className="text-[#c41e3a] text-[10px] font-semibold">
+                    <View className="bg-primary-soft border border-primary/20 px-3 py-1 rounded-md">
+                      <Text className="text-primary text-[10px] font-bold tracking-widest uppercase">
                         CLOSEST
                       </Text>
                     </View>
@@ -138,20 +150,22 @@ export default function SelectAgencyScreen() {
                 )}
 
                 {/* Info */}
-                <View className="flex-row justify-between">
-                  <View className="flex-1 pr-3">
+                <View className="flex-row justify-between pt-1">
+                  <View className="flex-1 pr-4">
                     {agency.highlight && (
-                      <View className="flex-row items-center mb-1">
-                        <FontAwesome name="star" size={14} color="#f5a623" />
-                        <Text className="ml-1 text-sm">{agency.rating}</Text>
+                      <View className="flex-row items-center mb-1.5">
+                        <Star size={14} color="#f5a623" fill="#f5a623" />
+                        <Text className="ml-1.5 text-sm font-bold text-text-primary">
+                          {agency.rating}
+                        </Text>
                       </View>
                     )}
 
-                    <Text className="text-base font-semibold text-[#1a1a1a] mb-1">
+                    <Text className="text-xl font-bold text-text-primary mb-1.5">
                       {agency.name}
                     </Text>
 
-                    <Text className="text-sm text-gray-400">
+                    <Text className="text-sm font-medium text-text-secondary leading-5 pr-2">
                       {agency.address}
                     </Text>
                   </View>
@@ -160,22 +174,22 @@ export default function SelectAgencyScreen() {
                     source={{
                       uri: agency.image,
                     }}
-                    className="w-[72px] h-[72px] rounded-xl"
+                    className="w-20 h-20 rounded-xl bg-background border border-border/50"
                   />
                 </View>
 
                 {/* Distance */}
-                <View className="flex-row mt-3 mb-4">
-                  <View className="flex-row items-center mr-4">
-                    <Ionicons name="navigate" size={14} color="#c41e3a" />
-                    <Text className="ml-1 text-sm text-[#c41e3a]">
+                <View className="flex-row mt-4 mb-5 bg-background p-3 rounded-xl border border-border/50">
+                  <View className="flex-row items-center mr-6">
+                    <Navigation size={16} color="#E60012" />
+                    <Text className="ml-2 text-sm font-bold text-primary">
                       {agency.distance}
                     </Text>
                   </View>
 
                   <View className="flex-row items-center">
-                    <Feather name="clock" size={14} color="#666" />
-                    <Text className="ml-1 text-sm text-gray-500">
+                    <Clock size={16} color="#6B7280" />
+                    <Text className="ml-2 text-sm font-medium text-text-secondary">
                       Open until {agency.closingTime}
                     </Text>
                   </View>
@@ -187,14 +201,16 @@ export default function SelectAgencyScreen() {
                     onPress={() =>
                       router.push(routes.booking.selectAppointment)
                     }
-                    className={`flex-1 py-3 rounded-full items-center mr-3 ${
-                      agency.highlight ? "bg-[#c41e3a]" : "bg-gray-100"
+                    className={`flex-1 h-14 rounded-xl items-center justify-center mr-3 active:opacity-80 transition-all ${
+                      agency.highlight
+                        ? "bg-primary shadow-card"
+                        : "bg-background border border-border"
                     }`}
                   >
                     <Text
-                      className={`${
-                        agency.highlight ? "text-white" : "text-[#1a1a1a]"
-                      } font-semibold`}
+                      className={`font-bold text-base ${
+                        agency.highlight ? "text-white" : "text-text-primary"
+                      }`}
                     >
                       {agency.highlight
                         ? "SELECT THIS AGENCY"
@@ -202,8 +218,8 @@ export default function SelectAgencyScreen() {
                     </Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center">
-                    <MaterialIcons name="near-me" size={20} color="#666" />
+                  <TouchableOpacity className="w-14 h-14 bg-background border border-border rounded-xl items-center justify-center active:opacity-70">
+                    <MapPin size={22} color="#111827" />
                   </TouchableOpacity>
                 </View>
               </View>

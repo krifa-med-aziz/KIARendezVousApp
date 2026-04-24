@@ -1,6 +1,7 @@
 import { routes } from "@/constants/routes";
 import { router } from "expo-router";
-import { Bell, ChevronLeft } from "lucide-react-native";
+import * as LucideIcons from "lucide-react-native";
+import { Bell, ChevronLeft, CheckCircle2 } from "lucide-react-native";
 import { useState } from "react";
 import { Stepper } from "@/components/Stepper";
 import { SERVICES } from "@/data/mockData";
@@ -15,39 +16,48 @@ export default function SelectServiceScreen() {
   const estimatedTotal = SERVICES[selectedService].price;
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fafafa]">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       {/* Header */}
-      <View className="flex-row justify-between items-center px-4 py-3 bg-white border-b border-gray-100">
-        <TouchableOpacity onPress={() => router.back()}>
-          <ChevronLeft size={24} color="#1a1a1a" />
+      <View className="flex-row justify-between items-center px-6 py-4 bg-surface border-b border-border">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="active:opacity-70 p-1 -ml-1"
+        >
+          <ChevronLeft size={24} color="#111827" />
         </TouchableOpacity>
 
         <View className="items-center">
-          <Text className="text-sm font-semibold text-[#1a1a1a]">
+          <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
             Select Service
           </Text>
         </View>
 
-        <TouchableOpacity onPress={() => router.push(routes.notifications)}>
-          <Bell size={24} color="#1a1a1a" />
+        <TouchableOpacity
+          onPress={() => router.push(routes.notifications)}
+          className="active:opacity-70 p-1 -mr-1"
+        >
+          <Bell size={24} color="#111827" />
         </TouchableOpacity>
       </View>
 
       <Stepper steps={STEPS} currentStep={1} />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-        <View className="px-4 pt-5">
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="px-6 pt-6">
           {/* Heading */}
           <View className="flex-row justify-between mb-8">
-            <View className="flex-1">
-              <Text className="text-3xl font-bold text-[#1a1a1a] leading-9">
+            <View className="flex-1 pr-4">
+              <Text className="text-4xl font-medium text-text-primary leading-tight">
                 Maintenance
               </Text>
-              <Text className="text-3xl font-bold text-[#1a1a1a] leading-9">
+              <Text className="text-4xl font-extrabold text-primary leading-tight">
                 Matters.
               </Text>
 
-              <Text className="text-xs text-gray-500 mt-3 leading-4">
+              <Text className="text-sm text-text-secondary mt-3 leading-relaxed">
                 Keep your KIA performing at its{"\n"}
                 peak with certified technician{"\n"}
                 support.
@@ -58,7 +68,7 @@ export default function SelectServiceScreen() {
               source={{
                 uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/engine-7FE08IBpgxmG5EtaEREOHtgIkBfx2t.jpg",
               }}
-              className="w-[100px] h-[100px] rounded-xl bg-gray-200"
+              className="w-[100px] h-[100px] rounded-2xl bg-border shadow-subtle"
             />
           </View>
 
@@ -70,47 +80,58 @@ export default function SelectServiceScreen() {
               <TouchableOpacity
                 key={service.id}
                 onPress={() => setSelectedService(index)}
-                className={`rounded-2xl p-4 mb-3 relative ${
-                  isSelected ? "bg-[#ffe4e8]" : "bg-gray-100"
+                className={`rounded-2xl p-5 mb-4 relative shadow-subtle border active:opacity-80 transition-all ${
+                  isSelected
+                    ? "bg-primary-soft border-primary"
+                    : "bg-surface border-border"
                 }`}
               >
                 {/* Recommended */}
                 {service.recommended && (
-                  <View className="absolute top-3 right-3">
-                    <Text className="text-[10px] font-bold tracking-wide text-[#c41e3a]">
+                  <View className="absolute top-4 right-4">
+                    <Text className="text-[10px] font-bold tracking-widest text-primary uppercase">
                       RECOMMENDED
                     </Text>
                   </View>
                 )}
 
                 <View className="pr-6">
-                  <View className="flex-row justify-between mb-3">
-                    <View className="flex-row gap-3 flex-1">
-                      <Text className="text-2xl">{service.icon}</Text>
-
-                      <View className="flex-1">
-                        <Text className="text-base font-bold text-[#1a1a1a] mb-1">
-                          {service.title}
-                        </Text>
-                        <Text className="text-xs text-gray-500 leading-4">
-                          {service.description}
-                        </Text>
-                      </View>
+                  <View className="flex-row mb-4 items-start">
+                    <View className="w-12 h-12 rounded-full bg-background border border-border items-center justify-center mr-4">
+                      {service.icon &&
+                        (() => {
+                          const IconComponent = (LucideIcons as any)[
+                            service.icon
+                          ];
+                          return IconComponent ? (
+                            <IconComponent size={24} color="#E60012" />
+                          ) : null;
+                        })()}
                     </View>
 
-                    {!service.recommended && (
-                      <View className="w-5 h-5 rounded-full border-2 border-[#c41e3a]" />
-                    )}
+                    <View className="flex-1 pt-1">
+                      <Text className="text-lg font-bold text-text-primary mb-1">
+                        {service.title}
+                      </Text>
+                      <Text className="text-sm text-text-secondary leading-5 pr-4">
+                        {service.description}
+                      </Text>
+                    </View>
                   </View>
 
-                  <Text className="text-sm font-bold text-[#1a1a1a]">
+                  <Text className="text-lg font-extrabold text-text-primary ml-16">
                     Est. ${service.price}
                   </Text>
                 </View>
 
-                {service.recommended && (
-                  <View className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-[#c41e3a]/10 justify-center items-center">
-                    <Text className="text-xl text-[#c41e3a]">⊕</Text>
+                {isSelected && (
+                  <View className="absolute bottom-5 right-5 bg-surface rounded-full">
+                    <CheckCircle2 size={24} color="#E60012" />
+                  </View>
+                )}
+                {!isSelected && service.recommended && (
+                  <View className="absolute bottom-5 right-5 w-6 h-6 rounded-full border-2 border-primary/30 justify-center items-center">
+                    <Text className="text-xs font-bold text-primary/50">+</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -118,30 +139,30 @@ export default function SelectServiceScreen() {
           })}
 
           {/* Help */}
-          <TouchableOpacity className="items-center py-5">
-            <Text className="text-sm font-semibold text-[#c41e3a]">
-              Can&apos;t find your service? →
+          <TouchableOpacity className="items-center py-6 mt-2 active:opacity-70">
+            <Text className="text-sm font-bold text-primary tracking-wide">
+              Can't find your service?
             </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       {/* Footer */}
-      <View className="absolute bottom-0 left-0 right-0 flex-row justify-between items-center px-4 py-4 bg-[#fafafa] border-t border-gray-100">
+      <View className="absolute bottom-0 left-0 right-0 flex-row justify-between items-center px-6 py-5 bg-surface border-t border-border pb-8">
         <View>
-          <Text className="text-[11px] font-semibold tracking-wide text-gray-400">
+          <Text className="text-[10px] font-bold tracking-widest text-text-muted uppercase">
             ESTIMATED TOTAL
           </Text>
-          <Text className="text-2xl font-bold text-[#1a1a1a] mt-0.5">
+          <Text className="text-2xl font-extrabold text-text-primary mt-1">
             ${estimatedTotal.toFixed(2)}
           </Text>
         </View>
 
         <TouchableOpacity
           onPress={() => router.push(routes.booking.selectAgency)}
-          className="bg-[#c41e3a] rounded-full px-8 py-3.5"
+          className="bg-primary rounded-xl px-10 h-14 justify-center items-center shadow-card active:opacity-80"
         >
-          <Text className="text-white font-bold text-base">Next</Text>
+          <Text className="text-white font-bold text-lg">Next</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
