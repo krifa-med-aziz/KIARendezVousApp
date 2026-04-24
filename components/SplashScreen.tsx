@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 80,
   },
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     letterSpacing: 2,
-    color: "#d32f2f",
+    color: "#BB162B",
     marginTop: 20,
   },
   centerContent: {
@@ -77,14 +77,14 @@ const styles = StyleSheet.create({
   progressBar: {
     width: 60,
     height: 2,
-    backgroundColor: "#d32f2f",
+    backgroundColor: "#93001B",
     marginBottom: 8,
   },
   statusText: {
     fontSize: 11,
     fontWeight: "400",
     letterSpacing: 1.5,
-    color: "#888888",
+    color: "#A1A1AA",
     marginBottom: 24,
   },
   taglineText: {

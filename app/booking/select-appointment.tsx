@@ -1,4 +1,5 @@
 import { routes } from "@/constants/routes";
+import { primaryShadowStyle } from "@/constants/shadows";
 import {
   ArrowLeft,
   ArrowRight,
@@ -10,6 +11,7 @@ import {
 import { router } from "expo-router";
 import { useState } from "react";
 import { Stepper } from "@/components/Stepper";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { DATES, MORNING_TIMES, AFTERNOON_TIMES } from "@/data/mockData";
 import {
   ScrollView,
@@ -27,19 +29,18 @@ export default function SelectAppointmentScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
 
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-6 py-4 bg-surface border-b border-border">
+      <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-border">
         <TouchableOpacity
           className="w-10 p-1 -ml-1 active:opacity-70"
           onPress={() => router.back()}
         >
-          <ArrowLeft size={24} color="#111827" />
+          <ArrowLeft size={24} color="#1A1C1C" strokeWidth={2} />
         </TouchableOpacity>
 
         <View className="flex-1 items-center">
-          <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
+          <Text className="text-sm font-jakarta-bold tracking-widest text-foreground uppercase">
             Select Appointment
           </Text>
         </View>
@@ -53,23 +54,21 @@ export default function SelectAppointmentScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        {/* Month */}
         <View className="flex-row justify-between px-6 pt-8 pb-6">
           <View>
-            <Text className="text-3xl font-extrabold text-text-primary">
+            <Text className="text-2xl font-jakarta-extrabold text-foreground">
               October 2024
             </Text>
-            <Text className="text-sm font-medium text-text-secondary mt-1">
+            <Text className="text-sm font-manrope text-muted mt-1">
               Next available: Today, 23 Oct
             </Text>
           </View>
 
-          <TouchableOpacity className="w-12 h-12 rounded-xl bg-surface border border-border items-center justify-center shadow-subtle active:opacity-70">
-            <Calendar size={20} color="#E60012" />
+          <TouchableOpacity className="w-12 h-12 rounded-2xl bg-white border border-border items-center justify-center active:opacity-70">
+            <Calendar size={20} color="#93001B" strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
-        {/* Dates */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -82,23 +81,35 @@ export default function SelectAppointmentScreen() {
             return (
               <TouchableOpacity
                 key={i}
-                className={`w-[72px] py-4 rounded-2xl items-center justify-center border transition-all ${
+                className={`w-[72px] py-4 rounded-3xl items-center justify-center border ${
                   active
-                    ? "bg-primary border-primary shadow-card"
-                    : "bg-surface border-border shadow-subtle"
+                    ? "bg-primary border-primary"
+                    : "bg-white border-border"
                 }`}
+                style={
+                  active
+                    ? primaryShadowStyle
+                    : {
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.05,
+                        shadowRadius: 8,
+                        elevation: 2,
+                      }
+                }
+                activeOpacity={0.9}
               >
                 <Text
-                  className={`text-xs font-bold uppercase tracking-widest mb-2 ${
-                    active ? "text-white/80" : "text-text-muted"
+                  className={`text-xs font-manrope-bold uppercase tracking-widest mb-2 ${
+                    active ? "text-white/80" : "text-label"
                   }`}
                 >
                   {d.day}
                 </Text>
 
                 <Text
-                  className={`text-2xl font-extrabold ${
-                    active ? "text-white" : "text-text-primary"
+                  className={`text-2xl font-jakarta-extrabold ${
+                    active ? "text-white" : "text-foreground"
                   }`}
                 >
                   {d.date}
@@ -112,12 +123,11 @@ export default function SelectAppointmentScreen() {
           })}
         </ScrollView>
 
-        {/* Morning */}
         <View className="px-6 mb-8">
           <View className="flex-row items-center mb-4">
-            <Sun size={18} color="#9CA3AF" />
-            <Text className="text-xs font-bold text-text-muted ml-2 tracking-widest uppercase">
-              MORNING AVAILABILITY
+            <Sun size={18} color="#71717A" strokeWidth={2} />
+            <Text className="text-xs font-manrope-bold text-muted ml-2 tracking-widest uppercase">
+              Morning availability
             </Text>
           </View>
 
@@ -129,15 +139,16 @@ export default function SelectAppointmentScreen() {
                 <TouchableOpacity
                   key={time}
                   onPress={() => setSelectedTime(time)}
-                  className={`w-[31%] h-12 rounded-xl items-center justify-center border active:opacity-80 transition-all ${
+                  className={`w-[31%] h-12 rounded-full items-center justify-center border ${
                     active
-                      ? "bg-primary border-primary shadow-card"
-                      : "bg-surface border-border shadow-subtle"
+                      ? "bg-primary border-primary"
+                      : "bg-white border-border"
                   }`}
+                  activeOpacity={0.9}
                 >
                   <Text
-                    className={`text-sm font-bold ${
-                      active ? "text-white" : "text-text-primary"
+                    className={`text-sm font-manrope-bold ${
+                      active ? "text-white" : "text-foreground"
                     }`}
                   >
                     {time}
@@ -148,17 +159,16 @@ export default function SelectAppointmentScreen() {
           </View>
         </View>
 
-        {/* Afternoon */}
         <View className="px-6 mb-8">
           <View className="flex-row items-center mb-4">
-            <SunMoon size={18} color="#9CA3AF" />
-            <Text className="text-xs font-bold text-text-muted ml-2 tracking-widest uppercase">
-              AFTERNOON AVAILABILITY
+            <SunMoon size={18} color="#71717A" strokeWidth={2} />
+            <Text className="text-xs font-manrope-bold text-muted ml-2 tracking-widest uppercase">
+              Afternoon availability
             </Text>
           </View>
 
           <View className="flex-row flex-wrap gap-3">
-            {AFTERNOON_TIMES.map((time, i) => {
+            {AFTERNOON_TIMES.map((time) => {
               const disabled = time === "03:30 PM";
               const active = selectedTime === time;
 
@@ -167,21 +177,21 @@ export default function SelectAppointmentScreen() {
                   key={time}
                   disabled={disabled}
                   onPress={() => setSelectedTime(time)}
-                  className={`w-[31%] h-12 rounded-xl items-center justify-center border transition-all ${
+                  className={`w-[31%] h-12 rounded-full items-center justify-center border ${
                     disabled
-                      ? "bg-background border-border/50 opacity-50"
+                      ? "bg-elevated border-border opacity-50"
                       : active
-                        ? "bg-primary border-primary shadow-card"
-                        : "bg-surface border-border shadow-subtle active:opacity-80"
+                        ? "bg-primary border-primary"
+                        : "bg-white border-border active:opacity-90"
                   }`}
                 >
                   <Text
-                    className={`text-sm font-bold ${
+                    className={`text-sm font-manrope-bold ${
                       disabled
-                        ? "text-text-muted"
+                        ? "text-muted"
                         : active
                           ? "text-white"
-                          : "text-text-primary"
+                          : "text-foreground"
                     }`}
                   >
                     {time}
@@ -192,17 +202,16 @@ export default function SelectAppointmentScreen() {
           </View>
         </View>
 
-        {/* Duration */}
-        <View className="mx-6 mb-6 p-5 bg-primary-soft rounded-2xl flex-row items-center">
-          <View className="w-12 h-12 rounded-xl bg-surface items-center justify-center mr-4 shadow-subtle border border-border/50">
-            <Clock size={24} color="#E60012" />
+        <View className="mx-6 mb-6 p-5 bg-badge-red rounded-3xl flex-row items-center border border-border">
+          <View className="w-12 h-12 rounded-2xl bg-white items-center justify-center mr-4 border border-border">
+            <Clock size={24} color="#93001B" strokeWidth={2} />
           </View>
 
           <View className="flex-1">
-            <Text className="text-xs font-bold text-primary mb-1 tracking-widest uppercase">
-              ESTIMATED DURATION
+            <Text className="text-xs font-manrope-bold text-primary mb-1 tracking-widest uppercase">
+              Estimated duration
             </Text>
-            <Text className="text-sm text-text-primary leading-relaxed font-medium">
+            <Text className="text-sm font-manrope text-foreground leading-relaxed">
               Full Maintenance typically takes 2-3 hours. We recommend dropping
               off 15 mins early.
             </Text>
@@ -210,23 +219,25 @@ export default function SelectAppointmentScreen() {
         </View>
       </ScrollView>
 
-      {/* Bottom */}
-      <View className="absolute bottom-0 left-0 right-0 flex-row items-center justify-between px-6 py-5 border-t border-border bg-surface pb-8">
+      <View className="absolute bottom-0 left-0 right-0 flex-row items-center justify-between px-6 py-5 border-t border-border bg-white pb-8">
         <View className="flex-1 pr-4">
-          <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase">
-            BOOKING SUMMARY
+          <Text className="text-[10px] font-manrope-bold text-muted tracking-widest uppercase">
+            Booking summary
           </Text>
-          <Text className="text-lg font-extrabold text-text-primary mt-1">
+          <Text className="text-lg font-jakarta-extrabold text-foreground mt-1">
             Oct 23 · {selectedTime}
           </Text>
         </View>
 
         <TouchableOpacity
           onPress={() => router.push(routes.booking.confirmation)}
-          className="flex-row items-center bg-primary h-14 px-8 rounded-xl active:opacity-80 shadow-card"
+          className="flex-row items-center bg-primary h-14 px-8 rounded-full active:opacity-90"
+          style={primaryShadowStyle}
         >
-          <Text className="text-white font-bold text-lg mr-2">Continue</Text>
-          <ArrowRight size={20} color="#fff" />
+          <Text className="text-white font-manrope-bold text-lg mr-2">
+            Continue
+          </Text>
+          <ArrowRight size={20} color="#fff" strokeWidth={2} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

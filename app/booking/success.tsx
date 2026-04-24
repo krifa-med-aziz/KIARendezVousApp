@@ -1,4 +1,5 @@
 import { routes } from "@/constants/routes";
+import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
 import {
   ArrowLeft,
   Bell,
@@ -13,6 +14,8 @@ import {
 } from "lucide-react-native";
 import { router } from "expo-router";
 import { Stepper } from "@/components/Stepper";
+import { Badge } from "@/components/ui/Badge";
+import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import {
   Alert,
   ScrollView,
@@ -28,151 +31,151 @@ export default function BookingSuccessScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
 
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-6 py-4 bg-surface border-b border-border">
+      <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-border">
         <TouchableOpacity
           className="active:opacity-70 p-1 -ml-1"
           onPress={() => router.replace(routes.main)}
         >
-          <ArrowLeft size={24} color="#111827" />
+          <ArrowLeft size={24} color="#1A1C1C" strokeWidth={2} />
         </TouchableOpacity>
-        <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
+        <Text className="text-sm font-jakarta-bold tracking-widest text-foreground uppercase">
           KIA SERVICE
         </Text>
         <TouchableOpacity
           className="active:opacity-70 p-1 -mr-1"
           onPress={() => router.push(routes.notifications)}
         >
-          <Bell size={24} color="#111827" />
+          <Bell size={24} color="#93001B" strokeWidth={2} />
         </TouchableOpacity>
       </View>
 
       <Stepper steps={STEPS} currentStep={5} />
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Success Section */}
-        <View className="bg-primary/5 pt-12 pb-16 items-center px-6 border-b border-border">
-          <View className="w-24 h-24 rounded-full bg-surface justify-center items-center shadow-card mb-6 border border-primary/20">
-            <View className="w-16 h-16 rounded-full bg-primary justify-center items-center shadow-subtle">
+        <View className="bg-badge-red/50 pt-12 pb-16 items-center px-6 border-b border-border">
+          <View
+            className="w-24 h-24 rounded-full bg-white justify-center items-center mb-6 border border-border"
+            style={cardShadowStyle}
+          >
+            <View
+              className="w-16 h-16 rounded-full bg-primary justify-center items-center"
+              style={primaryShadowStyle}
+            >
               <Check size={36} color="#fff" strokeWidth={3} />
             </View>
           </View>
-          <Text className="text-3xl font-extrabold text-text-primary mb-3 text-center">
-            Booking Successful!
+          <Text className="text-3xl font-jakarta-extrabold text-foreground mb-3 text-center">
+            Booking successful!
           </Text>
-          <Text className="text-base text-text-secondary text-center leading-relaxed font-medium">
+          <Text className="text-base font-manrope text-muted text-center leading-relaxed">
             Your service appointment is confirmed.{"\n"}We look forward to
             seeing you.
           </Text>
         </View>
 
-        {/* Booking Summary Card */}
-        <View className="mx-6 -mt-8 bg-surface rounded-2xl p-6 shadow-card border border-border z-10">
+        <View
+          className="mx-6 -mt-8 bg-white rounded-3xl p-6 border border-border z-10"
+          style={cardShadowStyle}
+        >
           <View className="flex-row justify-between items-center mb-6 border-b border-border pb-4">
-            <Text className="text-xs font-bold text-text-primary tracking-widest uppercase">
-              BOOKING SUMMARY
+            <Text className="text-xs font-manrope-bold text-foreground tracking-widest uppercase">
+              Booking summary
             </Text>
-            <View className="bg-[#e8f5f0] border border-[#2a9d6a]/20 px-3 py-1.5 rounded-md">
-              <Text className="text-[10px] font-bold text-[#2a9d6a] tracking-widest uppercase">
-                CONFIRMED
-              </Text>
-            </View>
+            <Badge variant="red">CONFIRMED</Badge>
           </View>
 
-          {/* Vehicle */}
           <View className="flex-row mb-6">
-            <View className="w-12 h-12 rounded-xl bg-background border border-border justify-center items-center mr-4">
-              <Car size={20} color="#6B7280" />
+            <View className="w-12 h-12 rounded-2xl bg-elevated border border-border justify-center items-center mr-4">
+              <Car size={20} color="#71717A" strokeWidth={2} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
-                VEHICLE
+              <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
+                Vehicle
               </Text>
-              <Text className="text-base font-bold text-text-primary">
+              <Text className="text-base font-jakarta-bold text-foreground">
                 KIA EV9 GT-Line
               </Text>
-              <Text className="text-sm font-medium text-text-secondary mt-0.5">
+              <Text className="text-sm font-manrope text-muted mt-0.5">
                 Plate: KA 05 MV 2024
               </Text>
             </View>
           </View>
 
-          {/* Service Type */}
           <View className="flex-row mb-6">
-            <View className="w-12 h-12 rounded-xl bg-background border border-border justify-center items-center mr-4">
-              <Wrench size={20} color="#6B7280" />
+            <View className="w-12 h-12 rounded-2xl bg-elevated border border-border justify-center items-center mr-4">
+              <Wrench size={20} color="#71717A" strokeWidth={2} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
-                SERVICE TYPE
+              <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
+                Service type
               </Text>
-              <Text className="text-base font-bold text-text-primary">
+              <Text className="text-base font-jakarta-bold text-foreground">
                 Full Maintenance Check
               </Text>
             </View>
           </View>
 
-          {/* Agency */}
           <View className="flex-row mb-6">
-            <View className="w-12 h-12 rounded-xl bg-background border border-border justify-center items-center mr-4">
-              <MapPin size={20} color="#6B7280" />
+            <View className="w-12 h-12 rounded-2xl bg-elevated border border-border justify-center items-center mr-4">
+              <MapPin size={20} color="#71717A" strokeWidth={2} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
-                AGENCY
+              <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
+                Agency
               </Text>
-              <Text className="text-base font-bold text-text-primary">
+              <Text className="text-base font-jakarta-bold text-foreground">
                 KIA Central Agency
               </Text>
-              <Text className="text-sm font-medium text-text-secondary mt-0.5">
+              <Text className="text-sm font-manrope text-muted mt-0.5">
                 Plot 12, Main Street, Downtown
               </Text>
             </View>
           </View>
 
-          {/* Date & Time */}
           <View className="flex-row">
-            <View className="w-12 h-12 rounded-xl bg-background border border-border justify-center items-center mr-4">
-              <Calendar size={20} color="#6B7280" />
+            <View className="w-12 h-12 rounded-2xl bg-elevated border border-border justify-center items-center mr-4">
+              <Calendar size={20} color="#71717A" strokeWidth={2} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
-                DATE & TIME
+              <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
+                Date & time
               </Text>
-              <Text className="text-base font-bold text-text-primary">
+              <Text className="text-base font-jakarta-bold text-foreground">
                 Oct 24, 2024 at 09:30 AM
               </Text>
-              <Text className="text-sm font-medium text-text-secondary mt-0.5">
+              <Text className="text-sm font-manrope text-muted mt-0.5">
                 Thursday, Morning Slot
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Loyalty Points Banner */}
         <TouchableOpacity
-          className="flex-row items-center mx-6 mt-6 bg-[#fffbf0] border border-[#f5a623]/20 rounded-2xl p-5 shadow-subtle active:opacity-80"
+          className="flex-row items-center mx-6 mt-6 bg-elevated border border-border rounded-3xl p-5 active:opacity-90"
+          style={cardShadowStyle}
           onPress={() =>
             Alert.alert("Loyalty", "Points would open rewards — demo only.")
           }
         >
-          <View className="bg-white p-2 rounded-full shadow-sm">
-            <Star size={20} color="#f5a623" fill="#f5a623" />
+          <View className="bg-white p-2 rounded-full border border-border">
+            <Star size={20} color="#93001B" fill="#93001B" strokeWidth={2} />
           </View>
-          <Text className="flex-1 text-xs font-bold text-text-primary tracking-widest uppercase ml-4">
-            EARNED{" "}
-            <Text className="text-primary font-extrabold text-sm">250</Text>{" "}
-            LOYALTY POINTS
+          <Text className="flex-1 text-xs font-manrope-bold text-foreground tracking-widest uppercase ml-4">
+            Earned{" "}
+            <Text className="text-primary font-jakarta-extrabold text-sm">
+              250
+            </Text>{" "}
+            loyalty points
           </Text>
-          <ChevronRight size={20} color="#9CA3AF" />
+          <ChevronRight size={20} color="#71717A" strokeWidth={2} />
         </TouchableOpacity>
 
-        {/* Action Buttons */}
-        <View className="px-6 pt-8 pb-12">
+        <View className="px-6 pt-8 pb-12 gap-4">
           <TouchableOpacity
-            className="flex-row items-center justify-center bg-primary h-14 rounded-xl mb-4 shadow-card active:opacity-80 transition-all"
+            className="flex-row items-center justify-center bg-primary h-14 rounded-full active:opacity-90"
+            style={primaryShadowStyle}
             onPress={() =>
               Alert.alert(
                 "Track service",
@@ -180,19 +183,16 @@ export default function BookingSuccessScreen() {
               )
             }
           >
-            <Radar size={22} color="#fff" />
-            <Text className="text-white text-lg font-bold ml-3">
-              Track Service
+            <Radar size={22} color="#fff" strokeWidth={2} />
+            <Text className="text-white text-lg font-manrope-bold ml-3">
+              Track service
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            className="items-center justify-center bg-surface h-14 rounded-xl border border-border shadow-subtle active:bg-background transition-all"
+          <SecondaryButton
+            label="Back to home"
             onPress={() => router.replace(routes.main)}
-          >
-            <Text className="text-text-primary text-base font-bold tracking-wide">
-              Back to Home
-            </Text>
-          </TouchableOpacity>
+            className="w-full"
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

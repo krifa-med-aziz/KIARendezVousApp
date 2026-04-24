@@ -6,19 +6,37 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#E60012",
-          light: "#FF1A2D",
-          dark: "#B3000E",
-          soft: "#FDE8EA",
+          DEFAULT: "#93001B",
+          hover: "#BB162B",
+          foreground: "#FFFFFF",
         },
-        background: "#F8F9FA",
+        background: "#F9F9F9",
+        foreground: "#1A1C1C",
+        muted: "#71717A",
+        border: "#F4F4F5",
         surface: "#FFFFFF",
-        border: "#E5E7EB",
-        text: {
-          primary: "#111827",
-          secondary: "#6B7280",
-          muted: "#9CA3AF",
+        badge: {
+          red: "#FEE2E2",
         },
+        elevated: "#F8F9FA",
+        label: "#A1A1AA",
+        /** Legacy aliases — map to design tokens */
+        text: {
+          primary: "#1A1C1C",
+          secondary: "#71717A",
+          muted: "#71717A",
+        },
+      },
+      fontFamily: {
+        jakarta: ["PlusJakartaSans_400Regular"],
+        "jakarta-medium": ["PlusJakartaSans_500Medium"],
+        "jakarta-semibold": ["PlusJakartaSans_600SemiBold"],
+        "jakarta-bold": ["PlusJakartaSans_700Bold"],
+        "jakarta-extrabold": ["PlusJakartaSans_800ExtraBold"],
+        manrope: ["Manrope_400Regular"],
+        "manrope-medium": ["Manrope_500Medium"],
+        "manrope-semibold": ["Manrope_600SemiBold"],
+        "manrope-bold": ["Manrope_700Bold"],
       },
       boxShadow: {
         subtle: "0 2px 10px rgba(0, 0, 0, 0.05)",

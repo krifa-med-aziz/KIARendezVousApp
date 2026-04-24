@@ -1,4 +1,8 @@
+import { Badge } from "@/components/ui/Badge";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { routes } from "@/constants/routes";
+import { cardShadowStyle } from "@/constants/shadows";
 import {
   Bell,
   Calendar,
@@ -26,147 +30,117 @@ export default function BookingsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
 
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-6 py-4 bg-surface border-b border-border">
+      <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-border">
         <TouchableOpacity
           className="p-1 -ml-1 active:opacity-70"
           onPress={() => router.push("/(main)")}
         >
-          <ChevronLeft size={24} color="#111827" />
+          <ChevronLeft size={24} color="#1A1C1C" strokeWidth={2} />
         </TouchableOpacity>
-        <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
+        <Text className="text-sm font-jakarta-bold tracking-widest text-foreground uppercase">
           Booking History
         </Text>
         <TouchableOpacity
           className="p-1 -mr-1 active:opacity-70"
           onPress={() => router.push(routes.notifications)}
         >
-          <Bell size={24} color="#111827" />
+          <Bell size={24} color="#93001B" strokeWidth={2} />
         </TouchableOpacity>
       </View>
 
-      <View className="bg-surface">
-        {/* Tab Bar */}
-        <View className="flex-row px-6 py-4 gap-3 bg-surface border-b border-border/50">
-          <TouchableOpacity
-            className={
-              listTab === "upcoming"
-                ? "px-5 py-2.5 rounded-xl bg-primary shadow-subtle"
-                : "px-5 py-2.5 rounded-xl bg-background border border-border"
-            }
-            onPress={() => setListTab("upcoming")}
-          >
-            <Text
-              className={
-                listTab === "upcoming"
-                  ? "text-white text-xs font-bold tracking-widest uppercase"
-                  : "text-text-secondary text-xs font-bold tracking-widest uppercase"
-              }
+      <View className="bg-white border-b border-border">
+        <View className="flex-row px-6 py-4 gap-3">
+          {(
+            [
+              ["upcoming", "Upcoming"],
+              ["completed", "Completed"],
+              ["canceled", "Canceled"],
+            ] as const
+          ).map(([key, label]) => (
+            <TouchableOpacity
+              key={key}
+              className={`px-5 py-2.5 rounded-full border ${
+                listTab === key
+                  ? "bg-primary border-primary"
+                  : "bg-elevated border-border"
+              }`}
+              onPress={() => setListTab(key)}
+              style={listTab === key ? cardShadowStyle : undefined}
             >
-              Upcoming
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className={
-              listTab === "completed"
-                ? "px-5 py-2.5 rounded-xl bg-primary shadow-subtle"
-                : "px-5 py-2.5 rounded-xl bg-background border border-border"
-            }
-            onPress={() => setListTab("completed")}
-          >
-            <Text
-              className={
-                listTab === "completed"
-                  ? "text-white text-xs font-bold tracking-widest uppercase"
-                  : "text-text-secondary text-xs font-bold tracking-widest uppercase"
-              }
-            >
-              Completed
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className={
-              listTab === "canceled"
-                ? "px-5 py-2.5 rounded-xl bg-primary shadow-subtle"
-                : "px-5 py-2.5 rounded-xl bg-background border border-border"
-            }
-            onPress={() => setListTab("canceled")}
-          >
-            <Text
-              className={
-                listTab === "canceled"
-                  ? "text-white text-xs font-bold tracking-widest uppercase"
-                  : "text-text-secondary text-xs font-bold tracking-widest uppercase"
-              }
-            >
-              Canceled
-            </Text>
-          </TouchableOpacity>
+              <Text
+                className={`text-xs font-manrope-bold tracking-widest uppercase ${
+                  listTab === key ? "text-white" : "text-muted"
+                }`}
+              >
+                {label}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {listTab !== "upcoming" ? (
           <View className="px-6 py-12 items-center">
-            <History size={48} color="#D1D5DB" className="mb-4" />
-            <Text className="text-base text-text-secondary text-center leading-relaxed">
-              No {listTab} bookings in this demo.{"\n"}Switch to Upcoming to see
-              sample data.
+            <History size={48} color="#71717A" strokeWidth={1.5} />
+            <Text className="text-base font-manrope text-muted text-center leading-relaxed mt-4">
+              No {listTab} bookings in this demo.{"\n"}Switch to Upcoming to
+              see sample data.
             </Text>
           </View>
         ) : null}
 
         {listTab === "upcoming" ? (
           <View className="p-6">
-            {/* Booking Card 1 */}
-            <View className="bg-surface border border-border rounded-2xl p-6 shadow-subtle mb-6">
+            <View
+              className="bg-white border border-border rounded-3xl p-6 mb-6"
+              style={cardShadowStyle}
+            >
               <View className="flex-row mb-6">
                 <Image
                   source={{
                     uri: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=200&h=200&fit=crop",
                   }}
-                  className="w-20 h-20 rounded-xl bg-background"
+                  className="w-20 h-20 rounded-2xl bg-elevated"
                 />
                 <View className="flex-1 ml-4 justify-center">
-                  <View className="self-end bg-background border border-border px-3 py-1.5 rounded-md mb-2">
-                    <Text className="text-[10px] font-bold text-text-secondary tracking-widest uppercase">
-                      CONFIRMED
-                    </Text>
+                  <View className="self-end mb-2">
+                    <Badge variant="red">CONFIRMED</Badge>
                   </View>
-                  <Text className="text-lg font-bold text-text-primary mb-1">
+                  <Text className="text-lg font-jakarta-bold text-foreground mb-1">
                     Full Periodic Service
                   </Text>
-                  <Text className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                  <Text className="text-xs font-manrope-bold text-muted uppercase tracking-widest">
                     KIA EV9 • GT-Line
                   </Text>
                 </View>
               </View>
 
-              <View className="flex-row bg-background/50 rounded-xl p-4 mb-6 border border-border/50">
+              <View className="flex-row bg-elevated rounded-2xl p-4 mb-6 border border-border">
                 <View className="flex-row items-center flex-1">
-                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
-                    <Calendar size={18} color="#E60012" />
+                  <View className="w-10 h-10 bg-white border border-border rounded-full justify-center items-center mr-3">
+                    <Calendar size={18} color="#93001B" strokeWidth={2} />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
+                    <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
                       DATE
                     </Text>
-                    <Text className="text-sm font-bold text-text-primary">
+                    <Text className="text-sm font-manrope-bold text-foreground">
                       Oct 24, 2023
                     </Text>
                   </View>
                 </View>
                 <View className="flex-row items-center flex-1">
-                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
-                    <Clock size={18} color="#6B7280" />
+                  <View className="w-10 h-10 bg-white border border-border rounded-full justify-center items-center mr-3">
+                    <Clock size={18} color="#71717A" strokeWidth={2} />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
+                    <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
                       TIME
                     </Text>
-                    <Text className="text-sm font-bold text-text-primary">
+                    <Text className="text-sm font-manrope-bold text-foreground">
                       09:30 AM
                     </Text>
                   </View>
@@ -174,81 +148,81 @@ export default function BookingsScreen() {
               </View>
 
               <View className="flex-row gap-3">
-                <TouchableOpacity
-                  className="flex-1 bg-primary h-14 rounded-xl items-center justify-center active:opacity-80 shadow-subtle"
-                  onPress={() => router.push(routes.booking.selectAppointment)}
-                >
-                  <Text className="text-sm text-white font-bold tracking-widest uppercase">
-                    Reschedule
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="flex-[0.7] bg-background border border-border h-14 rounded-xl items-center justify-center active:bg-text-secondary/10"
-                  onPress={() =>
-                    Alert.alert(
-                      "Cancel booking",
-                      "Are you sure you want to cancel this booking?",
-                      [
-                        { text: "No", style: "cancel" },
-                        { text: "Yes, Cancel", style: "destructive" },
-                      ],
-                    )
-                  }
-                >
-                  <Text className="text-text-primary text-sm font-bold tracking-widest uppercase">
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
+                <View className="flex-1">
+                  <PrimaryButton
+                    label="Reschedule"
+                    onPress={() =>
+                      router.push(routes.booking.selectAppointment)
+                    }
+                    className="w-full"
+                  />
+                </View>
+                <View className="flex-[0.85]">
+                  <SecondaryButton
+                    label="Cancel"
+                    onPress={() =>
+                      Alert.alert(
+                        "Cancel booking",
+                        "Are you sure you want to cancel this booking?",
+                        [
+                          { text: "No", style: "cancel" },
+                          { text: "Yes, Cancel", style: "destructive" },
+                        ],
+                      )
+                    }
+                    className="w-full"
+                  />
+                </View>
               </View>
             </View>
 
-            {/* Booking Card 2 */}
-            <View className="bg-surface border border-border rounded-2xl p-6 shadow-subtle">
+            <View
+              className="bg-white border border-border rounded-3xl p-6"
+              style={cardShadowStyle}
+            >
               <View className="flex-row mb-6">
                 <Image
                   source={{
                     uri: "https://images.unsplash.com/photo-1606611013016-969c19ba27bb?w=200&h=200&fit=crop",
                   }}
-                  className="w-20 h-20 rounded-xl bg-background"
+                  className="w-20 h-20 rounded-2xl bg-elevated"
                 />
                 <View className="flex-1 ml-4 justify-center">
-                  <View className="self-end bg-background border border-border px-3 py-1.5 rounded-md mb-2">
-                    <Text className="text-[10px] font-bold text-text-secondary tracking-widest uppercase">
-                      IN QUEUE
-                    </Text>
+                  <View className="self-end mb-2">
+                    <Badge variant="neutral">IN QUEUE</Badge>
                   </View>
-                  <Text className="text-lg font-bold text-text-primary mb-1">
+                  <Text className="text-lg font-jakarta-bold text-foreground mb-1">
                     Brake Inspection
                   </Text>
-                  <Text className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                  <Text className="text-xs font-manrope-bold text-muted uppercase tracking-widest">
                     KIA Sportage • 2022
                   </Text>
                 </View>
               </View>
 
-              <View className="flex-row bg-background/50 rounded-xl p-4 mb-6 border border-border/50">
+              <View className="flex-row bg-elevated rounded-2xl p-4 mb-6 border border-border">
                 <View className="flex-row items-center flex-1">
-                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
-                    <Calendar size={18} color="#E60012" />
+                  <View className="w-10 h-10 bg-white border border-border rounded-full justify-center items-center mr-3">
+                    <Calendar size={18} color="#93001B" strokeWidth={2} />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
+                    <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
                       DATE
                     </Text>
-                    <Text className="text-sm font-bold text-text-primary">
+                    <Text className="text-sm font-manrope-bold text-foreground">
                       Nov 02, 2023
                     </Text>
                   </View>
                 </View>
                 <View className="flex-row items-center flex-1">
-                  <View className="w-10 h-10 bg-background border border-border rounded-full justify-center items-center mr-3">
-                    <Clock size={18} color="#6B7280" />
+                  <View className="w-10 h-10 bg-white border border-border rounded-full justify-center items-center mr-3">
+                    <Clock size={18} color="#71717A" strokeWidth={2} />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
+                    <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
                       TIME
                     </Text>
-                    <Text className="text-sm font-bold text-text-primary">
+                    <Text className="text-sm font-manrope-bold text-foreground">
                       14:00 PM
                     </Text>
                   </View>
@@ -256,40 +230,39 @@ export default function BookingsScreen() {
               </View>
 
               <View className="flex-row gap-3">
-                <TouchableOpacity
-                  className="flex-1 bg-primary h-14 rounded-xl items-center justify-center active:opacity-80 shadow-subtle"
-                  onPress={() => router.push(routes.booking.selectAppointment)}
-                >
-                  <Text className="text-sm text-white font-bold tracking-widest uppercase">
-                    Reschedule
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="flex-[0.7] bg-background border border-border h-14 rounded-xl items-center justify-center active:bg-text-secondary/10"
-                  onPress={() =>
-                    Alert.alert(
-                      "Cancel booking",
-                      "Are you sure you want to cancel this booking?",
-                      [
-                        { text: "No", style: "cancel" },
-                        { text: "Yes, Cancel", style: "destructive" },
-                      ],
-                    )
-                  }
-                >
-                  <Text className="text-text-primary text-sm font-bold tracking-widest uppercase">
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
+                <View className="flex-1">
+                  <PrimaryButton
+                    label="Reschedule"
+                    onPress={() =>
+                      router.push(routes.booking.selectAppointment)
+                    }
+                    className="w-full"
+                  />
+                </View>
+                <View className="flex-[0.85]">
+                  <SecondaryButton
+                    label="Cancel"
+                    onPress={() =>
+                      Alert.alert(
+                        "Cancel booking",
+                        "Are you sure you want to cancel this booking?",
+                        [
+                          { text: "No", style: "cancel" },
+                          { text: "Yes, Cancel", style: "destructive" },
+                        ],
+                      )
+                    }
+                    className="w-full"
+                  />
+                </View>
               </View>
             </View>
           </View>
         ) : null}
 
-        {/* Scroll Hint */}
-        <View className="items-center py-8 opacity-50">
-          <History size={32} color="#9CA3AF" />
-          <Text className="text-xs font-medium text-text-muted mt-3">
+        <View className="items-center py-8 opacity-60">
+          <History size={32} color="#71717A" strokeWidth={2} />
+          <Text className="text-xs font-manrope-medium text-muted mt-3 text-center px-6">
             Scroll down to view past service insights
           </Text>
         </View>

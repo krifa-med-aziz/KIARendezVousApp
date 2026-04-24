@@ -1,4 +1,7 @@
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { routes } from "@/constants/routes";
+import { cardShadowStyle } from "@/constants/shadows";
 import { DEFAULT_VEHICLE_IMAGE, VEHICLES } from "@/data/mockData";
 import { router } from "expo-router";
 import {
@@ -29,64 +32,60 @@ export default function VehiclesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      {/* Header */}
-      <View className="flex-row justify-between items-center px-6 py-4 bg-surface border-b border-border">
+      <View className="flex-row justify-between items-center px-6 py-4 bg-white border-b border-border">
         <TouchableOpacity
           onPress={() => router.push("/(main)")}
           className="p-1 -ml-1 active:opacity-70"
         >
-          <ArrowLeft size={24} color="#111827" />
+          <ArrowLeft size={24} color="#1A1C1C" strokeWidth={2} />
         </TouchableOpacity>
-        <Text className="text-sm font-bold tracking-widest text-text-primary uppercase">
-          MY GARAGE
+        <Text className="text-sm font-jakarta-bold tracking-widest text-foreground uppercase">
+          My Garage
         </Text>
         <View className="w-6" />
       </View>
 
       <ScrollView
-        className="px-6 pt-8 pb-12"
+        className="px-6 pt-8 pb-28"
         showsVerticalScrollIndicator={false}
       >
-        {/* Section Title */}
-        <View className="mb-6">
-          <Text className="text-[10px] font-bold tracking-widest text-text-muted uppercase mb-2">
-            ACTIVE FLEET
+        <View className="mb-8">
+          <Text className="text-[10px] font-manrope-bold tracking-widest text-muted uppercase mb-2">
+            Active fleet
           </Text>
-          <Text className="text-3xl font-extrabold text-text-primary">
-            Your Curated Collection
+          <Text className="text-2xl font-jakarta-extrabold text-foreground">
+            Your vehicles
           </Text>
         </View>
 
-        {/* Vehicle Cards */}
         {VEHICLES.map((vehicle) => (
           <View
             key={vehicle.id}
-            className="bg-surface rounded-2xl overflow-hidden mb-6 border border-border shadow-subtle"
+            className="bg-white rounded-3xl overflow-hidden mb-8 border border-border"
+            style={cardShadowStyle}
           >
-            {/* Image Container */}
-            <View className="relative w-full h-[220px] bg-background">
+            <View className="relative w-full h-[220px] bg-elevated">
               <Image
                 source={{ uri: vehicle.image || DEFAULT_VEHICLE_IMAGE }}
                 className="w-full h-full"
                 resizeMode="cover"
               />
               {vehicle.battery && (
-                <View className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm px-3 py-1.5 rounded-md">
-                  <Text className="text-[10px] font-bold text-white tracking-widest uppercase">
+                <View className="absolute top-4 right-4 bg-primary px-3 py-1.5 rounded-full">
+                  <Text className="text-[10px] font-manrope-bold text-white tracking-widest uppercase">
                     BATTERY {vehicle.battery}
                   </Text>
                 </View>
               )}
             </View>
 
-            {/* Vehicle Info */}
             <View className="p-6">
               <View className="flex-row justify-between items-start mb-6">
                 <View>
-                  <Text className="text-2xl font-extrabold text-text-primary mb-1">
+                  <Text className="text-2xl font-jakarta-extrabold text-foreground mb-1">
                     {vehicle.name}
                   </Text>
-                  <Text className="text-sm font-bold text-text-secondary tracking-widest uppercase">
+                  <Text className="text-sm font-manrope-bold text-muted tracking-widest uppercase">
                     {vehicle.plate}
                   </Text>
                 </View>
@@ -94,21 +93,20 @@ export default function VehiclesScreen() {
                   className="p-2 -mr-2 active:opacity-70"
                   onPress={handleVehicleOptions}
                 >
-                  <MoreVertical size={24} color="#6B7280" />
+                  <MoreVertical size={24} color="#71717A" strokeWidth={2} />
                 </TouchableOpacity>
               </View>
 
-              {/* Service Info */}
-              <View className="gap-4 mb-6 pb-6 border-b border-border/50">
+              <View className="gap-4 mb-6 pb-6 border-b border-border">
                 <View className="flex-row items-center gap-4">
-                  <View className="w-10 h-10 rounded-full bg-background border border-border items-center justify-center">
-                    <Wrench size={18} color="#6B7280" />
+                  <View className="w-10 h-10 rounded-full bg-elevated border border-border items-center justify-center">
+                    <Wrench size={18} color="#71717A" strokeWidth={2} />
                   </View>
                   <View>
-                    <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
+                    <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
                       LAST SERVICE
                     </Text>
-                    <Text className="text-sm font-bold text-text-primary">
+                    <Text className="text-sm font-manrope-bold text-foreground">
                       {vehicle.lastService}
                     </Text>
                   </View>
@@ -116,14 +114,14 @@ export default function VehiclesScreen() {
 
                 {vehicle.mileage && (
                   <View className="flex-row items-center gap-4">
-                    <View className="w-10 h-10 rounded-full bg-background border border-border items-center justify-center">
-                      <Ruler size={18} color="#6B7280" />
+                    <View className="w-10 h-10 rounded-full bg-elevated border border-border items-center justify-center">
+                      <Ruler size={18} color="#71717A" strokeWidth={2} />
                     </View>
                     <View>
-                      <Text className="text-[10px] font-bold text-text-muted tracking-widest uppercase mb-1">
+                      <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
                         ODOMETER
                       </Text>
-                      <Text className="text-sm font-bold text-text-primary">
+                      <Text className="text-sm font-manrope-bold text-foreground">
                         {vehicle.mileage}
                       </Text>
                     </View>
@@ -131,53 +129,54 @@ export default function VehiclesScreen() {
                 )}
               </View>
 
-              {/* Action Button */}
-              <TouchableOpacity
-                className="bg-primary h-14 rounded-xl items-center justify-center active:opacity-80 shadow-subtle"
+              <PrimaryButton
+                label="Vehicle status"
                 onPress={() =>
                   router.push({
                     pathname: routes.vehicleDetails,
                     params: { id: String(vehicle.id) },
                   })
                 }
-              >
-                <Text className="text-sm font-bold text-white tracking-widest uppercase">
-                  VEHICLE STATUS →
-                </Text>
-              </TouchableOpacity>
+                className="w-full"
+              />
             </View>
           </View>
         ))}
 
-        {/* Expand Your Garage Section */}
-        <View className="bg-surface rounded-2xl p-8 items-center mb-6 border border-border shadow-subtle">
-          <View className="w-16 h-16 rounded-full bg-primary-soft items-center justify-center mb-4">
-            <Plus size={32} color="#E60012" />
+        <View
+          className="bg-white rounded-3xl p-8 items-center mb-6 border border-border"
+          style={cardShadowStyle}
+        >
+          <View className="w-16 h-16 rounded-full bg-badge-red items-center justify-center mb-4">
+            <Plus size={32} color="#93001B" strokeWidth={2} />
           </View>
-          <Text className="text-xl font-extrabold text-text-primary mb-3">
-            Expand Your Garage
+          <Text className="text-xl font-jakarta-extrabold text-foreground mb-3 text-center">
+            Expand your garage
           </Text>
-          <Text className="text-sm font-medium text-text-secondary text-center leading-relaxed mb-6">
+          <Text className="text-sm font-manrope text-muted text-center leading-relaxed mb-6">
             Register a new KIA vehicle to track its health, service history, and
             connected features.
           </Text>
-          <TouchableOpacity
-            className="bg-background border border-border rounded-xl px-8 h-12 items-center justify-center active:bg-text-secondary/10"
+          <SecondaryButton
+            label="Register now"
             onPress={() => router.push(routes.addVehicle)}
-          >
-            <Text className="text-xs font-bold text-text-primary tracking-widest uppercase">
-              REGISTER NOW
-            </Text>
-          </TouchableOpacity>
+            className="w-full"
+          />
         </View>
       </ScrollView>
 
-      {/* Floating Action Button */}
       <TouchableOpacity
-        className="absolute bottom-10 right-6 w-16 h-16 rounded-full bg-primary justify-center items-center shadow-card active:opacity-80"
+        className="absolute bottom-10 right-6 w-16 h-16 rounded-full bg-primary justify-center items-center active:opacity-90"
+        style={{
+          shadowColor: "#93001B",
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.28,
+          shadowRadius: 16,
+          elevation: 8,
+        }}
         onPress={() => router.push(routes.addVehicle)}
       >
-        <Plus size={32} color="#fff" />
+        <Plus size={28} color="#fff" strokeWidth={2} />
       </TouchableOpacity>
     </SafeAreaView>
   );

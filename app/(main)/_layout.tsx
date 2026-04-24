@@ -6,11 +6,13 @@ export default function MainTabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#c41e3a",
-        tabBarInactiveTintColor: "#999",
+        tabBarActiveTintColor: "#93001B",
+        tabBarInactiveTintColor: "#71717A",
         tabBarStyle: {
-          borderTopColor: "#f0f0f0",
+          borderTopColor: "#F4F4F5",
+          backgroundColor: "#FFFFFF",
           paddingBottom: 8,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: 10,
@@ -23,28 +25,36 @@ export default function MainTabsLayout() {
         name="index"
         options={{
           title: "HOME",
-          tabBarIcon: ({ color }) => <Home size={24} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <Home size={24} color={color} strokeWidth={2} />
+          ),
         }}
       />
       <Tabs.Screen
         name="vehicles"
         options={{
           title: "VEHICLES",
-          tabBarIcon: ({ color }) => <Car size={24} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <Car size={24} color={color} strokeWidth={2} />
+          ),
         }}
       />
       <Tabs.Screen
         name="bookings"
         options={{
           title: "BOOKINGS",
-          tabBarIcon: ({ color }) => <Calendar size={24} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <Calendar size={24} color={color} strokeWidth={2} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "PROFILE",
-          tabBarIcon: ({ color }) => <User size={24} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <User size={24} color={color} strokeWidth={2} />
+          ),
         }}
       />
     </Tabs>

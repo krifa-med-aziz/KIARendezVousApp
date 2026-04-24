@@ -19,28 +19,35 @@ export const Input: React.FC<InputProps> = ({
   return (
     <View className={`mb-6 ${containerClassName || ""}`}>
       {!!label && (
-        <Text className="text-sm font-semibold text-text-primary mb-2">
+        <Text className="text-xs font-manrope-bold text-muted mb-2 tracking-widest uppercase">
           {label}
         </Text>
       )}
       <View
-        className={`flex-row items-center h-14 bg-background border rounded-xl overflow-hidden ${
-          error ? "border-red-500" : "border-border focus:border-primary"
+        className={`flex-row items-center min-h-[56px] bg-white border rounded-2xl overflow-hidden px-4 ${
+          error ? "border-primary" : "border-border"
         }`}
+        style={{
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 2,
+        }}
       >
         <TextInput
-          className={`flex-1 px-4 h-full text-text-primary ${className || ""}`}
-          placeholderTextColor="#9CA3AF"
+          className={`flex-1 py-4 text-base text-foreground font-manrope ${className || ""}`}
+          placeholderTextColor="#71717A"
           {...props}
         />
         {rightElement && (
-          <View className="pr-4 justify-center items-center">
-            {rightElement}
-          </View>
+          <View className="pl-2 justify-center items-center">{rightElement}</View>
         )}
       </View>
       {error ? (
-        <Text className="text-[12px] font-medium text-error mt-1">{error}</Text>
+        <Text className="text-xs font-manrope-semibold text-primary mt-1">
+          {error}
+        </Text>
       ) : null}
     </View>
   );

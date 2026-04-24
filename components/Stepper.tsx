@@ -9,7 +9,7 @@ interface StepperProps {
 
 export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
   return (
-    <View className="flex-row items-center justify-between w-full px-6 pt-4 pb-6 bg-surface border-b border-border">
+    <View className="flex-row items-center justify-between w-full px-6 pt-10 pb-16 bg-white border-b border-border">
       {steps.map((step, index) => {
         const isCompleted = index < currentStep;
         const isCurrent = index === currentStep;
@@ -26,16 +26,16 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
                   isCompleted
                     ? "bg-primary border-primary"
                     : isCurrent
-                      ? "bg-surface border-primary"
-                      : "bg-surface border-border"
+                      ? "bg-white border-primary"
+                      : "bg-white border-border"
                 }`}
               >
                 {isCompleted ? (
                   <Check size={12} color="#fff" strokeWidth={3} />
                 ) : (
                   <Text
-                    className={`text-[10px] font-bold ${
-                      isCurrent ? "text-primary" : "text-text-muted"
+                    className={`text-[10px] font-manrope-bold ${
+                      isCurrent ? "text-primary" : "text-muted"
                     }`}
                   >
                     {index + 1}
@@ -44,10 +44,10 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
               </View>
 
               <Text
-                className={`text-[10px] tracking-tight mt-1.5 absolute top-7 w-20 text-center ${
+                className={`text-[10px] tracking-tight mt-1.5 absolute top-7 w-20 text-center font-manrope-bold ${
                   isCompleted || isCurrent
-                    ? "text-text-primary font-bold"
-                    : "text-text-muted font-bold"
+                    ? "text-foreground"
+                    : "text-muted"
                 }`}
                 numberOfLines={1}
               >
@@ -57,7 +57,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
 
             {!isLast && (
               <View
-                className={`h-[2px] flex-1 mx-2 mt-[-10px] ${
+                className={`h-0.5 flex-1 mx-2 mt-[-10px] ${
                   isCompleted ? "bg-primary" : "bg-border"
                 }`}
               />

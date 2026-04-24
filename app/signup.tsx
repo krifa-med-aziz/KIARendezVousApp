@@ -31,7 +31,6 @@ export default function Signup() {
       return;
     }
 
-    console.log("Signup success for:", email);
     signIn(email.trim());
     router.replace(routes.main);
   };
@@ -39,29 +38,23 @@ export default function Signup() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <ScrollView
-        className="px-6 pt-6 pb-10"
+        className="px-6 pt-8 pb-10"
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text className="text-xs font-bold tracking-widest text-primary text-center mb-6 uppercase">
-          CREATE ACCOUNT
+        <Text className="text-center text-xl font-jakarta-bold text-foreground tracking-wide mb-10">
+          KIA SERVICE
         </Text>
 
-        <View className="items-center mb-4">
-          <Text className="text-4xl text-text-primary font-medium mb-1">
-            Join the
-          </Text>
-          <Text className="text-4xl text-primary font-extrabold">
-            KIA Family
-          </Text>
-        </View>
-
-        <Text className="text-sm text-text-secondary text-center leading-6 mb-8">
-          Get started with managing your vehicle{"\n"}
-          and booking services easily.
+        <Text className="text-3xl font-jakarta-extrabold text-foreground mb-3">
+          Create your account
+        </Text>
+        <Text className="text-base font-manrope text-muted leading-6 mb-10">
+          Register to track your vehicles and book service appointments.
         </Text>
 
         <Input
-          label="FULL NAME"
+          label="Full name"
           placeholder="Alex Driver"
           value={name}
           onChangeText={setName}
@@ -69,7 +62,7 @@ export default function Signup() {
         />
 
         <Input
-          label="EMAIL ADDRESS"
+          label="Email address"
           placeholder="alex@example.com"
           value={email}
           onChangeText={setEmail}
@@ -77,8 +70,8 @@ export default function Signup() {
           autoCapitalize="none"
         />
 
-        <Text className="text-sm font-semibold text-text-primary mb-2 mt-2">
-          PASSWORD
+        <Text className="text-xs font-manrope-bold text-muted mb-2 tracking-widest uppercase">
+          Password
         </Text>
         <Input
           label=""
@@ -86,23 +79,24 @@ export default function Signup() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry={!showPassword}
-          containerClassName="mb-6 -mt-4"
+          containerClassName="mb-6 -mt-2"
           rightElement={
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
               className="p-2"
+              hitSlop={8}
             >
               {showPassword ? (
-                <Eye size={20} color="#9CA3AF" />
+                <Eye size={20} color="#71717A" strokeWidth={2} />
               ) : (
-                <EyeOff size={20} color="#9CA3AF" />
+                <EyeOff size={20} color="#71717A" strokeWidth={2} />
               )}
             </TouchableOpacity>
           }
         />
 
-        <Text className="text-sm font-semibold text-text-primary mb-2 mt-2">
-          CONFIRM PASSWORD
+        <Text className="text-xs font-manrope-bold text-muted mb-2 tracking-widest uppercase">
+          Confirm password
         </Text>
         <Input
           label=""
@@ -110,33 +104,35 @@ export default function Signup() {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry={!showConfirmPassword}
-          containerClassName="mb-8 -mt-4"
+          containerClassName="mb-8 -mt-2"
           rightElement={
             <TouchableOpacity
               onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               className="p-2"
+              hitSlop={8}
             >
               {showConfirmPassword ? (
-                <Eye size={20} color="#9CA3AF" />
+                <Eye size={20} color="#71717A" strokeWidth={2} />
               ) : (
-                <EyeOff size={20} color="#9CA3AF" />
+                <EyeOff size={20} color="#71717A" strokeWidth={2} />
               )}
             </TouchableOpacity>
           }
         />
 
-        <PrimaryButton
-          label="Sign Up"
-          onPress={handleSignup}
-          className="mb-8"
-        />
+        <PrimaryButton label="Sign up" onPress={handleSignup} className="mb-8" />
 
         <View className="flex-row justify-center items-center pb-6">
-          <Text className="text-sm font-medium text-text-secondary">
+          <Text className="text-sm font-manrope text-muted">
             Already have an account?{" "}
           </Text>
-          <TouchableOpacity onPress={() => router.push(routes.login as any)}>
-            <Text className="text-sm font-bold text-primary">Log In</Text>
+          <TouchableOpacity
+            onPress={() => router.push(routes.login as any)}
+            activeOpacity={0.7}
+          >
+            <Text className="text-sm font-manrope-bold text-primary">
+              Log in
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

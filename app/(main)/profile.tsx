@@ -23,6 +23,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const ICON_COLOR = "#1A1C1C";
+const CHEVRON = "#71717A";
+
 export default function ProfileScreen() {
   const { userEmail, signOut } = useAuth();
 
@@ -42,118 +45,119 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
 
-      {/* Header */}
-      <View className="flex-row items-center px-6 py-4 bg-surface border-b border-border">
+      <View className="flex-row items-center px-6 py-4 bg-white border-b border-border">
         <View className="w-8" />
-        <Text className="flex-1 text-sm font-bold tracking-widest text-text-primary text-center uppercase">
+        <Text className="flex-1 text-center text-sm font-jakarta-bold text-foreground tracking-widest uppercase">
           Settings
         </Text>
         <View className="w-8" />
       </View>
 
       <ScrollView className="flex-1 pb-12" showsVerticalScrollIndicator={false}>
-        {/* Account Section */}
-        <Text className="text-[10px] font-bold tracking-widest text-text-muted px-6 pt-8 pb-3 uppercase">
-          ACCOUNT
+        <Text className="text-[10px] font-manrope-bold tracking-widest text-muted px-6 pt-8 pb-3 uppercase">
+          Account
         </Text>
-        <Card className="mx-6 p-1">
+        <Card className="mx-6" noPadding>
           <TouchableOpacity
-            className="flex-row items-center p-4 border-b border-border/50 active:bg-background rounded-t-xl"
+            className="flex-row items-center p-4 border-b border-border active:bg-elevated rounded-t-3xl"
             onPress={() => Alert.alert("Profile", userEmail ?? "Not signed in")}
           >
-            <User size={22} color="#111827" />
-            <Text className="flex-1 text-base font-bold text-text-primary ml-4">
+            <User size={22} color={ICON_COLOR} strokeWidth={2} />
+            <Text className="flex-1 text-base font-manrope-bold text-foreground ml-4">
               Edit Profile
             </Text>
-            <ChevronRight size={20} color="#9CA3AF" />
+            <ChevronRight size={20} color={CHEVRON} strokeWidth={2} />
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center p-4 border-b border-border/50 active:bg-background"
+            className="flex-row items-center p-4 border-b border-border active:bg-elevated"
             onPress={() =>
               Alert.alert("Security", "Password change dialog would open here.")
             }
           >
-            <Lock size={22} color="#111827" />
-            <Text className="flex-1 text-base font-bold text-text-primary ml-4">
+            <Lock size={22} color={ICON_COLOR} strokeWidth={2} />
+            <Text className="flex-1 text-base font-manrope-bold text-foreground ml-4">
               Change Password
             </Text>
-            <ChevronRight size={20} color="#9CA3AF" />
+            <ChevronRight size={20} color={CHEVRON} strokeWidth={2} />
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center p-4 active:bg-background rounded-b-xl border-t-0">
-            <Languages size={22} color="#111827" />
+          <TouchableOpacity className="flex-row items-center p-4 active:bg-elevated rounded-b-3xl">
+            <Languages size={22} color={ICON_COLOR} strokeWidth={2} />
             <View className="flex-1 ml-4">
-              <Text className="text-base font-bold text-text-primary">
+              <Text className="text-base font-manrope-bold text-foreground">
                 Language
               </Text>
-              <Text className="text-xs font-semibold text-text-muted mt-0.5">
+              <Text className="text-xs font-manrope-semibold text-muted mt-0.5">
                 English (US)
               </Text>
             </View>
-            <ChevronRight size={20} color="#9CA3AF" />
+            <ChevronRight size={20} color={CHEVRON} strokeWidth={2} />
           </TouchableOpacity>
         </Card>
 
-        {/* Notifications Section */}
-        <Text className="text-[10px] font-bold tracking-widest text-text-muted px-6 pt-8 pb-3 uppercase">
-          NOTIFICATIONS
+        <Text className="text-[10px] font-manrope-bold tracking-widest text-muted px-6 pt-8 pb-3 uppercase">
+          Notifications
         </Text>
-        <Card className="mx-6 p-1">
-          <TouchableOpacity className="flex-row items-center p-4 border-b border-border/50 active:bg-background rounded-t-xl">
-            <Bell size={22} color="#111827" />
-            <Text className="flex-1 text-base font-bold text-text-primary ml-4">
+        <Card className="mx-6" noPadding>
+          <TouchableOpacity className="flex-row items-center p-4 border-b border-border active:bg-elevated rounded-t-3xl">
+            <Bell size={22} color={ICON_COLOR} strokeWidth={2} />
+            <Text className="flex-1 text-base font-manrope-bold text-foreground ml-4">
               Push Notifications
             </Text>
-            <ChevronRight size={20} color="#9CA3AF" />
+            <ChevronRight size={20} color={CHEVRON} strokeWidth={2} />
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center p-4 active:bg-background rounded-b-xl border-t-0">
-            <Mail size={22} color="#111827" />
-            <Text className="flex-1 text-base font-bold text-text-primary ml-4">
+          <TouchableOpacity className="flex-row items-center p-4 active:bg-elevated rounded-b-3xl">
+            <Mail size={22} color={ICON_COLOR} strokeWidth={2} />
+            <Text className="flex-1 text-base font-manrope-bold text-foreground ml-4">
               Email Alerts
             </Text>
-            <ChevronRight size={20} color="#9CA3AF" />
+            <ChevronRight size={20} color={CHEVRON} strokeWidth={2} />
           </TouchableOpacity>
         </Card>
 
-        {/* Security Section */}
-        <Text className="text-[10px] font-bold tracking-widest text-text-muted px-6 pt-8 pb-3 uppercase">
-          SECURITY
+        <Text className="text-[10px] font-manrope-bold tracking-widest text-muted px-6 pt-8 pb-3 uppercase">
+          Security
         </Text>
-        <Card className="mx-6 p-1">
-          <TouchableOpacity className="flex-row items-center p-4 border-b border-border/50 active:bg-background rounded-t-xl">
-            <Fingerprint size={22} color="#111827" />
-            <Text className="flex-1 text-base font-bold text-text-primary ml-4">
+        <Card className="mx-6" noPadding>
+          <TouchableOpacity className="flex-row items-center p-4 border-b border-border active:bg-elevated rounded-t-3xl">
+            <Fingerprint size={22} color={ICON_COLOR} strokeWidth={2} />
+            <Text className="flex-1 text-base font-manrope-bold text-foreground ml-4">
               Biometric Login
             </Text>
-            <ChevronRight size={20} color="#9CA3AF" />
+            <ChevronRight size={20} color={CHEVRON} strokeWidth={2} />
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center p-4 active:bg-background rounded-b-xl border-t-0">
-            <ShieldCheck size={22} color="#111827" />
-            <Text className="flex-1 text-base font-bold text-text-primary ml-4">
+          <TouchableOpacity className="flex-row items-center p-4 active:bg-elevated rounded-b-3xl">
+            <ShieldCheck size={22} color={ICON_COLOR} strokeWidth={2} />
+            <Text className="flex-1 text-base font-manrope-bold text-foreground ml-4">
               Two-Factor Authentication
             </Text>
-            <ChevronRight size={20} color="#9CA3AF" />
+            <ChevronRight size={20} color={CHEVRON} strokeWidth={2} />
           </TouchableOpacity>
         </Card>
 
-        {/* Sign Out Button */}
         <TouchableOpacity
-          className="flex-row items-center justify-center mx-6 mt-10 h-14 rounded-xl border-2 border-primary/20 bg-primary-soft active:opacity-70 transition-all"
+          className="flex-row items-center justify-center mx-6 mt-10 py-4 rounded-full border border-border bg-white active:opacity-90"
           onPress={handleSignOut}
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.06,
+            shadowRadius: 12,
+            elevation: 3,
+          }}
         >
-          <LogOut size={20} color="#E60012" />
-          <Text className="text-sm font-bold text-primary ml-3 tracking-widest uppercase">
-            SIGN OUT
+          <LogOut size={20} color="#93001B" strokeWidth={2} />
+          <Text className="text-sm font-manrope-bold text-primary ml-3 tracking-widest uppercase">
+            Sign out
           </Text>
         </TouchableOpacity>
 
-        {/* Version Footer */}
-        <Text className="text-[10px] font-bold tracking-widest text-text-muted text-center mt-8 mb-6 uppercase">
+        <Text className="text-[10px] font-manrope-bold tracking-widest text-muted text-center mt-8 mb-6 uppercase">
           {userEmail ? `${userEmail} · ` : ""}KIA CONNECT V4.12.0
         </Text>
       </ScrollView>

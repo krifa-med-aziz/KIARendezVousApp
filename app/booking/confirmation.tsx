@@ -1,14 +1,15 @@
 import { routes } from "@/constants/routes";
+import { primaryShadowStyle } from "@/constants/shadows";
 import {
   ArrowLeft,
   Calendar,
   CheckCircle2,
-  ChevronRight,
-  Settings,
   MapPin,
+  Settings,
 } from "lucide-react-native";
 import { router } from "expo-router";
 import { Stepper } from "@/components/Stepper";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import {
   Image,
   ScrollView,
@@ -24,18 +25,17 @@ export default function BookingConfirmationScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
 
-      {/* Header */}
-      <View className="flex-row items-center px-6 py-4 bg-surface border-b border-border">
+      <View className="flex-row items-center px-6 py-4 bg-white border-b border-border">
         <TouchableOpacity
           className="p-1 active:opacity-70 -ml-1"
           onPress={() => router.back()}
         >
-          <ArrowLeft size={24} color="#111827" />
+          <ArrowLeft size={24} color="#1A1C1C" strokeWidth={2} />
         </TouchableOpacity>
 
-        <Text className="flex-1 text-center mr-6 text-sm font-bold tracking-widest text-text-primary uppercase">
+        <Text className="flex-1 text-center mr-6 text-sm font-jakarta-bold tracking-widest text-foreground uppercase">
           Booking Summary
         </Text>
       </View>
@@ -46,8 +46,7 @@ export default function BookingConfirmationScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {/* Vehicle */}
-        <View className="mx-6 mt-6 mb-6 h-[220px] rounded-2xl overflow-hidden bg-text-primary shadow-card">
+        <View className="mx-6 mt-6 mb-6 h-[220px] rounded-3xl overflow-hidden bg-foreground">
           <Image
             source={{
               uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Booking_%20Confirmation-S9V8yXvXqlOZnLitigyrtEvRM2JBS0.png",
@@ -56,133 +55,134 @@ export default function BookingConfirmationScreen() {
             resizeMode="cover"
           />
 
-          <View className="flex-1 justify-end p-6 bg-black/40">
-            <View className="bg-primary/90 backdrop-blur-sm self-start px-3 py-1.5 rounded-md mb-2">
-              <Text className="text-[10px] font-bold text-white tracking-widest uppercase">
-                YOUR SELECTED VEHICLE
+          <View className="flex-1 justify-end p-6 bg-foreground/40">
+            <View className="bg-primary self-start px-3 py-1.5 rounded-full mb-2">
+              <Text className="text-[10px] font-manrope-bold text-white tracking-widest uppercase">
+                Your selected vehicle
               </Text>
             </View>
-            <Text className="text-3xl font-extrabold text-white">
+            <Text className="text-3xl font-jakarta-extrabold text-white">
               KIA EV6 GT
             </Text>
           </View>
         </View>
 
-        {/* Receipt Concept Card */}
-        <View className="mx-6 bg-surface rounded-2xl shadow-card border border-border overflow-hidden">
-          {/* Info Card */}
+        <View className="mx-6 bg-white rounded-3xl border border-border overflow-hidden"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.08,
+            shadowRadius: 20,
+            elevation: 5,
+          }}
+        >
           <View className="p-6 border-b border-dashed border-border">
             <View className="flex-row items-center mb-4">
-              <Settings size={20} color="#E60012" />
-              <Text className="ml-auto text-xs text-text-muted font-bold tracking-widest uppercase">
-                SERVICE TYPE
+              <Settings size={20} color="#93001B" strokeWidth={2} />
+              <Text className="ml-auto text-xs text-label font-manrope-bold tracking-widest uppercase">
+                Service type
               </Text>
             </View>
 
-            <Text className="text-xl font-bold text-text-primary mb-1.5">
+            <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
               Full Maintenance
             </Text>
-            <Text className="text-sm font-medium text-text-secondary leading-5">
+            <Text className="text-sm font-manrope text-muted leading-5">
               Complete diagnostic & performance check
             </Text>
           </View>
 
-          {/* Location */}
-          <View className="p-6 border-b border-dashed border-border bg-background/50">
+          <View className="p-6 border-b border-dashed border-border bg-elevated/80">
             <View className="flex-row items-center mb-4">
-              <MapPin size={20} color="#E60012" />
-              <Text className="ml-auto text-xs text-text-muted font-bold tracking-widest uppercase">
-                LOCATION
+              <MapPin size={20} color="#93001B" strokeWidth={2} />
+              <Text className="ml-auto text-xs text-label font-manrope-bold tracking-widest uppercase">
+                Location
               </Text>
             </View>
 
-            <Text className="text-xl font-bold text-text-primary mb-1.5">
+            <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
               KIA Central
             </Text>
-            <Text className="text-sm font-medium text-text-secondary leading-5">
+            <Text className="text-sm font-manrope text-muted leading-5">
               Industrial Area, Sector 4
             </Text>
           </View>
 
-          {/* Schedule */}
           <View className="p-6 border-b border-border">
             <View className="flex-row justify-between items-center mb-5">
-              <Text className="text-xs font-bold text-primary tracking-widest uppercase">
-                SCHEDULE
+              <Text className="text-xs font-manrope-bold text-primary tracking-widest uppercase">
+                Schedule
               </Text>
-              <Calendar size={18} color="#E60012" />
+              <Calendar size={18} color="#93001B" strokeWidth={2} />
             </View>
 
             <View className="flex-row items-center">
               <View className="w-[80px] items-center pr-5 border-r border-border">
-                <Text className="text-4xl font-extrabold text-primary">24</Text>
-                <Text className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1">
+                <Text className="text-4xl font-jakarta-extrabold text-primary">
+                  24
+                </Text>
+                <Text className="text-xs font-manrope-bold text-muted uppercase tracking-widest mt-1">
                   OCT
                 </Text>
               </View>
 
               <View className="flex-1 pl-5">
-                <Text className="text-lg font-bold text-text-primary mb-1.5">
+                <Text className="text-lg font-jakarta-bold text-foreground mb-1.5">
                   Thursday, 09:30 AM
                 </Text>
-                <Text className="text-sm font-medium text-text-secondary leading-5">
+                <Text className="text-sm font-manrope text-muted leading-5">
                   Estimated duration: 3-4 hours
                 </Text>
               </View>
             </View>
           </View>
 
-          {/* Cost */}
-          <View className="p-6 bg-background flex-row justify-between items-center">
+          <View className="p-6 bg-elevated flex-row justify-between items-center">
             <View>
-              <Text className="text-xs text-text-muted font-bold tracking-widest uppercase">
-                ESTIMATED COST
+              <Text className="text-xs text-label font-manrope-bold tracking-widest uppercase">
+                Estimated cost
               </Text>
-              <Text className="text-sm font-medium text-text-secondary mt-1.5">
+              <Text className="text-sm font-manrope text-muted mt-1.5">
                 Labor & Standard Spare Parts
               </Text>
             </View>
 
-            <Text className="text-3xl font-extrabold text-text-primary">
+            <Text className="text-3xl font-jakarta-extrabold text-foreground">
               $284.00
             </Text>
           </View>
         </View>
 
-        {/* Terms */}
-        <View className="mx-6 mt-6 mb-8 flex-row items-start bg-primary-soft/50 rounded-xl p-5 border border-primary/10">
+        <View className="mx-6 mt-6 mb-8 flex-row items-start bg-badge-red rounded-3xl p-5 border border-border">
           <View className="mr-4 mt-0.5">
-            <CheckCircle2 size={20} color="#E60012" />
+            <CheckCircle2 size={20} color="#93001B" strokeWidth={2} />
           </View>
 
-          <Text className="flex-1 text-sm text-text-primary leading-relaxed font-medium">
+          <Text className="flex-1 text-sm font-manrope text-foreground leading-relaxed">
             By confirming, you agree to our{" "}
-            <Text className="text-primary font-bold">Service Terms</Text>.
-            {"\n\n"}
-            <Text className="text-text-secondary">
+            <Text className="text-primary font-manrope-bold">Service Terms</Text>
+            .{"\n\n"}
+            <Text className="text-muted">
               You can reschedule or cancel free of charge up to 24 hours before
               the appointment.
             </Text>
           </Text>
         </View>
 
-        {/* Actions */}
         <View className="px-6 pb-6">
-          <TouchableOpacity
+          <PrimaryButton
+            label="Confirm booking"
             onPress={() => router.push(routes.booking.success)}
-            className="bg-primary h-14 rounded-xl items-center justify-center mb-4 shadow-card active:opacity-80 transition-all focus:scale-95"
-          >
-            <Text className="text-white text-lg font-bold">
-              Confirm Booking
-            </Text>
-          </TouchableOpacity>
+            className="mb-4"
+            style={primaryShadowStyle}
+          />
 
           <TouchableOpacity
             onPress={() => router.replace(routes.main)}
             className="items-center py-4 active:opacity-70"
           >
-            <Text className="text-text-secondary text-xs font-bold tracking-widest uppercase">
-              CANCEL & RETURN TO HOME
+            <Text className="text-muted text-xs font-manrope-bold tracking-widest uppercase">
+              Cancel & return to home
             </Text>
           </TouchableOpacity>
         </View>
