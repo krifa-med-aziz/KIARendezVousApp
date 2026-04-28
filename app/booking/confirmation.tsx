@@ -1,5 +1,11 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
+import { useBooking } from "@/context/BookingContext";
+import { DEFAULT_VEHICLE_IMAGE } from "@/data/mockData";
+import {
+  formatBookingDateLabel,
+  weekdayFromIso,
+} from "@/lib/bookingFormat";
 import {
   ArrowLeft,
   Calendar,
@@ -8,6 +14,7 @@ import {
   Settings,
 } from "lucide-react-native";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import {
@@ -21,7 +28,36 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingConfirmationScreen() {
+  const {
+    selectedVehicle,
+    selectedService,
+    selectedAgency,
+    selectedDate,
+    selectedTime,
+    isBookingComplete,
+  } = useBooking();
+
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+
+  useEffect(() => {
+    if (!isBookingComplete()) {
+      router.replace(routes.booking.selectVehicle);
+    }
+  }, [isBookingComplete]);
+
+  if (!isBookingComplete()) {
+    return (
+      <SafeAreaView className="flex-1 bg-background" edges={["top"]} />
+    );
+  }
+
+  const vehicleImageUri =
+    selectedVehicle?.image && !selectedVehicle.image.startsWith("../")
+      ? selectedVehicle.image
+      : DEFAULT_VEHICLE_IMAGE;
+
+  const scheduleLine = `${weekdayFromIso(selectedDate!.id)}, ${selectedTime}`;
+  const price = selectedService?.price ?? 0;
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -48,9 +84,7 @@ export default function BookingConfirmationScreen() {
       >
         <View className="mx-6 mt-6 mb-6 h-[220px] rounded-3xl overflow-hidden bg-foreground">
           <Image
-            source={{
-              uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Booking_%20Confirmation-S9V8yXvXqlOZnLitigyrtEvRM2JBS0.png",
-            }}
+            source={{ uri: vehicleImageUri }}
             className="absolute w-full h-full"
             resizeMode="cover"
           />
@@ -62,12 +96,13 @@ export default function BookingConfirmationScreen() {
               </Text>
             </View>
             <Text className="text-3xl font-jakarta-extrabold text-white">
-              KIA EV6 GT
+              {selectedVehicle!.name}
             </Text>
           </View>
         </View>
 
-        <View className="mx-6 bg-white rounded-3xl border border-border overflow-hidden"
+        <View
+          className="mx-6 bg-white rounded-3xl border border-border overflow-hidden"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 8 },
@@ -85,10 +120,10 @@ export default function BookingConfirmationScreen() {
             </View>
 
             <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
-              Full Maintenance
+              {selectedService!.title}
             </Text>
             <Text className="text-sm font-manrope text-muted leading-5">
-              Complete diagnostic & performance check
+              {selectedService!.description}
             </Text>
           </View>
 
@@ -101,10 +136,10 @@ export default function BookingConfirmationScreen() {
             </View>
 
             <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
-              KIA Central
+              {selectedAgency!.name}
             </Text>
             <Text className="text-sm font-manrope text-muted leading-5">
-              Industrial Area, Sector 4
+              {selectedAgency!.address}
             </Text>
           </View>
 
@@ -119,19 +154,20 @@ export default function BookingConfirmationScreen() {
             <View className="flex-row items-center">
               <View className="w-[80px] items-center pr-5 border-r border-border">
                 <Text className="text-4xl font-jakarta-extrabold text-primary">
-                  24
+                  {selectedDate!.date}
                 </Text>
                 <Text className="text-xs font-manrope-bold text-muted uppercase tracking-widest mt-1">
-                  OCT
+                  {selectedDate!.monthLabel.slice(0, 3)}
                 </Text>
               </View>
 
               <View className="flex-1 pl-5">
                 <Text className="text-lg font-jakarta-bold text-foreground mb-1.5">
-                  Thursday, 09:30 AM
+                  {scheduleLine}
                 </Text>
                 <Text className="text-sm font-manrope text-muted leading-5">
-                  Estimated duration: 3-4 hours
+                  {formatBookingDateLabel(selectedDate!)} · Estimated from
+                  selected package
                 </Text>
               </View>
             </View>
@@ -143,12 +179,12 @@ export default function BookingConfirmationScreen() {
                 Estimated cost
               </Text>
               <Text className="text-sm font-manrope text-muted mt-1.5">
-                Labor & Standard Spare Parts
+                Labor & standard parts (estimate)
               </Text>
             </View>
 
             <Text className="text-3xl font-jakarta-extrabold text-foreground">
-              $284.00
+              ${price.toFixed(2)}
             </Text>
           </View>
         </View>

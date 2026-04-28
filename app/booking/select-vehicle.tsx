@@ -1,18 +1,22 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
+import { useBooking } from "@/context/BookingContext";
+import { DEFAULT_VEHICLE_IMAGE, VEHICLES } from "@/data/mockData";
 import { router } from "expo-router";
 import { Bell, ChevronLeft, Plus, Check } from "lucide-react-native";
-import { useState } from "react";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { DEFAULT_VEHICLE_IMAGE, VEHICLES } from "@/data/mockData";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectVehicleScreen() {
-  const [selectedVehicle, setSelectedVehicle] = useState(0);
-
+  const { selectedVehicle, setVehicle } = useBooking();
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+
+  const onContinue = () => {
+    if (!selectedVehicle) return;
+    router.push(routes.booking.selectService);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -64,60 +68,63 @@ export default function SelectVehicleScreen() {
           </Text>
         </View>
 
-        {VEHICLES.map((vehicle, index) => (
-          <TouchableOpacity
-            key={vehicle.id}
-            className={`bg-white rounded-3xl p-5 mb-4 flex-row items-center gap-4 border ${
-              selectedVehicle === index
-                ? "border-primary bg-badge-red/40"
-                : "border-border"
-            }`}
-            style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.06,
-              shadowRadius: 12,
-              elevation: 3,
-            }}
-            onPress={() => setSelectedVehicle(index)}
-            activeOpacity={0.9}
-          >
-            {selectedVehicle === index && (
-              <View className="absolute top-4 right-4 bg-primary rounded-full p-1">
-                <Check size={14} color="#fff" strokeWidth={3} />
-              </View>
-            )}
-
-            <Image
-              source={{ uri: vehicle.image || DEFAULT_VEHICLE_IMAGE }}
-              className="w-20 h-20 rounded-2xl bg-elevated border border-border"
-            />
-
-            <View className="flex-1 pr-6">
-              <Text className="text-lg font-jakarta-bold text-foreground mb-1">
-                {vehicle.name}
-              </Text>
-              <Text className="text-sm font-manrope text-muted mb-3">
-                {vehicle.plate} • {vehicle.mileage}
-              </Text>
-
-              <View className="flex-row gap-2 flex-wrap">
-                <View className="bg-badge-red rounded-full px-3 py-1">
-                  <Text className="text-[10px] font-manrope-bold text-primary tracking-widest uppercase">
-                    {vehicle.type}
-                  </Text>
+        {VEHICLES.map((vehicle) => {
+          const isSelected = selectedVehicle?.id === vehicle.id;
+          return (
+            <TouchableOpacity
+              key={vehicle.id}
+              className={`bg-white rounded-3xl p-5 mb-4 flex-row items-center gap-4 border ${
+                isSelected
+                  ? "border-primary bg-badge-red/40"
+                  : "border-border"
+              }`}
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.06,
+                shadowRadius: 12,
+                elevation: 3,
+              }}
+              onPress={() => setVehicle(vehicle)}
+              activeOpacity={0.9}
+            >
+              {isSelected && (
+                <View className="absolute top-4 right-4 bg-primary rounded-full p-1">
+                  <Check size={14} color="#fff" strokeWidth={3} />
                 </View>
-                {vehicle.badge && (
-                  <View className="bg-elevated border border-border rounded-full px-3 py-1">
-                    <Text className="text-[10px] font-manrope-bold text-muted tracking-widest uppercase">
-                      {vehicle.badge}
+              )}
+
+              <Image
+                source={{ uri: vehicle.image || DEFAULT_VEHICLE_IMAGE }}
+                className="w-20 h-20 rounded-2xl bg-elevated border border-border"
+              />
+
+              <View className="flex-1 pr-6">
+                <Text className="text-lg font-jakarta-bold text-foreground mb-1">
+                  {vehicle.name}
+                </Text>
+                <Text className="text-sm font-manrope text-muted mb-3">
+                  {vehicle.plate} • {vehicle.mileage}
+                </Text>
+
+                <View className="flex-row gap-2 flex-wrap">
+                  <View className="bg-badge-red rounded-full px-3 py-1">
+                    <Text className="text-[10px] font-manrope-bold text-primary tracking-widest uppercase">
+                      {vehicle.type}
                     </Text>
                   </View>
-                )}
+                  {vehicle.badge && (
+                    <View className="bg-elevated border border-border rounded-full px-3 py-1">
+                      <Text className="text-[10px] font-manrope-bold text-muted tracking-widest uppercase">
+                        {vehicle.badge}
+                      </Text>
+                    </View>
+                  )}
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          );
+        })}
 
         <TouchableOpacity
           className="bg-transparent rounded-3xl py-8 px-4 items-center justify-center border-2 border-dashed border-border mb-8 active:opacity-70"
@@ -133,7 +140,8 @@ export default function SelectVehicleScreen() {
 
         <PrimaryButton
           label="Continue to service"
-          onPress={() => router.push(routes.booking.selectService)}
+          onPress={onContinue}
+          disabled={!selectedVehicle}
           className="mb-4"
           style={primaryShadowStyle}
         />

@@ -8,6 +8,7 @@ import {
   Tag,
   Wrench,
 } from "lucide-react-native";
+import { routes } from "@/constants/routes";
 import { router } from "expo-router";
 import {
   Image,
@@ -36,7 +37,7 @@ export default function NotificationsScreen() {
         </Text>
         <TouchableOpacity
           className="p-1 -mr-1 active:opacity-70"
-          onPress={() => router.push("/(main)/profile")}
+          onPress={() => router.push(routes.profile)}
         >
           <Settings size={24} color="#1A1C1C" strokeWidth={2} />
         </TouchableOpacity>

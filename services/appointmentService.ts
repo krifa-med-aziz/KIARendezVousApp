@@ -1,3 +1,11 @@
+type AppointmentData = {
+  vehicleId?: string;
+  serviceId?: string;
+  agencyId?: string;
+  date?: string;
+  time?: string;
+};
+
 export const appointmentService = {
   getAgencies: async () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -14,7 +22,7 @@ export const appointmentService = {
       { id: '3', name: 'Brake Inspection', duration: '45 min', price: 120 },
     ];
   },
-  bookAppointment: async (appointmentData) => {
+  bookAppointment: async (appointmentData: AppointmentData) => {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     return { id: Math.random().toString(), status: 'confirmed', ...appointmentData };
   },

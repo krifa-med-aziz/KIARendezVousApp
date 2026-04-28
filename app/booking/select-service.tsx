@@ -1,9 +1,9 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
+import { useBooking } from "@/context/BookingContext";
 import { router } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
 import { Bell, ChevronLeft, CheckCircle2 } from "lucide-react-native";
-import { useState } from "react";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SERVICES } from "@/data/mockData";
@@ -11,11 +11,15 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectServiceScreen() {
-  const [selectedService, setSelectedService] = useState(0);
-
+  const { selectedService, setService } = useBooking();
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
-  const estimatedTotal = SERVICES[selectedService].price;
+  const estimatedTotal = selectedService?.price ?? 0;
+
+  const onNext = () => {
+    if (!selectedService) return;
+    router.push(routes.booking.selectAgency);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -71,13 +75,13 @@ export default function SelectServiceScreen() {
             />
           </View>
 
-          {SERVICES.map((service, index) => {
-            const isSelected = selectedService === index;
+          {SERVICES.map((service) => {
+            const isSelected = selectedService?.id === service.id;
 
             return (
               <TouchableOpacity
                 key={service.id}
-                onPress={() => setSelectedService(index)}
+                onPress={() => setService(service)}
                 className={`rounded-3xl p-6 mb-4 border ${
                   isSelected
                     ? "bg-badge-red border-primary"
@@ -158,7 +162,8 @@ export default function SelectServiceScreen() {
 
         <PrimaryButton
           label="Next"
-          onPress={() => router.push(routes.booking.selectAgency)}
+          onPress={onNext}
+          disabled={!selectedService}
           className="px-10"
           style={primaryShadowStyle}
         />

@@ -2,7 +2,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import "../global.css";
 import { Stack } from "expo-router";
 import { VehicleProvider } from "@/context/VehicleContext";
-import { AppointmentProvider } from "@/context/AppointmentContext";
+import { BookingProvider } from "@/context/BookingContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
 import {
@@ -55,9 +55,9 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AuthProvider>
         <VehicleProvider>
-          <AppointmentProvider>
+          <BookingProvider>
             <Stack screenOptions={{ headerShown: false }} />
-          </AppointmentProvider>
+          </BookingProvider>
         </VehicleProvider>
       </AuthProvider>
     </SafeAreaProvider>

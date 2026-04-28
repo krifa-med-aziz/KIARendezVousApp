@@ -1,5 +1,11 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
+import { useBooking } from "@/context/BookingContext";
+import {
+  BOOKING_DATE_OPTIONS,
+  MORNING_TIMES,
+  AFTERNOON_TIMES,
+} from "@/data/mockData";
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,10 +15,8 @@ import {
   SunMoon,
 } from "lucide-react-native";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Stepper } from "@/components/Stepper";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { DATES, MORNING_TIMES, AFTERNOON_TIMES } from "@/data/mockData";
 import {
   ScrollView,
   StatusBar,
@@ -23,9 +27,34 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectAppointmentScreen() {
-  const [selectedTime, setSelectedTime] = useState("09:30 AM");
-
+  const { selectedDate, selectedTime, setDate, setTime } = useBooking();
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+
+  const defaultDate = useMemo(
+    () => BOOKING_DATE_OPTIONS[2] ?? BOOKING_DATE_OPTIONS[0],
+    [],
+  );
+
+  useEffect(() => {
+    if (!selectedDate) {
+      setDate(defaultDate);
+    }
+  }, [defaultDate, selectedDate, setDate]);
+
+  useEffect(() => {
+    if (!selectedTime) {
+      setTime("09:30 AM");
+    }
+  }, [selectedTime, setTime]);
+
+  const monthHeading = selectedDate
+    ? `${selectedDate.monthLabel} ${selectedDate.year}`
+    : `${defaultDate.monthLabel} ${defaultDate.year}`;
+
+  const onContinue = () => {
+    if (!selectedDate || !selectedTime) return;
+    router.push(routes.booking.confirmation);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -57,10 +86,10 @@ export default function SelectAppointmentScreen() {
         <View className="flex-row justify-between px-6 pt-8 pb-6">
           <View>
             <Text className="text-2xl font-jakarta-extrabold text-foreground">
-              October 2024
+              {monthHeading}
             </Text>
             <Text className="text-sm font-manrope text-muted mt-1">
-              Next available: Today, 23 Oct
+              Pick a day and time slot
             </Text>
           </View>
 
@@ -75,12 +104,13 @@ export default function SelectAppointmentScreen() {
           className="mb-8"
           contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
         >
-          {DATES.map((d, i) => {
-            const active = d.active;
+          {BOOKING_DATE_OPTIONS.map((d) => {
+            const active = selectedDate?.id === d.id;
 
             return (
               <TouchableOpacity
-                key={i}
+                key={d.id}
+                onPress={() => setDate(d)}
                 className={`w-[72px] py-4 rounded-3xl items-center justify-center border ${
                   active
                     ? "bg-primary border-primary"
@@ -138,7 +168,7 @@ export default function SelectAppointmentScreen() {
               return (
                 <TouchableOpacity
                   key={time}
-                  onPress={() => setSelectedTime(time)}
+                  onPress={() => setTime(time)}
                   className={`w-[31%] h-12 rounded-full items-center justify-center border ${
                     active
                       ? "bg-primary border-primary"
@@ -176,7 +206,7 @@ export default function SelectAppointmentScreen() {
                 <TouchableOpacity
                   key={time}
                   disabled={disabled}
-                  onPress={() => setSelectedTime(time)}
+                  onPress={() => setTime(time)}
                   className={`w-[31%] h-12 rounded-full items-center justify-center border ${
                     disabled
                       ? "bg-elevated border-border opacity-50"
@@ -212,8 +242,8 @@ export default function SelectAppointmentScreen() {
               Estimated duration
             </Text>
             <Text className="text-sm font-manrope text-foreground leading-relaxed">
-              Full Maintenance typically takes 2-3 hours. We recommend dropping
-              off 15 mins early.
+              Service duration depends on the package selected. Arrive 15
+              minutes before your slot.
             </Text>
           </View>
         </View>
@@ -225,13 +255,19 @@ export default function SelectAppointmentScreen() {
             Booking summary
           </Text>
           <Text className="text-lg font-jakarta-extrabold text-foreground mt-1">
-            Oct 23 · {selectedTime}
+            {selectedDate
+              ? `${selectedDate.monthLabel.slice(0, 3)} ${selectedDate.date}`
+              : "—"}{" "}
+            · {selectedTime ?? "—"}
           </Text>
         </View>
 
         <TouchableOpacity
-          onPress={() => router.push(routes.booking.confirmation)}
-          className="flex-row items-center bg-primary h-14 px-8 rounded-full active:opacity-90"
+          onPress={onContinue}
+          disabled={!selectedDate || !selectedTime}
+          className={`flex-row items-center bg-primary h-14 px-8 rounded-full active:opacity-90 ${
+            !selectedDate || !selectedTime ? "opacity-45" : ""
+          }`}
           style={primaryShadowStyle}
         >
           <Text className="text-white font-manrope-bold text-lg mr-2">

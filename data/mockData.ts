@@ -110,12 +110,42 @@ export const AGENCIES = [
   },
 ];
 
-export const DATES = [
-  { day: "MON", date: "21", active: false },
-  { day: "TUE", date: "22", active: false },
-  { day: "WED", date: "23", active: true },
-  { day: "THU", date: "24", active: false },
-];
+/** Calendar chips for booking; `id` is ISO date (YYYY-MM-DD) for context */
+export const BOOKING_DATE_OPTIONS = [
+  {
+    id: "2024-10-21",
+    day: "MON",
+    date: "21",
+    monthLabel: "October",
+    year: 2024,
+  },
+  {
+    id: "2024-10-22",
+    day: "TUE",
+    date: "22",
+    monthLabel: "October",
+    year: 2024,
+  },
+  {
+    id: "2024-10-23",
+    day: "WED",
+    date: "23",
+    monthLabel: "October",
+    year: 2024,
+  },
+  {
+    id: "2024-10-24",
+    day: "THU",
+    date: "24",
+    monthLabel: "October",
+    year: 2024,
+  },
+] as const;
+
+export type Vehicle = (typeof VEHICLES)[number];
+export type Service = (typeof SERVICES)[number];
+export type Agency = (typeof AGENCIES)[number];
+export type BookingDateOption = (typeof BOOKING_DATE_OPTIONS)[number];
 
 export const MORNING_TIMES = ["08:30 AM", "09:00 AM", "09:30 AM", "11:00 AM"];
 export const AFTERNOON_TIMES = ["01:30 PM", "02:00 PM", "03:30 PM", "04:00 PM"];

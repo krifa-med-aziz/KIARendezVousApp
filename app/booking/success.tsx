@@ -1,5 +1,10 @@
 import { routes } from "@/constants/routes";
 import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
+import { useBooking } from "@/context/BookingContext";
+import {
+  formatBookingDateLabel,
+  weekdayFromIso,
+} from "@/lib/bookingFormat";
 import {
   ArrowLeft,
   Bell,
@@ -13,6 +18,7 @@ import {
   Wrench,
 } from "lucide-react-native";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { Stepper } from "@/components/Stepper";
 import { Badge } from "@/components/ui/Badge";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -27,7 +33,36 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingSuccessScreen() {
+  const {
+    selectedVehicle,
+    selectedService,
+    selectedAgency,
+    selectedDate,
+    selectedTime,
+    isBookingComplete,
+    resetBooking,
+  } = useBooking();
+
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+
+  useEffect(() => {
+    if (!isBookingComplete()) {
+      router.replace(routes.booking.selectVehicle);
+    }
+  }, [isBookingComplete]);
+
+  const goHome = () => {
+    resetBooking();
+    router.replace(routes.main);
+  };
+
+  if (!isBookingComplete()) {
+    return (
+      <SafeAreaView className="flex-1 bg-background" edges={["top"]} />
+    );
+  }
+
+  const dateTimeSummary = `${formatBookingDateLabel(selectedDate!)} at ${selectedTime} · ${weekdayFromIso(selectedDate!.id)}`;
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -36,7 +71,7 @@ export default function BookingSuccessScreen() {
       <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-border">
         <TouchableOpacity
           className="active:opacity-70 p-1 -ml-1"
-          onPress={() => router.replace(routes.main)}
+          onPress={goHome}
         >
           <ArrowLeft size={24} color="#1A1C1C" strokeWidth={2} />
         </TouchableOpacity>
@@ -95,10 +130,10 @@ export default function BookingSuccessScreen() {
                 Vehicle
               </Text>
               <Text className="text-base font-jakarta-bold text-foreground">
-                KIA EV9 GT-Line
+                {selectedVehicle!.name}
               </Text>
               <Text className="text-sm font-manrope text-muted mt-0.5">
-                Plate: KA 05 MV 2024
+                Plate: {selectedVehicle!.plate}
               </Text>
             </View>
           </View>
@@ -112,7 +147,7 @@ export default function BookingSuccessScreen() {
                 Service type
               </Text>
               <Text className="text-base font-jakarta-bold text-foreground">
-                Full Maintenance Check
+                {selectedService!.title}
               </Text>
             </View>
           </View>
@@ -126,10 +161,10 @@ export default function BookingSuccessScreen() {
                 Agency
               </Text>
               <Text className="text-base font-jakarta-bold text-foreground">
-                KIA Central Agency
+                {selectedAgency!.name}
               </Text>
               <Text className="text-sm font-manrope text-muted mt-0.5">
-                Plot 12, Main Street, Downtown
+                {selectedAgency!.address}
               </Text>
             </View>
           </View>
@@ -143,10 +178,7 @@ export default function BookingSuccessScreen() {
                 Date & time
               </Text>
               <Text className="text-base font-jakarta-bold text-foreground">
-                Oct 24, 2024 at 09:30 AM
-              </Text>
-              <Text className="text-sm font-manrope text-muted mt-0.5">
-                Thursday, Morning Slot
+                {dateTimeSummary}
               </Text>
             </View>
           </View>
@@ -156,7 +188,7 @@ export default function BookingSuccessScreen() {
           className="flex-row items-center mx-6 mt-6 bg-elevated border border-border rounded-3xl p-5 active:opacity-90"
           style={cardShadowStyle}
           onPress={() =>
-            Alert.alert("Loyalty", "Points would open rewards — demo only.")
+            Alert.alert("Loyalty", "Points and rewards would appear here.")
           }
         >
           <View className="bg-white p-2 rounded-full border border-border">
@@ -165,7 +197,7 @@ export default function BookingSuccessScreen() {
           <Text className="flex-1 text-xs font-manrope-bold text-foreground tracking-widest uppercase ml-4">
             Earned{" "}
             <Text className="text-primary font-jakarta-extrabold text-sm">
-              250
+              {Math.round((selectedService?.price ?? 0) * 0.84)}
             </Text>{" "}
             loyalty points
           </Text>
@@ -176,23 +208,14 @@ export default function BookingSuccessScreen() {
           <TouchableOpacity
             className="flex-row items-center justify-center bg-primary h-14 rounded-full active:opacity-90"
             style={primaryShadowStyle}
-            onPress={() =>
-              Alert.alert(
-                "Track service",
-                "Live status would open here — demo.",
-              )
-            }
+            onPress={() => router.push(routes.booking.tracking)}
           >
             <Radar size={22} color="#fff" strokeWidth={2} />
             <Text className="text-white text-lg font-manrope-bold ml-3">
               Track service
             </Text>
           </TouchableOpacity>
-          <SecondaryButton
-            label="Back to home"
-            onPress={() => router.replace(routes.main)}
-            className="w-full"
-          />
+          <SecondaryButton label="Back to home" onPress={goHome} className="w-full" />
         </View>
       </ScrollView>
     </SafeAreaView>
