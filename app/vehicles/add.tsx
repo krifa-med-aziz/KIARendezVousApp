@@ -1,297 +1,381 @@
-import { routes } from "@/constants/routes";
-import { primaryShadowStyle } from "@/constants/shadows";
-import { createVehicle } from "@/lib/api/kiaApi";
-import { router } from "expo-router";
+import React, { useState } from "react";
 import {
-  Bell,
-  ChevronDown,
-  ChevronLeft,
-  FileScan,
-  FilePen,
-  Info,
-  Shield,
-} from "lucide-react-native";
-import { useState } from "react";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
   Alert,
   Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import { Camera, X, CheckCircle2, ChevronLeft } from "lucide-react-native";
+import { Input } from "@/components/ui/Input";
+import { scanCarteGrise, createVehicle } from "@/lib/api/vehicleApi";
+import type { ScanResult } from "@/types/vehicle";
 
 export default function AddVehicleScreen() {
-  const [activeTab, setActiveTab] = useState("manual");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [plateNumber, setPlateNumber] = useState("");
-  const [vinNumber, setVinNumber] = useState("");
-  const [showModelDropdown, setShowModelDropdown] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const kiaModes = ["Sportage", "Sorento", "EV6", "Picanto", "Rio", "Cerato"];
-  const modelTypeMap: Record<string, string> = {
-    EV6: "ELECTRIC",
-    Sportage: "SUV",
-    Sorento: "SUV",
-    Picanto: "HATCHBACK",
-    Rio: "SEDAN",
-    Cerato: "SEDAN",
+  const [activeTab, setActiveTab] = useState<"scan" | "manual">("scan");
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [aiFields, setAiFields] = useState<Set<string>>(new Set());
+
+  // Form fields
+  const [plate, setPlate] = useState("");
+  const [cin, setCin] = useState("");
+  const [vin, setVin] = useState("");
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const [ownerName, setOwnerName] = useState("");
+  const [address, setAddress] = useState("");
+  const [dpmc, setDpmc] = useState("");
+  const [mileage, setMileage] = useState("");
+
+  const switchTab = (tab: "scan" | "manual") => {
+    setActiveTab(tab);
+    if (tab === "manual") {
+      resetScanState();
+    }
   };
 
-  const onSaveVehicle = async () => {
-    if (!selectedModel || !plateNumber.trim()) {
-      Alert.alert("Missing info", "Select a model and enter a plate number.");
+  const resetScanState = () => {
+    setImageUri(null);
+    setScanResult(null);
+    setScanning(false);
+  };
+
+  const pickImage = async (source: "camera" | "gallery") => {
+    const options: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    };
+
+    let result;
+    if (source === "camera") {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert("Permission Required", "Camera access is needed to scan.");
+        return;
+      }
+      result = await ImagePicker.launchCameraAsync(options);
+    } else {
+      const permission =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert("Permission Required", "Gallery access is needed.");
+        return;
+      }
+      result = await ImagePicker.launchImageLibraryAsync(options);
+    }
+
+    if (!result.canceled && result.assets[0]) {
+      const uri = result.assets[0].uri;
+      setImageUri(uri);
+      performScan(uri);
+    }
+  };
+
+  const performScan = async (uri: string) => {
+    setScanning(true);
+    setScanResult(null);
+    try {
+      const res = await scanCarteGrise(uri);
+      setScanResult(res);
+
+      if (res.success && res.data) {
+        const newAiFields = new Set<string>();
+        if (res.data.plate) {
+          setPlate(res.data.plate);
+          newAiFields.add("plate");
+        }
+        if (res.data.cin) {
+          setCin(res.data.cin);
+          newAiFields.add("cin");
+        }
+        if (res.data.vin) {
+          setVin(res.data.vin);
+          newAiFields.add("vin");
+        }
+        if (res.data.brand) {
+          setBrand(res.data.brand);
+          newAiFields.add("brand");
+        }
+        if (res.data.model) {
+          setModel(res.data.model);
+          newAiFields.add("model");
+        }
+        if (res.data.ownerName) {
+          setOwnerName(res.data.ownerName);
+          newAiFields.add("ownerName");
+        }
+        if (res.data.address) {
+          setAddress(res.data.address);
+          newAiFields.add("address");
+        }
+        if (res.data.dpmc) {
+          setDpmc(res.data.dpmc);
+          newAiFields.add("dpmc");
+        }
+        setAiFields(newAiFields);
+      }
+    } catch (error: any) {
+      setScanResult({ success: false, error: error.message });
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const handleConfirm = async () => {
+    if (!plate.trim() || !mileage.trim()) {
+      Alert.alert("Required fields", "Plate and mileage are required.");
       return;
     }
-    setIsSaving(true);
-    setError(null);
     try {
-      await createVehicle({
-        name: `Kia ${selectedModel}`,
-        plate: plateNumber.trim(),
-        mileage: "0 km",
-        type: modelTypeMap[selectedModel] ?? "SEDAN",
-        vin: vinNumber.trim() || undefined,
-      });
-      Alert.alert("Vehicle saved", `${selectedModel} (${plateNumber})`, [
-        { text: "OK", onPress: () => router.replace(routes.main) },
-      ]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save vehicle");
-    } finally {
-      setIsSaving(false);
+      const payload = {
+        name: `${brand} ${model}`.trim() || plate,
+        plate,
+        mileage,
+        type: "private",
+        vin: vin || undefined,
+        brand: brand || undefined,
+        model: model || undefined,
+        dpmc: dpmc || undefined,
+        ownerName: ownerName || undefined,
+        cin: cin || undefined,
+      };
+      await createVehicle(payload);
+      router.back();
+    } catch (err: any) {
+      Alert.alert(
+        "Registration Failed",
+        err.message || "Could not register vehicle.",
+      );
     }
+  };
+
+  const AiBadge = ({ fieldKey }: { fieldKey: string }) => {
+    if (!aiFields.has(fieldKey)) return null;
+    return (
+      <View className="bg-green-600 rounded px-1.5 py-0.5 justify-center items-center">
+        <Text className="text-white text-xs font-bold">AI</Text>
+      </View>
+    );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="flex-row justify-between items-center px-6 py-4 bg-white border-b border-border">
-        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-          <ChevronLeft size={24} color="#93001B" strokeWidth={2} />
-        </TouchableOpacity>
-        <Text className="text-base font-jakarta-bold text-foreground">
-          Add New Vehicle
-        </Text>
-        <TouchableOpacity
-          onPress={() => router.push(routes.notifications)}
-          activeOpacity={0.7}
-        >
-          <Bell size={24} color="#93001B" strokeWidth={2} />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView className="pb-10">
-        <View className="relative w-full h-[220px] bg-foreground">
-          <Image
-            source={{
-              uri: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Add%20Vehicle%20%28Dual%20Input%29-kcRuiht7pIwm5yBcP57AECBgSlhidy.png",
-            }}
-            className="w-full h-full"
-            resizeMode="cover"
-          />
-          <View className="absolute inset-0 bg-foreground/45 justify-end px-6 pb-6">
-            <Text className="text-xs font-manrope-bold tracking-widest text-white/90 mb-2 uppercase">
-              Registration
-            </Text>
-            <Text className="text-3xl font-jakarta-extrabold text-white">
-              Bring your KIA home.
-            </Text>
-          </View>
-        </View>
-
-        <View className="flex-row border-b border-border bg-white">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-background">
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        <View className="flex-row w-full border-b border-border">
           <TouchableOpacity
-            className={`flex-1 flex-row items-center justify-center py-5 gap-2 border-b-2 ${
-              activeTab === "manual" ? "border-primary" : "border-transparent"
-            }`}
-            onPress={() => setActiveTab("manual")}
+            className={`flex-1 py-4 justify-center items-center ${activeTab === "scan" ? "border-b-2 border-red-600" : ""}`}
+            onPress={() => switchTab("scan")}
           >
-            <FilePen
-              size={18}
-              color={activeTab === "manual" ? "#93001B" : "#71717A"}
-              strokeWidth={2}
-            />
             <Text
-              className={`text-sm font-manrope-bold ${
-                activeTab === "manual" ? "text-primary" : "text-muted"
-              }`}
+              className={`font-jakarta-bold ${activeTab === "scan" ? "text-white" : "text-muted"}`}
             >
-              Manual Entry
+              AI SCAN — CARTE GRISE
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`flex-1 flex-row items-center justify-center py-5 gap-2 border-b-2 ${
-              activeTab === "scan" ? "border-primary" : "border-transparent"
-            }`}
-            onPress={() => setActiveTab("scan")}
+            className={`flex-1 py-4 justify-center items-center ${activeTab === "manual" ? "border-b-2 border-red-600" : ""}`}
+            onPress={() => switchTab("manual")}
           >
-            <FileScan
-              size={18}
-              color={activeTab === "scan" ? "#93001B" : "#71717A"}
-              strokeWidth={2}
-            />
             <Text
-              className={`text-sm font-manrope-bold ${
-                activeTab === "scan" ? "text-primary" : "text-muted"
-              }`}
+              className={`font-jakarta-bold ${activeTab === "manual" ? "text-white" : "text-muted"}`}
             >
-              Document Scan
+              MANUAL ENTRY
             </Text>
           </TouchableOpacity>
         </View>
 
-        {activeTab === "manual" && (
-          <View className="px-6 pt-8">
-            <View className="mb-6">
-              <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-sm font-manrope-semibold text-foreground">
-                  Vehicle Model
-                </Text>
-                <Text className="text-[10px] font-manrope-bold tracking-widest text-muted uppercase">
-                  Required
-                </Text>
+        {activeTab === "scan" && (
+          <View className="px-6 pt-6">
+            {!imageUri ? (
+              <View>
+                <View className="min-h-[180px] border-2 border-dashed border-border rounded-xl justify-center items-center p-6">
+                  <Camera
+                    size={48}
+                    color="#71717A"
+                    strokeWidth={1.5}
+                    className="mb-4"
+                  />
+                  <Text className="font-jakarta-bold text-foreground text-lg mb-1 text-center">
+                    Photograph your Carte Grise
+                  </Text>
+                  <Text className="text-muted font-manrope text-sm text-center">
+                    Position the card clearly in frame
+                  </Text>
+                </View>
+                <View className="flex-row gap-4 mt-6">
+                  <TouchableOpacity
+                    onPress={() => pickImage("camera")}
+                    className="flex-1 py-3.5 border border-border rounded-xl justify-center items-center"
+                  >
+                    <Text className="font-jakarta-bold text-foreground">
+                      TAKE PHOTO
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => pickImage("gallery")}
+                    className="flex-1 py-3.5 rounded-xl justify-center items-center bg-red-600"
+                  >
+                    <Text className="font-jakarta-bold text-white">
+                      CHOOSE FROM GALLERY
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <TouchableOpacity
-                className="min-h-[56px] bg-white border border-border rounded-2xl px-4 flex-row justify-between items-center"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.04,
-                  shadowRadius: 8,
-                  elevation: 2,
-                }}
-                onPress={() => setShowModelDropdown(!showModelDropdown)}
-              >
-                <Text className="text-sm font-manrope text-foreground">
-                  {selectedModel || "Select KIA Model"}
-                </Text>
-                <ChevronDown size={20} color="#71717A" strokeWidth={2} />
-              </TouchableOpacity>
-              {showModelDropdown && (
-                <View
-                  className="mt-2 bg-white rounded-2xl z-50 border border-border overflow-hidden"
-                  style={{
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 16,
-                    elevation: 6,
-                  }}
-                >
-                  {kiaModes.map((model) => (
-                    <TouchableOpacity
-                      key={model}
-                      className="px-4 py-4 border-b border-border last:border-0 active:bg-elevated"
-                      onPress={() => {
-                        setSelectedModel(model);
-                        setShowModelDropdown(false);
-                      }}
+            ) : scanning ? (
+              <View className="p-4 rounded-xl border border-border">
+                <View className="flex-row justify-between items-start mb-4">
+                  <View className="flex-row items-center gap-4">
+                    <Image
+                      source={{ uri: imageUri }}
+                      className="w-20 h-20 rounded-lg"
+                    />
+                    <Text
+                      className="font-manrope-bold text-foreground text-sm max-w-[200px]"
+                      numberOfLines={1}
+                      ellipsizeMode="middle"
                     >
-                      <Text className="text-sm font-manrope-medium text-foreground">
-                        {model}
+                      carte-grise.jpg
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={resetScanState} className="p-1">
+                    <X size={20} color="#71717A" />
+                  </TouchableOpacity>
+                </View>
+                <View className="flex-row items-center justify-center gap-3 py-4">
+                  <ActivityIndicator size="small" color="#93001B" />
+                  <Text className="font-manrope text-muted">
+                    Scanning carte grise...
+                  </Text>
+                </View>
+              </View>
+            ) : scanResult?.success ? (
+              <View className="bg-green-50 border border-green-500 rounded-xl p-4">
+                <View className="flex-row justify-between items-start mb-2">
+                  <View className="flex-row items-center gap-2">
+                    <CheckCircle2 size={20} color="#16a34a" />
+                    <Text className="font-jakarta-bold text-green-600">
+                      SCAN REUSSI
+                    </Text>
+                  </View>
+                  <View className="items-end">
+                    <Text className="font-jakarta-bold text-green-600 text-xs mb-1">
+                      MATCH: {scanResult.matchPercent ?? 100}%
+                    </Text>
+                    <TouchableOpacity onPress={resetScanState}>
+                      <Text className="text-primary font-manrope-bold text-xs">
+                        Rescanner
                       </Text>
                     </TouchableOpacity>
-                  ))}
+                  </View>
                 </View>
-              )}
-            </View>
-
-            <View className="mb-6">
-              <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-sm font-manrope-semibold text-foreground">
-                  Matricule / Plate Number
-                </Text>
-                <Text className="text-[10px] font-manrope-bold tracking-widest text-muted uppercase">
-                  Required
+                <Text className="font-manrope text-green-700 text-sm mt-1">
+                  {aiFields.size} champs detectes et remplis automatiquement.
                 </Text>
               </View>
-              <TextInput
-                className="min-h-[56px] bg-white border border-border rounded-2xl px-4 text-sm font-manrope text-foreground"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.04,
-                  shadowRadius: 8,
-                  elevation: 2,
-                }}
-                placeholder="e.g. ABC-1234"
-                placeholderTextColor="#71717A"
-                value={plateNumber}
-                onChangeText={setPlateNumber}
-              />
-            </View>
-
-            <View className="mb-6">
-              <View className="flex-row justify-between items-center mb-2">
-                <View className="flex-row items-center gap-1.5">
-                  <Text className="text-sm font-manrope-semibold text-foreground">
-                    VIN Number
+            ) : (
+              <View className="bg-red-50 border border-red-500 rounded-xl p-4">
+                <View className="flex-row justify-between items-center">
+                  <Text className="font-manrope-bold text-red-700 flex-1 mr-4">
+                    Scan failed — please try again or use manual entry
                   </Text>
-                  <Info size={16} color="#71717A" strokeWidth={2} />
+                  <TouchableOpacity onPress={resetScanState}>
+                    <Text className="text-primary font-manrope-bold text-xs">
+                      Rescan
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                <Text className="text-[10px] font-manrope-bold tracking-widest text-muted uppercase">
-                  Optional
-                </Text>
               </View>
-              <TextInput
-                className="min-h-[56px] bg-white border border-border rounded-2xl px-4 text-sm font-manrope text-foreground"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.04,
-                  shadowRadius: 8,
-                  elevation: 2,
-                }}
-                placeholder="17-digit Chassis Number"
-                placeholderTextColor="#71717A"
-                value={vinNumber}
-                onChangeText={setVinNumber}
-              />
-              <Text className="text-xs font-manrope text-muted mt-2">
-                Found on the driver&apos;s side dashboard or vehicle
-                registration papers.
-              </Text>
-            </View>
-
-            <View className="flex-row bg-badge-red rounded-3xl p-5 gap-4 mb-8 border border-border">
-              <Shield size={24} color="#93001B" strokeWidth={2} />
-              <View className="flex-1 gap-1">
-                <Text className="text-sm font-manrope-bold text-primary">
-                  Secure Registration
-                </Text>
-                <Text className="text-sm font-manrope text-muted">
-                  Linking your vehicle unlocks personalized maintenance schedules
-                  and digital service history.
-                </Text>
-              </View>
-            </View>
-
-            <PrimaryButton
-              label={isSaving ? "Saving..." : "Save vehicle"}
-              onPress={onSaveVehicle}
-              disabled={isSaving}
-              className="mb-2"
-              style={primaryShadowStyle}
-            />
-            {error && (
-              <Text className="text-sm font-manrope text-primary mb-4">
-                {error}
-              </Text>
             )}
           </View>
         )}
 
-        {activeTab === "scan" && (
-          <View className="px-6 pt-8 items-center">
-            <Text className="text-sm font-manrope text-muted text-center">
-              Document Scan feature coming soon
+        <View className="px-6 pt-8 pb-6">
+          <Input
+            label="N° IMMATRICULATION"
+            placeholder="Ex: 170 تونس 1867"
+            value={plate}
+            onChangeText={setPlate}
+            rightElement={<AiBadge fieldKey="plate" />}
+          />
+          <Input
+            label="CIN (OU MF)"
+            placeholder="Ex: 03989990"
+            value={cin}
+            onChangeText={setCin}
+            rightElement={<AiBadge fieldKey="cin" />}
+          />
+          <Input
+            label="VIN — N° SERIE DU TYPE"
+            placeholder="Ex: ZFA1990000P011861"
+            value={vin}
+            onChangeText={setVin}
+            rightElement={<AiBadge fieldKey="vin" />}
+          />
+          <Input
+            label="MARQUE (CONSTRUCTEUR)"
+            placeholder="Ex: FIAT"
+            value={brand}
+            onChangeText={setBrand}
+            rightElement={<AiBadge fieldKey="brand" />}
+          />
+          <Input
+            label="MODELE (TYPE COMMERCIAL)"
+            placeholder="Ex: PUNTO"
+            value={model}
+            onChangeText={setModel}
+            rightElement={<AiBadge fieldKey="model" />}
+          />
+          <Input
+            label="NOM DU TITULAIRE"
+            placeholder="Ex: عواطف بوصلاح"
+            value={ownerName}
+            onChangeText={setOwnerName}
+            rightElement={<AiBadge fieldKey="ownerName" />}
+          />
+          <Input
+            label="ADRESSE"
+            placeholder="Ex: 40 نهج الجامع الكبير المهدية"
+            value={address}
+            onChangeText={setAddress}
+            rightElement={<AiBadge fieldKey="address" />}
+          />
+          <Input
+            label="DPMC — DATE"
+            placeholder="Ex: 2013/12/13"
+            value={dpmc}
+            onChangeText={setDpmc}
+            rightElement={<AiBadge fieldKey="dpmc" />}
+          />
+          <Input
+            label="KILOMETRAGE"
+            placeholder="Ex: 45000"
+            value={mileage}
+            onChangeText={setMileage}
+            keyboardType="number-pad"
+          />
+
+          <TouchableOpacity
+            onPress={handleConfirm}
+            className="w-full bg-red-600 rounded-xl py-4 items-center justify-center mt-4"
+          >
+            <Text className="font-jakarta-bold text-white uppercase text-sm">
+              CONFIRM & REGISTER VEHICLE ›
             </Text>
-          </View>
-        )}
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
