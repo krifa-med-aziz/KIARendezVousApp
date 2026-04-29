@@ -2,6 +2,7 @@
 export const routes = {
   login: "/login",
   signup: "/signup",
+  verifyOtp: "/verify-otp",
   main: "/(main)",
   profile: "/profile",
   profileEdit: "/profile/edit",

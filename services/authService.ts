@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store";
 
 const KEYCLOAK_URL =
   "http://192.168.100.74:8080/realms/kia-app/protocol/openid-connect/token";
+const API_BASE = "http://192.168.100.74:3000";
 
 export const authService = {
   login: async (email: string, password: string) => {
@@ -37,61 +38,30 @@ export const authService = {
     password: string,
     firstName: string,
     lastName: string,
+    phone: string,
   ) => {
-    // Step 1 — admin token
-    const adminTokenRes = await fetch(
-      "http://192.168.100.74:8080/realms/master/protocol/openid-connect/token",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "password",
-          client_id: "admin-cli",
-          username: "admin",
-          password: "admin",
-        }).toString(),
-      },
-    );
+    const res = await fetch(`${API_BASE}/auth/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, email, password, firstName, lastName }),
+    });
 
-    const adminTokenBody = await adminTokenRes.json();
-
-    if (!adminTokenRes.ok) {
-      throw new Error(
-        adminTokenBody.error_description ?? "Could not get admin token",
-      );
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error ?? "Failed to send OTP");
     }
+  },
 
-    const adminToken = adminTokenBody.access_token;
+  verifyOtp: async (phone: string, code: string) => {
+    const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, code }),
+    });
 
-    // Step 2 — create user
-    const createRes = await fetch(
-      "http://192.168.100.74:8080/admin/realms/kia-app/users",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${adminToken}`,
-        },
-        body: JSON.stringify({
-          email,
-          username: email,
-          firstName,
-          lastName,
-          enabled: true,
-          emailVerified: true,
-          credentials: [
-            { type: "password", value: password, temporary: false },
-          ],
-        }),
-      },
-    );
-
-    if (!createRes.ok) {
-      const err = await createRes.json();
-      throw new Error(err.errorMessage ?? "Registration failed");
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error ?? "OTP verification failed");
     }
-
-    // Step 3 — login
-    await authService.login(email, password);
   },
 };

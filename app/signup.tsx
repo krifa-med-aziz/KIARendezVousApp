@@ -13,14 +13,28 @@ export default function Signup() {
   const { signIn } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSignup = async () => {
-    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+    if (
+      !name.trim() ||
+      !email.trim() ||
+      !phone.trim() ||
+      !password ||
+      !confirmPassword
+    ) {
       Alert.alert("Details required", "Please fill in all fields.");
+      return;
+    }
+    if (!/^\+216\d{8}$/.test(phone.trim())) {
+      Alert.alert(
+        "Invalid phone",
+        "Enter a valid Tunisian number: +216XXXXXXXX",
+      );
       return;
     }
     if (password !== confirmPassword) {
@@ -30,8 +44,17 @@ export default function Signup() {
     try {
       const [firstName, ...rest] = name.trim().split(" ");
       const lastName = rest.join(" ") || "-";
-      await authService.register(email.trim(), password, firstName, lastName);
-      router.replace(routes.main);
+      await authService.register(
+        email.trim(),
+        password,
+        firstName,
+        lastName,
+        phone.trim(),
+      );
+      router.push({
+        pathname: routes.verifyOtp as any,
+        params: { phone: phone.trim(), email: email.trim(), password },
+      });
     } catch (err: any) {
       Alert.alert("Registration failed", err.message ?? "Please try again.");
     }
@@ -70,6 +93,14 @@ export default function Signup() {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+        />
+
+        <Input
+          label="Phone number"
+          placeholder="+216XXXXXXXX"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
         />
 
         <Text className="text-xs font-manrope-bold text-muted mb-2 tracking-widest uppercase">
@@ -122,7 +153,11 @@ export default function Signup() {
           }
         />
 
-        <PrimaryButton label="Sign up" onPress={handleSignup} className="mb-8" />
+        <PrimaryButton
+          label="Sign up"
+          onPress={handleSignup}
+          className="mb-8"
+        />
 
         <View className="flex-row justify-center items-center pb-6">
           <Text className="text-sm font-manrope text-muted">
