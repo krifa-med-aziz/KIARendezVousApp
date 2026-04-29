@@ -1,20 +1,52 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
+import { getVehicles } from "@/lib/api/kiaApi";
+import type { Vehicle } from "@/lib/types";
 import { useBooking } from "@/context/BookingContext";
-import { DEFAULT_VEHICLE_IMAGE, VEHICLES } from "@/data/mockData";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { Bell, ChevronLeft, Plus, Check } from "lucide-react-native";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const DEFAULT_VEHICLE_IMAGE =
+  "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
+
 export default function SelectVehicleScreen() {
-  const { selectedVehicle, setVehicle } = useBooking();
+  const { selectedVehicleId, setVehicleId } = useBooking();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getVehicles();
+        if (mounted) setVehicles(response);
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to load vehicles");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const onContinue = () => {
-    if (!selectedVehicle) return;
+    if (!selectedVehicleId) return;
     router.push(routes.booking.selectService);
   };
 
@@ -68,8 +100,20 @@ export default function SelectVehicleScreen() {
           </Text>
         </View>
 
-        {VEHICLES.map((vehicle) => {
-          const isSelected = selectedVehicle?.id === vehicle.id;
+        {isLoading && (
+          <Text className="text-sm font-manrope text-muted mb-6">
+            Loading vehicles...
+          </Text>
+        )}
+
+        {error && (
+          <Text className="text-sm font-manrope text-primary mb-6">{error}</Text>
+        )}
+
+        {!isLoading &&
+          !error &&
+          vehicles.map((vehicle) => {
+            const isSelected = selectedVehicleId === vehicle.id;
           return (
             <TouchableOpacity
               key={vehicle.id}
@@ -85,7 +129,7 @@ export default function SelectVehicleScreen() {
                 shadowRadius: 12,
                 elevation: 3,
               }}
-              onPress={() => setVehicle(vehicle)}
+              onPress={() => setVehicleId(vehicle.id)}
               activeOpacity={0.9}
             >
               {isSelected && (
@@ -124,7 +168,7 @@ export default function SelectVehicleScreen() {
               </View>
             </TouchableOpacity>
           );
-        })}
+          })}
 
         <TouchableOpacity
           className="bg-transparent rounded-3xl py-8 px-4 items-center justify-center border-2 border-dashed border-border mb-8 active:opacity-70"
@@ -141,7 +185,7 @@ export default function SelectVehicleScreen() {
         <PrimaryButton
           label="Continue to service"
           onPress={onContinue}
-          disabled={!selectedVehicle}
+          disabled={!selectedVehicleId}
           className="mb-4"
           style={primaryShadowStyle}
         />

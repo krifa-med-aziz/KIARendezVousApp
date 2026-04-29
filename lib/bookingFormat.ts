@@ -1,4 +1,4 @@
-import type { BookingDateOption } from "@/data/mockData";
+import type { BookingDateOption } from "@/lib/types";
 
 const MONTHS = [
   "Jan",

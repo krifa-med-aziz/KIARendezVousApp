@@ -2,10 +2,10 @@ import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
 import {
-  BOOKING_DATE_OPTIONS,
-  MORNING_TIMES,
-  AFTERNOON_TIMES,
-} from "@/data/mockData";
+  getAfternoonTimeSlots,
+  getMorningTimeSlots,
+  getNextBookingDateOptions,
+} from "@/lib/bookingSlots";
 import {
   ArrowLeft,
   ArrowRight,
@@ -29,23 +29,27 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function SelectAppointmentScreen() {
   const { selectedDate, selectedTime, setDate, setTime } = useBooking();
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+  const dateOptions = useMemo(() => getNextBookingDateOptions(7), []);
+  const morningTimes = useMemo(() => getMorningTimeSlots(), []);
+  const afternoonTimes = useMemo(() => getAfternoonTimeSlots(), []);
 
-  const defaultDate = useMemo(
-    () => BOOKING_DATE_OPTIONS[2] ?? BOOKING_DATE_OPTIONS[0],
-    [],
+  const defaultDate = useMemo(() => dateOptions[0], [dateOptions]);
+  const defaultTime = useMemo(
+    () => morningTimes[0] ?? afternoonTimes[0] ?? null,
+    [afternoonTimes, morningTimes],
   );
 
   useEffect(() => {
-    if (!selectedDate) {
+    if (!selectedDate && defaultDate) {
       setDate(defaultDate);
     }
   }, [defaultDate, selectedDate, setDate]);
 
   useEffect(() => {
-    if (!selectedTime) {
-      setTime("09:30 AM");
+    if (!selectedTime && defaultTime) {
+      setTime(defaultTime);
     }
-  }, [selectedTime, setTime]);
+  }, [defaultTime, selectedTime, setTime]);
 
   const monthHeading = selectedDate
     ? `${selectedDate.monthLabel} ${selectedDate.year}`
@@ -104,7 +108,7 @@ export default function SelectAppointmentScreen() {
           className="mb-8"
           contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
         >
-          {BOOKING_DATE_OPTIONS.map((d) => {
+          {dateOptions.map((d) => {
             const active = selectedDate?.id === d.id;
 
             return (
@@ -162,7 +166,7 @@ export default function SelectAppointmentScreen() {
           </View>
 
           <View className="flex-row flex-wrap gap-3">
-            {MORNING_TIMES.map((time) => {
+            {morningTimes.map((time) => {
               const active = selectedTime === time;
 
               return (
@@ -198,7 +202,7 @@ export default function SelectAppointmentScreen() {
           </View>
 
           <View className="flex-row flex-wrap gap-3">
-            {AFTERNOON_TIMES.map((time) => {
+            {afternoonTimes.map((time) => {
               const disabled = time === "03:30 PM";
               const active = selectedTime === time;
 

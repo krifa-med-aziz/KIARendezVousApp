@@ -2,8 +2,10 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { routes } from "@/constants/routes";
 import { cardShadowStyle } from "@/constants/shadows";
-import { DEFAULT_VEHICLE_IMAGE, VEHICLES } from "@/data/mockData";
+import { getVehicles } from "@/lib/api/kiaApi";
+import type { Vehicle } from "@/lib/types";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   MoreVertical,
@@ -21,7 +23,36 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const DEFAULT_VEHICLE_IMAGE =
+  "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
+
 export default function VehiclesScreen() {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await getVehicles();
+        if (mounted) setVehicles(data);
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to load vehicles");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const handleVehicleOptions = () => {
     Alert.alert("Vehicle Options", "Choose an action", [
       { text: "Edit Details" },
@@ -58,7 +89,16 @@ export default function VehiclesScreen() {
           </Text>
         </View>
 
-        {VEHICLES.map((vehicle) => (
+        {isLoading && (
+          <Text className="text-sm font-manrope text-muted mb-6">
+            Loading vehicles...
+          </Text>
+        )}
+        {error && (
+          <Text className="text-sm font-manrope text-primary mb-6">{error}</Text>
+        )}
+
+        {vehicles.map((vehicle) => (
           <View
             key={vehicle.id}
             className="bg-white rounded-3xl overflow-hidden mb-8 border border-border"
@@ -70,7 +110,7 @@ export default function VehiclesScreen() {
                 className="w-full h-full"
                 resizeMode="cover"
               />
-              {vehicle.battery && (
+              {!!vehicle.battery && (
                 <View className="absolute top-4 right-4 bg-primary px-3 py-1.5 rounded-full">
                   <Text className="text-[10px] font-manrope-bold text-white tracking-widest uppercase">
                     BATTERY {vehicle.battery}
@@ -107,7 +147,13 @@ export default function VehiclesScreen() {
                       LAST SERVICE
                     </Text>
                     <Text className="text-sm font-manrope-bold text-foreground">
-                      {vehicle.lastService}
+                      {vehicle.createdAt
+                        ? new Date(vehicle.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "2-digit",
+                            year: "numeric",
+                          })
+                        : "—"}
                     </Text>
                   </View>
                 </View>

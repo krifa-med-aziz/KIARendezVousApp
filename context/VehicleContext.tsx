@@ -1,40 +1,53 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { vehicleService } from '../services/vehicleService';
-
-type Vehicle = { id: string; brand: string; model: string; plateNumber: string; year: number };
+import React, { createContext, useState, useEffect, useCallback } from "react";
+import { vehicleService } from "@/services/vehicleService";
+import type { Vehicle } from "@/lib/types";
 
 interface VehicleContextType {
   vehicles: Vehicle[];
   isLoading: boolean;
-  addVehicle: (v: Omit<Vehicle, 'id'>) => Promise<void>;
+  addVehicle: (v: {
+    name: string;
+    plate: string;
+    mileage: string;
+    type: string;
+    vin?: string;
+  }) => Promise<void>;
   loadVehicles: () => Promise<void>;
 }
 
-export const VehicleContext = createContext<VehicleContextType>({} as VehicleContextType);
+export const VehicleContext = createContext<VehicleContextType>(
+  {} as VehicleContextType,
+);
 
 export const VehicleProvider = ({ children }: { children: React.ReactNode }) => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadVehicles = async () => {
+  const loadVehicles = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await vehicleService.getVehicles();
       setVehicles(data);
-    } catch (e) {
-      console.error(e);
+    } catch {
+      setVehicles([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const addVehicle = async (v: Omit<Vehicle, 'id'>) => {
+  const addVehicle = async (v: {
+    name: string;
+    plate: string;
+    mileage: string;
+    type: string;
+    vin?: string;
+  }) => {
     setIsLoading(true);
     try {
-      const newVehicle = await vehicleService.addVehicle(v);
-      setVehicles([...vehicles, newVehicle]);
-    } catch (e) {
-      console.error(e);
+      await vehicleService.addVehicle(v);
+      await loadVehicles();
+    } catch {
+      // keep existing list on failure
     } finally {
       setIsLoading(false);
     }
@@ -42,10 +55,12 @@ export const VehicleProvider = ({ children }: { children: React.ReactNode }) => 
 
   useEffect(() => {
     loadVehicles();
-  }, []);
+  }, [loadVehicles]);
 
   return (
-    <VehicleContext.Provider value={{ vehicles, isLoading, addVehicle, loadVehicles }}>
+    <VehicleContext.Provider
+      value={{ vehicles, isLoading, addVehicle, loadVehicles }}
+    >
       {children}
     </VehicleContext.Provider>
   );

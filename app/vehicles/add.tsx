@@ -1,5 +1,6 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
+import { createVehicle } from "@/lib/api/kiaApi";
 import { router } from "expo-router";
 import {
   Bell,
@@ -29,8 +30,42 @@ export default function AddVehicleScreen() {
   const [plateNumber, setPlateNumber] = useState("");
   const [vinNumber, setVinNumber] = useState("");
   const [showModelDropdown, setShowModelDropdown] = useState(false);
-
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const kiaModes = ["Sportage", "Sorento", "EV6", "Picanto", "Rio", "Cerato"];
+  const modelTypeMap: Record<string, string> = {
+    EV6: "ELECTRIC",
+    Sportage: "SUV",
+    Sorento: "SUV",
+    Picanto: "HATCHBACK",
+    Rio: "SEDAN",
+    Cerato: "SEDAN",
+  };
+
+  const onSaveVehicle = async () => {
+    if (!selectedModel || !plateNumber.trim()) {
+      Alert.alert("Missing info", "Select a model and enter a plate number.");
+      return;
+    }
+    setIsSaving(true);
+    setError(null);
+    try {
+      await createVehicle({
+        name: `Kia ${selectedModel}`,
+        plate: plateNumber.trim(),
+        mileage: "0 km",
+        type: modelTypeMap[selectedModel] ?? "SEDAN",
+        vin: vinNumber.trim() || undefined,
+      });
+      Alert.alert("Vehicle saved", `${selectedModel} (${plateNumber})`, [
+        { text: "OK", onPress: () => router.replace(routes.main) },
+      ]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save vehicle");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -236,24 +271,17 @@ export default function AddVehicleScreen() {
             </View>
 
             <PrimaryButton
-              label="Save vehicle"
-              onPress={() => {
-                if (!selectedModel || !plateNumber.trim()) {
-                  Alert.alert(
-                    "Missing info",
-                    "Select a model and enter a plate number.",
-                  );
-                  return;
-                }
-                Alert.alert(
-                  "Vehicle saved",
-                  `${selectedModel} (${plateNumber}) — demo only.`,
-                  [{ text: "OK", onPress: () => router.back() }],
-                );
-              }}
-              className="mb-6"
+              label={isSaving ? "Saving..." : "Save vehicle"}
+              onPress={onSaveVehicle}
+              disabled={isSaving}
+              className="mb-2"
               style={primaryShadowStyle}
             />
+            {error && (
+              <Text className="text-sm font-manrope text-primary mb-4">
+                {error}
+              </Text>
+            )}
           </View>
         )}
 

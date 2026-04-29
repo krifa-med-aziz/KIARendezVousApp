@@ -1,11 +1,18 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
-import { DEFAULT_VEHICLE_IMAGE } from "@/data/mockData";
+import {
+  createAppointment,
+  getAgencies,
+  getServices,
+  getVehicles,
+} from "@/lib/api/kiaApi";
+import { to24HourTime, toIsoDateTime } from "@/lib/bookingSlots";
 import {
   formatBookingDateLabel,
   weekdayFromIso,
 } from "@/lib/bookingFormat";
+import type { Agency, Service, Vehicle } from "@/lib/types";
 import {
   ArrowLeft,
   Calendar,
@@ -14,7 +21,7 @@ import {
   Settings,
 } from "lucide-react-native";
 import { router } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import {
@@ -27,15 +34,26 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const DEFAULT_VEHICLE_IMAGE =
+  "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
+
 export default function BookingConfirmationScreen() {
   const {
-    selectedVehicle,
-    selectedService,
-    selectedAgency,
+    selectedVehicleId,
+    selectedServiceId,
+    selectedAgencyId,
     selectedDate,
     selectedTime,
     isBookingComplete,
+    resetBooking,
   } = useBooking();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
@@ -45,19 +63,109 @@ export default function BookingConfirmationScreen() {
     }
   }, [isBookingComplete]);
 
+  useEffect(() => {
+    if (!selectedServiceId) return;
+    let mounted = true;
+    const load = async () => {
+      setIsLoading(true);
+      setLoadError(null);
+      try {
+        const [vehiclesData, servicesData, agenciesData] = await Promise.all([
+          getVehicles(),
+          getServices(),
+          getAgencies(selectedServiceId),
+        ]);
+        if (!mounted) return;
+        setVehicles(vehiclesData);
+        setServices(servicesData);
+        setAgencies(agenciesData);
+      } catch (error) {
+        if (mounted) {
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : "Failed to load booking details",
+          );
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [selectedServiceId]);
+
   if (!isBookingComplete()) {
     return (
       <SafeAreaView className="flex-1 bg-background" edges={["top"]} />
     );
   }
 
+  const selectedVehicle = useMemo(
+    () => vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? null,
+    [selectedVehicleId, vehicles],
+  );
+  const selectedService = useMemo(
+    () => services.find((service) => service.id === selectedServiceId) ?? null,
+    [selectedServiceId, services],
+  );
+  const selectedAgency = useMemo(
+    () => agencies.find((agency) => agency.id === selectedAgencyId) ?? null,
+    [agencies, selectedAgencyId],
+  );
+
   const vehicleImageUri =
     selectedVehicle?.image && !selectedVehicle.image.startsWith("../")
       ? selectedVehicle.image
       : DEFAULT_VEHICLE_IMAGE;
 
-  const scheduleLine = `${weekdayFromIso(selectedDate!.id)}, ${selectedTime}`;
+  const scheduleLine = `${weekdayFromIso(selectedDate!.id)}, ${selectedTime ?? ""}`;
   const price = selectedService?.price ?? 0;
+
+  const onConfirm = async () => {
+    if (
+      !selectedVehicleId ||
+      !selectedServiceId ||
+      !selectedAgencyId ||
+      !selectedDate ||
+      !selectedTime
+    ) {
+      return;
+    }
+
+    setSubmitError(null);
+    setIsSubmitting(true);
+    try {
+      const time24 = to24HourTime(selectedTime);
+      const appointment = await createAppointment({
+        vehicleId: selectedVehicleId,
+        serviceId: selectedServiceId,
+        agencyId: selectedAgencyId,
+        date: toIsoDateTime(selectedDate.id, selectedTime),
+        time: time24,
+      });
+      resetBooking();
+      router.replace({
+        pathname: routes.booking.success,
+        params: {
+          appointmentId: String(appointment.id),
+          vehicleId: String(selectedVehicleId),
+          serviceId: String(selectedServiceId),
+          agencyId: String(selectedAgencyId),
+          date: selectedDate.id,
+          time: selectedTime,
+        },
+      });
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Failed to create appointment",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -82,6 +190,17 @@ export default function BookingConfirmationScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
+        {isLoading && (
+          <Text className="mx-6 mt-4 text-sm font-manrope text-muted">
+            Loading confirmation details...
+          </Text>
+        )}
+        {loadError && (
+          <Text className="mx-6 mt-4 text-sm font-manrope text-primary">
+            {loadError}
+          </Text>
+        )}
+
         <View className="mx-6 mt-6 mb-6 h-[220px] rounded-3xl overflow-hidden bg-foreground">
           <Image
             source={{ uri: vehicleImageUri }}
@@ -96,7 +215,7 @@ export default function BookingConfirmationScreen() {
               </Text>
             </View>
             <Text className="text-3xl font-jakarta-extrabold text-white">
-              {selectedVehicle!.name}
+              {selectedVehicle?.name ?? "—"}
             </Text>
           </View>
         </View>
@@ -120,10 +239,10 @@ export default function BookingConfirmationScreen() {
             </View>
 
             <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
-              {selectedService!.title}
+              {selectedService?.title ?? "—"}
             </Text>
             <Text className="text-sm font-manrope text-muted leading-5">
-              {selectedService!.description}
+              {selectedService?.description ?? "—"}
             </Text>
           </View>
 
@@ -136,10 +255,10 @@ export default function BookingConfirmationScreen() {
             </View>
 
             <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
-              {selectedAgency!.name}
+              {selectedAgency?.name ?? "—"}
             </Text>
             <Text className="text-sm font-manrope text-muted leading-5">
-              {selectedAgency!.address}
+              {selectedAgency?.location ?? "—"}
             </Text>
           </View>
 
@@ -207,11 +326,17 @@ export default function BookingConfirmationScreen() {
 
         <View className="px-6 pb-6">
           <PrimaryButton
-            label="Confirm booking"
-            onPress={() => router.push(routes.booking.success)}
+            label={isSubmitting ? "Confirming..." : "Confirm booking"}
+            onPress={onConfirm}
+            disabled={isSubmitting || isLoading || !!loadError}
             className="mb-4"
             style={primaryShadowStyle}
           />
+          {submitError && (
+            <Text className="text-sm font-manrope text-primary mb-2">
+              {submitError}
+            </Text>
+          )}
 
           <TouchableOpacity
             onPress={() => router.replace(routes.main)}

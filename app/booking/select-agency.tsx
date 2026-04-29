@@ -1,7 +1,8 @@
 import { routes } from "@/constants/routes";
 import { cardShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
-import { AGENCIES } from "@/data/mockData";
+import { getAgencies } from "@/lib/api/kiaApi";
+import type { Agency } from "@/lib/types";
 import {
   ArrowLeft,
   Bell,
@@ -16,6 +17,7 @@ import {
   Star,
 } from "lucide-react-native";
 import { router } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -30,11 +32,56 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectAgencyScreen() {
-  const { selectedAgency, setAgency } = useBooking();
+  const { selectedServiceId, selectedAgencyId, setAgencyId } = useBooking();
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
-  const selectAndContinue = (agency: (typeof AGENCIES)[number]) => {
-    setAgency(agency);
+  useEffect(() => {
+    if (!selectedServiceId) {
+      router.replace(routes.booking.selectService);
+      return;
+    }
+    let mounted = true;
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getAgencies(selectedServiceId);
+        if (mounted) setAgencies(response);
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to load agencies");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [selectedServiceId]);
+
+  const mappedAgencies = useMemo(
+    () =>
+      agencies.map((agency, index) => ({
+        ...agency,
+        address: agency.location,
+        distance: agency.distance ?? "Nearby",
+        highlight: index === 0,
+        rating: agency.rating ?? 4.8,
+        closingTime: agency.closingTime ?? "18:00",
+        image:
+          agency.image ??
+          "https://images.unsplash.com/photo-1567449303078-57ad995bd329?w=200",
+      })),
+    [agencies],
+  );
+
+  const selectAndContinue = (agency: Agency) => {
+    setAgencyId(agency.id);
     router.push(routes.booking.selectAppointment);
   };
 
@@ -81,7 +128,8 @@ export default function SelectAgencyScreen() {
               style={cardShadowStyle}
             >
               <Text className="text-xs text-white font-manrope-bold tracking-wide">
-                {selectedAgency?.name ?? "Select an agency"}
+                {mappedAgencies.find((agency) => agency.id === selectedAgencyId)?.name ??
+                  "Select an agency"}
               </Text>
             </View>
 
@@ -131,7 +179,7 @@ export default function SelectAgencyScreen() {
                 Nearby agencies
               </Text>
               <Text className="text-sm font-manrope text-muted mt-1">
-                Found {AGENCIES.length} KIA service centers nearby
+                Found {mappedAgencies.length} KIA service centers nearby
               </Text>
             </View>
 
@@ -142,8 +190,19 @@ export default function SelectAgencyScreen() {
             </TouchableOpacity>
           </View>
 
-          {AGENCIES.map((agency) => {
-            const isSelected = selectedAgency?.id === agency.id;
+          {isLoading && (
+            <Text className="text-sm font-manrope text-muted mb-6">
+              Loading agencies...
+            </Text>
+          )}
+          {error && (
+            <Text className="text-sm font-manrope text-primary mb-6">{error}</Text>
+          )}
+
+          {!isLoading &&
+            !error &&
+            mappedAgencies.map((agency) => {
+            const isSelected = selectedAgencyId === agency.id;
             return (
               <View
                 key={agency.id}

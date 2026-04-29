@@ -1,10 +1,11 @@
 import { routes } from "@/constants/routes";
 import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
-import { useBooking } from "@/context/BookingContext";
+import { getAgencies, getServices, getVehicles } from "@/lib/api/kiaApi";
 import {
   formatBookingDateLabel,
   weekdayFromIso,
 } from "@/lib/bookingFormat";
+import type { Agency, BookingDateOption, Service, Vehicle } from "@/lib/types";
 import {
   ArrowLeft,
   Bell,
@@ -17,8 +18,8 @@ import {
   Star,
   Wrench,
 } from "lucide-react-native";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import { Stepper } from "@/components/Stepper";
 import { Badge } from "@/components/ui/Badge";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -33,36 +34,91 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingSuccessScreen() {
-  const {
-    selectedVehicle,
-    selectedService,
-    selectedAgency,
-    selectedDate,
-    selectedTime,
-    isBookingComplete,
-    resetBooking,
-  } = useBooking();
+  const params = useLocalSearchParams<{
+    appointmentId?: string;
+    vehicleId?: string;
+    serviceId?: string;
+    agencyId?: string;
+    date?: string;
+    time?: string;
+  }>();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+  const vehicleId = Number(params.vehicleId);
+  const serviceId = Number(params.serviceId);
+  const agencyId = Number(params.agencyId);
 
   useEffect(() => {
-    if (!isBookingComplete()) {
+    if (!vehicleId || !serviceId || !agencyId || !params.date || !params.time) {
       router.replace(routes.booking.selectVehicle);
+      return;
     }
-  }, [isBookingComplete]);
+    let mounted = true;
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const [vehiclesData, servicesData, agenciesData] = await Promise.all([
+          getVehicles(),
+          getServices(),
+          getAgencies(serviceId),
+        ]);
+        if (!mounted) return;
+        setVehicles(vehiclesData);
+        setServices(servicesData);
+        setAgencies(agenciesData);
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to load details");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [agencyId, params.date, params.time, serviceId, vehicleId]);
 
   const goHome = () => {
-    resetBooking();
     router.replace(routes.main);
   };
 
-  if (!isBookingComplete()) {
+  if (!vehicleId || !serviceId || !agencyId || !params.date || !params.time) {
     return (
       <SafeAreaView className="flex-1 bg-background" edges={["top"]} />
     );
   }
 
-  const dateTimeSummary = `${formatBookingDateLabel(selectedDate!)} at ${selectedTime} · ${weekdayFromIso(selectedDate!.id)}`;
+  const selectedVehicle = useMemo(
+    () => vehicles.find((vehicle) => vehicle.id === vehicleId) ?? null,
+    [vehicleId, vehicles],
+  );
+  const selectedService = useMemo(
+    () => services.find((service) => service.id === serviceId) ?? null,
+    [serviceId, services],
+  );
+  const selectedAgency = useMemo(
+    () => agencies.find((agency) => agency.id === agencyId) ?? null,
+    [agencies, agencyId],
+  );
+  const dateOption = useMemo<BookingDateOption>(() => {
+    const date = new Date(`${params.date}T12:00:00`);
+    return {
+      id: params.date!,
+      day: weekdayFromIso(params.date!).slice(0, 3).toUpperCase(),
+      date: String(date.getDate()),
+      monthLabel: date.toLocaleDateString("en-US", { month: "long" }),
+      year: date.getFullYear(),
+    };
+  }, [params.date]);
+  const dateTimeSummary = `${formatBookingDateLabel(dateOption)} at ${params.time} · ${weekdayFromIso(dateOption.id)}`;
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -89,6 +145,17 @@ export default function BookingSuccessScreen() {
       <Stepper steps={STEPS} currentStep={5} />
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {isLoading && (
+          <Text className="mx-6 mt-4 text-sm font-manrope text-muted">
+            Loading booking details...
+          </Text>
+        )}
+        {error && (
+          <Text className="mx-6 mt-4 text-sm font-manrope text-primary">
+            {error}
+          </Text>
+        )}
+
         <View className="bg-badge-red/50 pt-12 pb-16 items-center px-6 border-b border-border">
           <View
             className="w-24 h-24 rounded-full bg-white justify-center items-center mb-6 border border-border"
@@ -130,10 +197,10 @@ export default function BookingSuccessScreen() {
                 Vehicle
               </Text>
               <Text className="text-base font-jakarta-bold text-foreground">
-                {selectedVehicle!.name}
+                {selectedVehicle?.name ?? "—"}
               </Text>
               <Text className="text-sm font-manrope text-muted mt-0.5">
-                Plate: {selectedVehicle!.plate}
+                Plate: {selectedVehicle?.plate ?? "—"}
               </Text>
             </View>
           </View>
@@ -147,7 +214,7 @@ export default function BookingSuccessScreen() {
                 Service type
               </Text>
               <Text className="text-base font-jakarta-bold text-foreground">
-                {selectedService!.title}
+                {selectedService?.title ?? "—"}
               </Text>
             </View>
           </View>
@@ -161,10 +228,10 @@ export default function BookingSuccessScreen() {
                 Agency
               </Text>
               <Text className="text-base font-jakarta-bold text-foreground">
-                {selectedAgency!.name}
+                {selectedAgency?.name ?? "—"}
               </Text>
               <Text className="text-sm font-manrope text-muted mt-0.5">
-                {selectedAgency!.address}
+                {selectedAgency?.location ?? "—"}
               </Text>
             </View>
           </View>
@@ -208,7 +275,19 @@ export default function BookingSuccessScreen() {
           <TouchableOpacity
             className="flex-row items-center justify-center bg-primary h-14 rounded-full active:opacity-90"
             style={primaryShadowStyle}
-            onPress={() => router.push(routes.booking.tracking)}
+            onPress={() =>
+              router.push({
+                pathname: routes.booking.tracking,
+                params: {
+                  appointmentId: params.appointmentId ?? "",
+                  vehicleId: String(vehicleId),
+                  serviceId: String(serviceId),
+                  agencyId: String(agencyId),
+                  date: dateOption.id,
+                  time: params.time ?? "",
+                },
+              })
+            }
           >
             <Radar size={22} color="#fff" strokeWidth={2} />
             <Text className="text-white text-lg font-manrope-bold ml-3">

@@ -1,4 +1,4 @@
-import type { Agency, BookingDateOption, Service, Vehicle } from "@/data/types";
+import type { BookingDateOption } from "@/lib/types";
 import React, {
   createContext,
   useCallback,
@@ -8,17 +8,17 @@ import React, {
 } from "react";
 
 export type BookingState = {
-  selectedVehicle: Vehicle | null;
-  selectedService: Service | null;
-  selectedAgency: Agency | null;
+  selectedVehicleId: number | null;
+  selectedServiceId: number | null;
+  selectedAgencyId: number | null;
   selectedDate: BookingDateOption | null;
   selectedTime: string | null;
 };
 
 type BookingContextValue = BookingState & {
-  setVehicle: (vehicle: Vehicle | null) => void;
-  setService: (service: Service | null) => void;
-  setAgency: (agency: Agency | null) => void;
+  setVehicleId: (vehicleId: number | null) => void;
+  setServiceId: (serviceId: number | null) => void;
+  setAgencyId: (agencyId: number | null) => void;
   setDate: (date: BookingDateOption | null) => void;
   setTime: (time: string | null) => void;
   resetBooking: () => void;
@@ -28,22 +28,23 @@ type BookingContextValue = BookingState & {
 const BookingContext = createContext<BookingContextValue | null>(null);
 
 export function BookingProvider({ children }: { children: React.ReactNode }) {
-  const [selectedVehicle, setVehicleState] = useState<Vehicle | null>(null);
-  const [selectedService, setServiceState] = useState<Service | null>(null);
-  const [selectedAgency, setAgencyState] = useState<Agency | null>(null);
+  const [selectedVehicleId, setVehicleState] = useState<number | null>(null);
+  const [selectedServiceId, setServiceState] = useState<number | null>(null);
+  const [selectedAgencyId, setAgencyState] = useState<number | null>(null);
   const [selectedDate, setDateState] = useState<BookingDateOption | null>(null);
   const [selectedTime, setTimeState] = useState<string | null>(null);
 
-  const setVehicle = useCallback((vehicle: Vehicle | null) => {
-    setVehicleState(vehicle);
+  const setVehicleId = useCallback((vehicleId: number | null) => {
+    setVehicleState(vehicleId);
   }, []);
 
-  const setService = useCallback((service: Service | null) => {
-    setServiceState(service);
+  const setServiceId = useCallback((serviceId: number | null) => {
+    setServiceState(serviceId);
+    setAgencyState(null);
   }, []);
 
-  const setAgency = useCallback((agency: Agency | null) => {
-    setAgencyState(agency);
+  const setAgencyId = useCallback((agencyId: number | null) => {
+    setAgencyState(agencyId);
   }, []);
 
   const setDate = useCallback((date: BookingDateOption | null) => {
@@ -65,16 +66,16 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
   const isBookingComplete = useCallback(
     () =>
       !!(
-        selectedVehicle &&
-        selectedService &&
-        selectedAgency &&
+        selectedVehicleId &&
+        selectedServiceId &&
+        selectedAgencyId &&
         selectedDate &&
         selectedTime
       ),
     [
-      selectedVehicle,
-      selectedService,
-      selectedAgency,
+      selectedVehicleId,
+      selectedServiceId,
+      selectedAgencyId,
       selectedDate,
       selectedTime,
     ],
@@ -82,28 +83,28 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({
-      selectedVehicle,
-      selectedService,
-      selectedAgency,
+      selectedVehicleId,
+      selectedServiceId,
+      selectedAgencyId,
       selectedDate,
       selectedTime,
-      setVehicle,
-      setService,
-      setAgency,
+      setVehicleId,
+      setServiceId,
+      setAgencyId,
       setDate,
       setTime,
       resetBooking,
       isBookingComplete,
     }),
     [
-      selectedVehicle,
-      selectedService,
-      selectedAgency,
+      selectedVehicleId,
+      selectedServiceId,
+      selectedAgencyId,
       selectedDate,
       selectedTime,
-      setVehicle,
-      setService,
-      setAgency,
+      setVehicleId,
+      setServiceId,
+      setAgencyId,
       setDate,
       setTime,
       resetBooking,

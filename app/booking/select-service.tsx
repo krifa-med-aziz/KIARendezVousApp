@@ -1,23 +1,64 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
+import { getServices } from "@/lib/api/kiaApi";
+import type { Service } from "@/lib/types";
 import { router } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
 import { Bell, ChevronLeft, CheckCircle2 } from "lucide-react-native";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { SERVICES } from "@/data/mockData";
+import { useEffect, useMemo, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+function resolveServiceIcon(title: string): string {
+  const lower = title.toLowerCase();
+  if (lower.includes("oil")) return "Droplet";
+  if (lower.includes("brake")) return "Disc";
+  if (lower.includes("tire")) return "RotateCcw";
+  if (lower.includes("ac") || lower.includes("air")) return "Snowflake";
+  if (lower.includes("battery")) return "Battery";
+  return "Wrench";
+}
+
 export default function SelectServiceScreen() {
-  const { selectedService, setService } = useBooking();
+  const { selectedServiceId, setServiceId } = useBooking();
+  const [services, setServices] = useState<Service[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getServices();
+        if (mounted) setServices(response);
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to load services");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const selectedService = useMemo(
+    () => services.find((service) => service.id === selectedServiceId) ?? null,
+    [services, selectedServiceId],
+  );
   const estimatedTotal = selectedService?.price ?? 0;
 
   const onNext = () => {
-    if (!selectedService) return;
+    if (!selectedServiceId) return;
     router.push(routes.booking.selectAgency);
   };
 
@@ -75,13 +116,25 @@ export default function SelectServiceScreen() {
             />
           </View>
 
-          {SERVICES.map((service) => {
-            const isSelected = selectedService?.id === service.id;
+          {isLoading && (
+            <Text className="text-sm font-manrope text-muted mb-6">
+              Loading services...
+            </Text>
+          )}
+          {error && (
+            <Text className="text-sm font-manrope text-primary mb-6">{error}</Text>
+          )}
+
+          {!isLoading &&
+            !error &&
+            services.map((service) => {
+            const isSelected = selectedServiceId === service.id;
+            const iconName = resolveServiceIcon(service.title);
 
             return (
               <TouchableOpacity
                 key={service.id}
-                onPress={() => setService(service)}
+                onPress={() => setServiceId(service.id)}
                 className={`rounded-3xl p-6 mb-4 border ${
                   isSelected
                     ? "bg-badge-red border-primary"
@@ -96,7 +149,7 @@ export default function SelectServiceScreen() {
                 }}
                 activeOpacity={0.9}
               >
-                {service.recommended && (
+                {!!service.recommended && (
                   <View className="absolute top-4 right-4">
                     <Text className="text-[10px] font-manrope-bold tracking-widest text-primary uppercase">
                       Recommended
@@ -107,11 +160,9 @@ export default function SelectServiceScreen() {
                 <View className="pr-6">
                   <View className="flex-row mb-4 items-start">
                     <View className="w-12 h-12 rounded-full bg-elevated border border-border items-center justify-center mr-4">
-                      {service.icon &&
+                      {iconName &&
                         (() => {
-                          const IconComponent = (LucideIcons as any)[
-                            service.icon
-                          ];
+                          const IconComponent = (LucideIcons as any)[iconName];
                           return IconComponent ? (
                             <IconComponent size={24} color="#93001B" />
                           ) : null;
@@ -163,7 +214,7 @@ export default function SelectServiceScreen() {
         <PrimaryButton
           label="Next"
           onPress={onNext}
-          disabled={!selectedService}
+          disabled={!selectedServiceId}
           className="px-10"
           style={primaryShadowStyle}
         />

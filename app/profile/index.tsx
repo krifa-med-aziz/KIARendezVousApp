@@ -2,7 +2,8 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { routes } from "@/constants/routes";
 import { cardShadowStyle } from "@/constants/shadows";
-import { VEHICLES } from "@/data/mockData";
+import { getVehicles } from "@/lib/api/kiaApi";
+import type { Vehicle } from "@/lib/types";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Bell,
@@ -14,6 +15,7 @@ import {
   Wrench,
 } from "lucide-react-native";
 import { router } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Image,
@@ -40,13 +42,34 @@ function displayNameFromEmail(email: string | null): string {
 
 export default function ProfileScreen() {
   const { userEmail, signOut } = useAuth();
-  const primary = VEHICLES[0];
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
-  const totalDistance = VEHICLES.reduce((acc, vehicle) => {
-    const mileageStr = vehicle.mileage || "";
-    const num = parseInt(mileageStr.replace(/[^0-9]/g, ""), 10) || 0;
-    return acc + num;
-  }, 0);
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const data = await getVehicles();
+        if (mounted) setVehicles(data);
+      } catch {
+        if (mounted) setVehicles([]);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const primary = vehicles[0];
+  const totalDistance = useMemo(
+    () =>
+      vehicles.reduce((acc, vehicle) => {
+        const mileageStr = vehicle.mileage || "";
+        const num = parseInt(mileageStr.replace(/[^0-9]/g, ""), 10) || 0;
+        return acc + num;
+      }, 0),
+    [vehicles],
+  );
   const formattedTotalDistance =
     totalDistance > 0 ? `${totalDistance.toLocaleString("en-US")} km` : "—";
 
@@ -125,7 +148,13 @@ export default function ProfileScreen() {
               Next service
             </Text>
             <Text className="text-lg font-jakarta-extrabold text-foreground">
-              {primary?.lastService ?? "Schedule"}
+              {primary?.createdAt
+                ? new Date(primary.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  })
+                : "Schedule"}
             </Text>
           </View>
         </View>

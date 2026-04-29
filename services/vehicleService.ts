@@ -1,20 +1,16 @@
+import { createVehicle, getVehicles } from "@/lib/api/kiaApi";
+import type { Vehicle } from "@/lib/types";
+
 type VehicleInput = {
-  brand: string;
-  model: string;
-  plateNumber: string;
-  year: number;
+  name: string;
+  plate: string;
+  mileage: string;
+  type: string;
+  vin?: string;
 };
 
 export const vehicleService = {
-  getVehicles: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    return [
-      { id: '1', brand: 'Kia', model: 'Sportage', plateNumber: '123-ABC', year: 2022 },
-      { id: '2', brand: 'Kia', model: 'Rio', plateNumber: '456-DEF', year: 2020 },
-    ];
-  },
-  addVehicle: async (vehicle: VehicleInput) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return { id: Math.random().toString(), ...vehicle };
-  },
+  getVehicles: async (): Promise<Vehicle[]> => getVehicles(),
+  addVehicle: async (vehicle: VehicleInput): Promise<Vehicle> =>
+    createVehicle(vehicle),
 };

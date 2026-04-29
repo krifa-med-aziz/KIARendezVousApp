@@ -6,19 +6,71 @@ import {
   tileShadowStyle,
 } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
+import { getAgencies, getServices, getVehicles } from "@/lib/api/kiaApi";
 import { formatBookingDateLabel } from "@/lib/bookingFormat";
+import type { Agency, Service, Vehicle } from "@/lib/types";
 import { router } from "expo-router";
-import { Bell, Menu, CalendarPlus, Car } from "lucide-react-native";
+import { Bell, CalendarPlus, Car } from "lucide-react-native";
 import { Badge } from "@/components/ui/Badge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
+import { useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const { isBookingComplete, selectedService, selectedAgency, selectedDate, selectedTime, selectedVehicle } =
-    useBooking();
+  const {
+    isBookingComplete,
+    selectedServiceId,
+    selectedAgencyId,
+    selectedDate,
+    selectedTime,
+    selectedVehicleId,
+  } = useBooking();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
   const hasUpcoming = isBookingComplete();
+
+  useEffect(() => {
+    if (!hasUpcoming || !selectedServiceId) return;
+    let mounted = true;
+    const load = async () => {
+      try {
+        const [vehiclesData, servicesData, agenciesData] = await Promise.all([
+          getVehicles(),
+          getServices(),
+          getAgencies(selectedServiceId),
+        ]);
+        if (!mounted) return;
+        setVehicles(vehiclesData);
+        setServices(servicesData);
+        setAgencies(agenciesData);
+      } catch {
+        if (!mounted) return;
+        setVehicles([]);
+        setServices([]);
+        setAgencies([]);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [hasUpcoming, selectedServiceId]);
+
+  const selectedVehicle = useMemo(
+    () => vehicles.find((item) => item.id === selectedVehicleId) ?? null,
+    [selectedVehicleId, vehicles],
+  );
+  const selectedService = useMemo(
+    () => services.find((item) => item.id === selectedServiceId) ?? null,
+    [selectedServiceId, services],
+  );
+  const selectedAgency = useMemo(
+    () => agencies.find((item) => item.id === selectedAgencyId) ?? null,
+    [agencies, selectedAgencyId],
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-background">

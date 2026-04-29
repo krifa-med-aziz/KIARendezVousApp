@@ -3,13 +3,15 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { routes } from "@/constants/routes";
 import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
-import { useBooking } from "@/context/BookingContext";
+import { getAgencies, getServices, getVehicles } from "@/lib/api/kiaApi";
 import {
   formatBookingDateLabel,
   weekdayFromIso,
 } from "@/lib/bookingFormat";
+import type { Agency, BookingDateOption, Service, Vehicle } from "@/lib/types";
 import { ArrowLeft, Building2, Calendar, Car } from "lucide-react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Linking,
@@ -32,16 +34,79 @@ const STEPS = [
 const ACTIVE_INDEX = 2;
 
 export default function ServiceTrackingScreen() {
-  const {
-    selectedVehicle,
-    selectedService,
-    selectedAgency,
-    selectedDate,
-    selectedTime,
-    isBookingComplete,
-  } = useBooking();
+  const params = useLocalSearchParams<{
+    appointmentId?: string;
+    vehicleId?: string;
+    serviceId?: string;
+    agencyId?: string;
+    date?: string;
+    time?: string;
+  }>();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const vehicleId = Number(params.vehicleId);
+  const serviceId = Number(params.serviceId);
+  const agencyId = Number(params.agencyId);
+  const hasContext =
+    !!vehicleId && !!serviceId && !!agencyId && !!params.date && !!params.time;
 
-  const hasContext = isBookingComplete();
+  useEffect(() => {
+    if (!hasContext) return;
+    let mounted = true;
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const [vehiclesData, servicesData, agenciesData] = await Promise.all([
+          getVehicles(),
+          getServices(),
+          getAgencies(serviceId),
+        ]);
+        if (!mounted) return;
+        setVehicles(vehiclesData);
+        setServices(servicesData);
+        setAgencies(agenciesData);
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to load details");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [hasContext, serviceId]);
+
+  const selectedVehicle = useMemo(
+    () => vehicles.find((vehicle) => vehicle.id === vehicleId) ?? null,
+    [vehicleId, vehicles],
+  );
+  const selectedService = useMemo(
+    () => services.find((service) => service.id === serviceId) ?? null,
+    [serviceId, services],
+  );
+  const selectedAgency = useMemo(
+    () => agencies.find((agency) => agency.id === agencyId) ?? null,
+    [agencies, agencyId],
+  );
+  const selectedDate = useMemo<BookingDateOption | null>(() => {
+    if (!params.date) return null;
+    const date = new Date(`${params.date}T12:00:00`);
+    return {
+      id: params.date,
+      day: weekdayFromIso(params.date).slice(0, 3).toUpperCase(),
+      date: String(date.getDate()),
+      monthLabel: date.toLocaleDateString("en-US", { month: "long" }),
+      year: date.getFullYear(),
+    };
+  }, [params.date]);
+  const selectedTime = params.time ?? null;
 
   const contactAgency = () => {
     const phone = "tel:+18005550199";
@@ -79,6 +144,17 @@ export default function ServiceTrackingScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
+        {isLoading && hasContext && (
+          <Text className="mx-6 mt-4 text-sm font-manrope text-muted">
+            Loading appointment details...
+          </Text>
+        )}
+        {error && hasContext && (
+          <Text className="mx-6 mt-4 text-sm font-manrope text-primary">
+            {error}
+          </Text>
+        )}
+
         {!hasContext ? (
           <View className="mx-6 mt-8 p-6 bg-white rounded-3xl border border-border"
             style={cardShadowStyle}
@@ -112,7 +188,7 @@ export default function ServiceTrackingScreen() {
                     {selectedVehicle?.name}
                   </Text>
                   <Text className="text-sm font-manrope text-muted mt-1">
-                    {selectedService?.title}
+                    {selectedService?.title ?? "—"}
                   </Text>
                 </View>
               </View>
@@ -165,7 +241,19 @@ export default function ServiceTrackingScreen() {
           />
           <SecondaryButton
             label="View Appointment Details"
-            onPress={() => router.push(routes.booking.confirmation)}
+            onPress={() =>
+              router.push({
+                pathname: routes.booking.success,
+                params: {
+                  appointmentId: params.appointmentId ?? "",
+                  vehicleId: String(vehicleId),
+                  serviceId: String(serviceId),
+                  agencyId: String(agencyId),
+                  date: params.date ?? "",
+                  time: params.time ?? "",
+                },
+              })
+            }
           />
         </View>
       )}
