@@ -20,22 +20,19 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleEmailLogin = () => {
+  const handleEmailLogin = async () => {
     if (!email.trim() || !password) {
-      Alert.alert(
-        "Details required",
-        "Please enter your email and password to continue.",
-      );
+      Alert.alert("Details required", "Please enter your email and password to continue.");
       return;
     }
-    signIn(email.trim());
-    router.replace(routes.main);
+    try {
+      await signIn(email.trim(), password);
+      router.replace(routes.main);
+    } catch (err: any) {
+      Alert.alert("Login failed", err.message ?? "Please check your credentials.");
+    }
   };
 
-  const handleSocial = (provider: string) => {
-    signIn(`${provider.toLowerCase()}@kia.app`);
-    router.replace(routes.main);
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -120,18 +117,16 @@ export default function Login() {
 
         <View className="flex-row gap-3 mb-10">
           <TouchableOpacity
-            className="flex-1 py-4 rounded-full bg-border items-center active:opacity-90"
-            onPress={() => handleSocial("Google")}
-            activeOpacity={0.85}
+            className="flex-1 py-4 rounded-full bg-border items-center opacity-40"
+            disabled
           >
             <Text className="text-base font-manrope-bold text-foreground">
               Google
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex-1 py-4 rounded-full bg-border items-center active:opacity-90"
-            onPress={() => handleSocial("Apple")}
-            activeOpacity={0.85}
+            className="flex-1 py-4 rounded-full bg-border items-center opacity-40"
+            disabled
           >
             <Text className="text-base font-manrope-bold text-foreground">
               Apple

@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/Input";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { routes } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import { authService } from "@/services/authService";
 import { router } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
@@ -17,22 +18,23 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-      Alert.alert("Details required", "Please fill in all fields to register.");
+      Alert.alert("Details required", "Please fill in all fields.");
       return;
     }
-
     if (password !== confirmPassword) {
-      Alert.alert(
-        "Passwords do not match",
-        "Please ensure both passwords are the same.",
-      );
+      Alert.alert("Passwords do not match");
       return;
     }
-
-    signIn(email.trim());
-    router.replace(routes.main);
+    try {
+      const [firstName, ...rest] = name.trim().split(" ");
+      const lastName = rest.join(" ") || "-";
+      await authService.register(email.trim(), password, firstName, lastName);
+      router.replace(routes.main);
+    } catch (err: any) {
+      Alert.alert("Registration failed", err.message ?? "Please try again.");
+    }
   };
 
   return (

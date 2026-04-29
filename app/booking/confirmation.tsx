@@ -8,10 +8,7 @@ import {
   getVehicles,
 } from "@/lib/api/kiaApi";
 import { to24HourTime, toIsoDateTime } from "@/lib/bookingSlots";
-import {
-  formatBookingDateLabel,
-  weekdayFromIso,
-} from "@/lib/bookingFormat";
+import { formatBookingDateLabel, weekdayFromIso } from "@/lib/bookingFormat";
 import type { Agency, Service, Vehicle } from "@/lib/types";
 import {
   ArrowLeft,
@@ -97,12 +94,6 @@ export default function BookingConfirmationScreen() {
     };
   }, [selectedServiceId]);
 
-  if (!isBookingComplete()) {
-    return (
-      <SafeAreaView className="flex-1 bg-background" edges={["top"]} />
-    );
-  }
-
   const selectedVehicle = useMemo(
     () => vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? null,
     [selectedVehicleId, vehicles],
@@ -115,6 +106,10 @@ export default function BookingConfirmationScreen() {
     () => agencies.find((agency) => agency.id === selectedAgencyId) ?? null,
     [agencies, selectedAgencyId],
   );
+
+  if (!isBookingComplete()) {
+    return <SafeAreaView className="flex-1 bg-background" edges={["top"]} />;
+  }
 
   const vehicleImageUri =
     selectedVehicle?.image && !selectedVehicle.image.startsWith("../")
@@ -315,7 +310,9 @@ export default function BookingConfirmationScreen() {
 
           <Text className="flex-1 text-sm font-manrope text-foreground leading-relaxed">
             By confirming, you agree to our{" "}
-            <Text className="text-primary font-manrope-bold">Service Terms</Text>
+            <Text className="text-primary font-manrope-bold">
+              Service Terms
+            </Text>
             .{"\n\n"}
             <Text className="text-muted">
               You can reschedule or cancel free of charge up to 24 hours before

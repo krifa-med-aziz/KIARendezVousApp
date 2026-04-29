@@ -1,10 +1,7 @@
 import { routes } from "@/constants/routes";
 import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
 import { getAgencies, getServices, getVehicles } from "@/lib/api/kiaApi";
-import {
-  formatBookingDateLabel,
-  weekdayFromIso,
-} from "@/lib/bookingFormat";
+import { formatBookingDateLabel, weekdayFromIso } from "@/lib/bookingFormat";
 import type { Agency, BookingDateOption, Service, Vehicle } from "@/lib/types";
 import {
   ArrowLeft,
@@ -74,7 +71,9 @@ export default function BookingSuccessScreen() {
         setAgencies(agenciesData);
       } catch (err) {
         if (mounted) {
-          setError(err instanceof Error ? err.message : "Failed to load details");
+          setError(
+            err instanceof Error ? err.message : "Failed to load details",
+          );
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -89,12 +88,6 @@ export default function BookingSuccessScreen() {
   const goHome = () => {
     router.replace(routes.main);
   };
-
-  if (!vehicleId || !serviceId || !agencyId || !params.date || !params.time) {
-    return (
-      <SafeAreaView className="flex-1 bg-background" edges={["top"]} />
-    );
-  }
 
   const selectedVehicle = useMemo(
     () => vehicles.find((vehicle) => vehicle.id === vehicleId) ?? null,
@@ -118,6 +111,11 @@ export default function BookingSuccessScreen() {
       year: date.getFullYear(),
     };
   }, [params.date]);
+
+  if (!vehicleId || !serviceId || !agencyId || !params.date || !params.time) {
+    return <SafeAreaView className="flex-1 bg-background" edges={["top"]} />;
+  }
+
   const dateTimeSummary = `${formatBookingDateLabel(dateOption)} at ${params.time} · ${weekdayFromIso(dateOption.id)}`;
 
   return (
@@ -294,7 +292,11 @@ export default function BookingSuccessScreen() {
               Track service
             </Text>
           </TouchableOpacity>
-          <SecondaryButton label="Back to home" onPress={goHome} className="w-full" />
+          <SecondaryButton
+            label="Back to home"
+            onPress={goHome}
+            className="w-full"
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
