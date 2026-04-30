@@ -1,6 +1,8 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
+import { useAppointments } from "@/context/AppointmentsContext";
 import { useBooking } from "@/context/BookingContext";
+import { encodeBookingSuccessSummary } from "@/lib/bookingSuccessParams";
 import {
   createAppointment,
   getAgencies,
@@ -44,6 +46,7 @@ export default function BookingConfirmationScreen() {
     isBookingComplete,
     resetBooking,
   } = useBooking();
+  const { refresh: refreshAppointments } = useAppointments();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
@@ -54,11 +57,24 @@ export default function BookingConfirmationScreen() {
 
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const bookingComplete = isBookingComplete();
+
   useEffect(() => {
-    if (!isBookingComplete()) {
+    if (!bookingComplete && !isSuccess && !isSubmitting) {
       router.replace(routes.booking.selectVehicle);
     }
-  }, [isBookingComplete]);
+  }, [
+    bookingComplete,
+    isSuccess,
+    isSubmitting,
+    selectedVehicleId,
+    selectedServiceId,
+    selectedAgencyId,
+    selectedDate?.id,
+    selectedTime,
+  ]);
 
   useEffect(() => {
     if (!selectedServiceId) return;
@@ -107,7 +123,7 @@ export default function BookingConfirmationScreen() {
     [agencies, selectedAgencyId],
   );
 
-  if (!isBookingComplete()) {
+  if (!bookingComplete && !isSuccess) {
     return <SafeAreaView className="flex-1 bg-background" edges={["top"]} />;
   }
 
@@ -141,10 +157,20 @@ export default function BookingConfirmationScreen() {
         date: toIsoDateTime(selectedDate.id, selectedTime),
         time: time24,
       });
-      resetBooking();
+      await refreshAppointments();
+      const summary = encodeBookingSuccessSummary({
+        appointmentId: String(appointment.id),
+        vehicleId: selectedVehicleId,
+        serviceId: selectedServiceId,
+        agencyId: selectedAgencyId,
+        date: selectedDate.id,
+        time: selectedTime,
+      });
+      setIsSuccess(true);
       router.replace({
         pathname: routes.booking.success,
         params: {
+          summary,
           appointmentId: String(appointment.id),
           vehicleId: String(selectedVehicleId),
           serviceId: String(selectedServiceId),
@@ -152,6 +178,9 @@ export default function BookingConfirmationScreen() {
           date: selectedDate.id,
           time: selectedTime,
         },
+      });
+      requestAnimationFrame(() => {
+        resetBooking();
       });
     } catch (error) {
       setSubmitError(

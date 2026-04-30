@@ -45,3 +45,14 @@ export async function createAppointment(
   });
 }
 
+
+
+export async function getAppointments(): Promise<Appointment[]> {
+  return apiFetch<Appointment[]>("/appointments"); 
+}
+
+export async function cancelAppointment(id: number): Promise<void> {
+  return apiFetch<void>(`/appointments/${id}`, {
+    method: "DELETE",
+  });
+}

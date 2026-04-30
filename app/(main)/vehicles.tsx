@@ -1,5 +1,6 @@
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
+import { useToast } from "@/context/ToastContext";
 import { routes } from "@/constants/routes";
 import { cardShadowStyle } from "@/constants/shadows";
 import { getVehicles } from "@/lib/api/kiaApi";
@@ -13,20 +14,14 @@ import {
   Ruler,
   Wrench,
 } from "lucide-react-native";
-import {
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const DEFAULT_VEHICLE_IMAGE =
   "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
 
 export default function VehiclesScreen() {
+  const { showToast } = useToast();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,11 +49,10 @@ export default function VehiclesScreen() {
   }, []);
 
   const handleVehicleOptions = () => {
-    Alert.alert("Vehicle Options", "Choose an action", [
-      { text: "Edit Details" },
-      { text: "Remove Vehicle", style: "destructive" },
-      { text: "Cancel", style: "cancel" },
-    ]);
+    showToast({
+      type: "info",
+      message: "Vehicle edit and remove will be available in a future update.",
+    });
   };
 
   return (

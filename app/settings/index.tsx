@@ -1,7 +1,9 @@
 import { SettingsItem } from "@/components/SettingsItem";
 import { SettingsSection } from "@/components/SettingsSection";
 import { Button } from "@/components/ui/Button";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { routes } from "@/constants/routes";
+import { useToast } from "@/context/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Bell,
@@ -16,7 +18,6 @@ import {
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   ScrollView,
   StatusBar,
   Switch,
@@ -28,24 +29,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const { signOut } = useAuth();
+  const { showToast } = useToast();
 
   const [pushEnabled, setPushEnabled] = useState(true);
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-
-  const logout = () => {
-    Alert.alert("Logout", "Are you sure you want to logout?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: () => {
-          signOut();
-          router.replace(routes.login);
-        },
-      },
-    ]);
-  };
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const switchRight = (value: boolean, onValueChange: (v: boolean) => void) => (
     <Switch
@@ -120,7 +109,12 @@ export default function SettingsScreen() {
           <SettingsItem
             label="Language"
             icon={Globe}
-            onPress={() => Alert.alert("Language", "Coming soon.")}
+            onPress={() =>
+              showToast({
+                type: "info",
+                message: "Language settings coming soon.",
+              })
+            }
           />
         </SettingsSection>
 
@@ -128,28 +122,20 @@ export default function SettingsScreen() {
           <SettingsItem
             label="Help Center"
             icon={HelpCircle}
-            onPress={() => Alert.alert("Help Center", "Coming soon.")}
+            onPress={() =>
+              showToast({ type: "info", message: "Help center coming soon." })
+            }
           />
           <View className="h-px bg-border mx-4" />
           <SettingsItem
             label="Contact Us"
             icon={Mail}
-            onPress={() => Alert.alert("Contact Us", "support@kia.app")}
+            onPress={() =>
+              showToast({ type: "info", message: "Contact: support@kia.app" })
+            }
           />
-        </SettingsSection>
-
-        <SettingsSection title="Danger Zone">
-          <View className="p-4">
-            <Button
-              label="Logout"
-              variant="danger"
-              className="w-full"
-              onPress={logout}
-            />
-          </View>
         </SettingsSection>
       </ScrollView>
     </SafeAreaView>
   );
 }
-

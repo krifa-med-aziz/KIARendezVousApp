@@ -1,6 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 
-const API_BASE_URL = "http://192.168.100.74:3000";
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL ?? "http://192.168.100.74:3000";
 
 export class ApiError extends Error {
   status: number;

@@ -1,6 +1,7 @@
 import { routes } from "@/constants/routes";
 import { cardShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
+import { useFocusEffect } from "@react-navigation/native";
 import { getAgencies } from "@/lib/api/kiaApi";
 import type { Agency } from "@/lib/types";
 import {
@@ -17,7 +18,7 @@ import {
   Star,
 } from "lucide-react-native";
 import { router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -32,15 +33,31 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectAgencyScreen() {
-  const { selectedServiceId, selectedAgencyId, setAgencyId } = useBooking();
+  const {
+    selectedVehicleId,
+    selectedServiceId,
+    selectedAgencyId,
+    setAgencyId,
+  } = useBooking();
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
+  useFocusEffect(
+    useCallback(() => {
+      if (!selectedVehicleId) {
+        router.replace(routes.booking.selectVehicle);
+        return;
+      }
+      if (!selectedServiceId) {
+        router.replace(routes.booking.selectService);
+      }
+    }, [selectedVehicleId, selectedServiceId]),
+  );
+
   useEffect(() => {
-    if (!selectedServiceId) {
-      router.replace(routes.booking.selectService);
+    if (!selectedVehicleId || !selectedServiceId) {
       return;
     }
     let mounted = true;
@@ -52,7 +69,9 @@ export default function SelectAgencyScreen() {
         if (mounted) setAgencies(response);
       } catch (err) {
         if (mounted) {
-          setError(err instanceof Error ? err.message : "Failed to load agencies");
+          setError(
+            err instanceof Error ? err.message : "Failed to load agencies",
+          );
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -128,12 +147,13 @@ export default function SelectAgencyScreen() {
               style={cardShadowStyle}
             >
               <Text className="text-xs text-white font-manrope-bold tracking-wide">
-                {mappedAgencies.find((agency) => agency.id === selectedAgencyId)?.name ??
-                  "Select an agency"}
+                {mappedAgencies.find((agency) => agency.id === selectedAgencyId)
+                  ?.name ?? "Select an agency"}
               </Text>
             </View>
 
-            <TouchableOpacity className="absolute right-4 top-40 w-12 h-12 bg-white rounded-2xl items-center justify-center border border-border active:opacity-80"
+            <TouchableOpacity
+              className="absolute right-4 top-40 w-12 h-12 bg-white rounded-2xl items-center justify-center border border-border active:opacity-80"
               style={cardShadowStyle}
             >
               <MapPin size={22} color="#1A1C1C" strokeWidth={2} />
@@ -152,7 +172,8 @@ export default function SelectAgencyScreen() {
               </TouchableOpacity>
             </View>
 
-            <View className="absolute bottom-4 left-4 flex-row bg-white rounded-2xl p-1 border border-border"
+            <View
+              className="absolute bottom-4 left-4 flex-row bg-white rounded-2xl p-1 border border-border"
               style={cardShadowStyle}
             >
               <TouchableOpacity className="flex-row items-center bg-primary px-6 py-2.5 rounded-full">
@@ -183,7 +204,8 @@ export default function SelectAgencyScreen() {
               </Text>
             </View>
 
-            <TouchableOpacity className="p-2 bg-white rounded-2xl border border-border h-12 w-12 items-center justify-center active:opacity-70"
+            <TouchableOpacity
+              className="p-2 bg-white rounded-2xl border border-border h-12 w-12 items-center justify-center active:opacity-70"
               style={cardShadowStyle}
             >
               <SlidersHorizontal size={20} color="#1A1C1C" strokeWidth={2} />
@@ -196,108 +218,110 @@ export default function SelectAgencyScreen() {
             </Text>
           )}
           {error && (
-            <Text className="text-sm font-manrope text-primary mb-6">{error}</Text>
+            <Text className="text-sm font-manrope text-primary mb-6">
+              {error}
+            </Text>
           )}
 
           {!isLoading &&
             !error &&
             mappedAgencies.map((agency) => {
-            const isSelected = selectedAgencyId === agency.id;
-            return (
-              <View
-                key={agency.id}
-                className={`bg-white rounded-3xl mb-6 border ${
-                  isSelected ? "border-primary" : "border-border"
-                }`}
-                style={cardShadowStyle}
-              >
-                <View className="p-6">
-                  {agency.highlight && (
-                    <View className="flex-row mb-3 gap-2 flex-wrap">
-                      <View className="bg-primary px-3 py-1 rounded-full">
-                        <Text className="text-white text-[10px] font-manrope-bold tracking-widest uppercase">
-                          TOP RATED
-                        </Text>
-                      </View>
-                      <View className="bg-badge-red border border-border px-3 py-1 rounded-full">
-                        <Text className="text-primary text-[10px] font-manrope-bold tracking-widest uppercase">
-                          CLOSEST
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-
-                  <View className="flex-row justify-between pt-1">
-                    <View className="flex-1 pr-4">
-                      {agency.highlight && (
-                        <View className="flex-row items-center mb-1.5">
-                          <Star size={14} color="#93001B" fill="#93001B" />
-                          <Text className="ml-1.5 text-sm font-manrope-bold text-foreground">
-                            {agency.rating}
+              const isSelected = selectedAgencyId === agency.id;
+              return (
+                <View
+                  key={agency.id}
+                  className={`bg-white rounded-3xl mb-6 border ${
+                    isSelected ? "border-primary" : "border-border"
+                  }`}
+                  style={cardShadowStyle}
+                >
+                  <View className="p-6">
+                    {agency.highlight && (
+                      <View className="flex-row mb-3 gap-2 flex-wrap">
+                        <View className="bg-primary px-3 py-1 rounded-full">
+                          <Text className="text-white text-[10px] font-manrope-bold tracking-widest uppercase">
+                            TOP RATED
                           </Text>
                         </View>
-                      )}
-
-                      <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
-                        {agency.name}
-                      </Text>
-
-                      <Text className="text-sm font-manrope text-muted leading-5 pr-2">
-                        {agency.address}
-                      </Text>
-                    </View>
-
-                    <Image
-                      source={{
-                        uri: agency.image,
-                      }}
-                      className="w-20 h-20 rounded-2xl bg-elevated border border-border"
-                    />
-                  </View>
-
-                  <View className="flex-row mt-4 mb-5 bg-elevated p-3 rounded-2xl border border-border">
-                    <View className="flex-row items-center mr-6">
-                      <Navigation size={16} color="#93001B" strokeWidth={2} />
-                      <Text className="ml-2 text-sm font-manrope-bold text-primary">
-                        {agency.distance}
-                      </Text>
-                    </View>
-
-                    <View className="flex-row items-center">
-                      <Clock size={16} color="#71717A" strokeWidth={2} />
-                      <Text className="ml-2 text-sm font-manrope text-muted">
-                        Open until {agency.closingTime}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View className="flex-row items-center gap-3">
-                    {agency.highlight ? (
-                      <View className="flex-1">
-                        <PrimaryButton
-                          label="Select this agency"
-                          onPress={() => selectAndContinue(agency)}
-                          className="w-full"
-                        />
-                      </View>
-                    ) : (
-                      <View className="flex-1">
-                        <SecondaryButton
-                          label="Select agency"
-                          onPress={() => selectAndContinue(agency)}
-                          className="w-full"
-                        />
+                        <View className="bg-badge-red border border-border px-3 py-1 rounded-full">
+                          <Text className="text-primary text-[10px] font-manrope-bold tracking-widest uppercase">
+                            CLOSEST
+                          </Text>
+                        </View>
                       </View>
                     )}
 
-                    <TouchableOpacity className="w-14 h-14 bg-elevated border border-border rounded-2xl items-center justify-center active:opacity-70">
-                      <MapPin size={22} color="#1A1C1C" strokeWidth={2} />
-                    </TouchableOpacity>
+                    <View className="flex-row justify-between pt-1">
+                      <View className="flex-1 pr-4">
+                        {agency.highlight && (
+                          <View className="flex-row items-center mb-1.5">
+                            <Star size={14} color="#93001B" fill="#93001B" />
+                            <Text className="ml-1.5 text-sm font-manrope-bold text-foreground">
+                              {agency.rating}
+                            </Text>
+                          </View>
+                        )}
+
+                        <Text className="text-xl font-jakarta-bold text-foreground mb-1.5">
+                          {agency.name}
+                        </Text>
+
+                        <Text className="text-sm font-manrope text-muted leading-5 pr-2">
+                          {agency.address}
+                        </Text>
+                      </View>
+
+                      <Image
+                        source={{
+                          uri: agency.image,
+                        }}
+                        className="w-20 h-20 rounded-2xl bg-elevated border border-border"
+                      />
+                    </View>
+
+                    <View className="flex-row mt-4 mb-5 bg-elevated p-3 rounded-2xl border border-border">
+                      <View className="flex-row items-center mr-6">
+                        <Navigation size={16} color="#93001B" strokeWidth={2} />
+                        <Text className="ml-2 text-sm font-manrope-bold text-primary">
+                          {agency.distance}
+                        </Text>
+                      </View>
+
+                      <View className="flex-row items-center">
+                        <Clock size={16} color="#71717A" strokeWidth={2} />
+                        <Text className="ml-2 text-sm font-manrope text-muted">
+                          Open until {agency.closingTime}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View className="flex-row items-center gap-3">
+                      {agency.highlight ? (
+                        <View className="flex-1">
+                          <PrimaryButton
+                            label="Select this agency"
+                            onPress={() => selectAndContinue(agency)}
+                            className="w-full"
+                          />
+                        </View>
+                      ) : (
+                        <View className="flex-1">
+                          <SecondaryButton
+                            label="Select agency"
+                            onPress={() => selectAndContinue(agency)}
+                            className="w-full"
+                          />
+                        </View>
+                      )}
+
+                      <TouchableOpacity className="w-14 h-14 bg-elevated border border-border rounded-2xl items-center justify-center active:opacity-70">
+                        <MapPin size={22} color="#1A1C1C" strokeWidth={2} />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })}
         </View>
       </ScrollView>
     </SafeAreaView>

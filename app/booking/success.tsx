@@ -1,5 +1,11 @@
 import { routes } from "@/constants/routes";
 import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
+import { useToast } from "@/context/ToastContext";
+import { paramFirst } from "@/lib/routeParams";
+import {
+  parseBookingSuccessParams,
+  type BookingSuccessPayload,
+} from "@/lib/bookingSuccessParams";
 import { getAgencies, getServices, getVehicles } from "@/lib/api/kiaApi";
 import { formatBookingDateLabel, weekdayFromIso } from "@/lib/bookingFormat";
 import type { Agency, BookingDateOption, Service, Vehicle } from "@/lib/types";
@@ -15,13 +21,17 @@ import {
   Star,
   Wrench,
 } from "lucide-react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import {
+  router,
+  useLocalSearchParams,
+  useRootNavigationState,
+} from "expo-router";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Stepper } from "@/components/Stepper";
+import { LoadingIndicator } from "@/components/ui/LoadingIndicator";
 import { Badge } from "@/components/ui/Badge";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import {
-  Alert,
   ScrollView,
   StatusBar,
   Text,
@@ -32,13 +42,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingSuccessScreen() {
   const params = useLocalSearchParams<{
-    appointmentId?: string;
-    vehicleId?: string;
-    serviceId?: string;
-    agencyId?: string;
-    date?: string;
-    time?: string;
+    summary?: string | string[];
+    appointmentId?: string | string[];
+    vehicleId?: string | string[];
+    serviceId?: string | string[];
+    agencyId?: string | string[];
+    date?: string | string[];
+    time?: string | string[];
   }>();
+  const { showToast } = useToast();
+
+  const payload = useMemo(
+    () => parseBookingSuccessParams(params),
+    [
+      paramFirst(params.summary),
+      paramFirst(params.appointmentId),
+      paramFirst(params.vehicleId),
+      paramFirst(params.serviceId),
+      paramFirst(params.agencyId),
+      paramFirst(params.date),
+      paramFirst(params.time),
+    ],
+  );
+
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
@@ -46,15 +72,16 @@ export default function BookingSuccessScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
-  const vehicleId = Number(params.vehicleId);
-  const serviceId = Number(params.serviceId);
-  const agencyId = Number(params.agencyId);
+
+  const stable = payload as BookingSuccessPayload | null;
 
   useEffect(() => {
-    if (!vehicleId || !serviceId || !agencyId || !params.date || !params.time) {
-      router.replace(routes.booking.selectVehicle);
+    if (!stable) {
+      console.log("No valid booking payload found in params.");
+      setIsLoading(false);
       return;
     }
+    console.log("Booking payload validated:", stable.appointmentId);
     let mounted = true;
     const load = async () => {
       setIsLoading(true);
@@ -63,7 +90,7 @@ export default function BookingSuccessScreen() {
         const [vehiclesData, servicesData, agenciesData] = await Promise.all([
           getVehicles(),
           getServices(),
-          getAgencies(serviceId),
+          getAgencies(stable.serviceId),
         ]);
         if (!mounted) return;
         setVehicles(vehiclesData);
@@ -83,44 +110,71 @@ export default function BookingSuccessScreen() {
     return () => {
       mounted = false;
     };
-  }, [agencyId, params.date, params.time, serviceId, vehicleId]);
-
-  const goHome = () => {
-    router.replace(routes.main);
-  };
+  }, [stable?.agencyId, stable?.serviceId, stable?.vehicleId, stable?.date]);
 
   const selectedVehicle = useMemo(
-    () => vehicles.find((vehicle) => vehicle.id === vehicleId) ?? null,
-    [vehicleId, vehicles],
+    () =>
+      stable
+        ? (vehicles.find((vehicle) => vehicle.id === stable.vehicleId) ?? null)
+        : null,
+    [stable, vehicles],
   );
   const selectedService = useMemo(
-    () => services.find((service) => service.id === serviceId) ?? null,
-    [serviceId, services],
+    () =>
+      stable
+        ? (services.find((service) => service.id === stable.serviceId) ?? null)
+        : null,
+    [stable, services],
   );
   const selectedAgency = useMemo(
-    () => agencies.find((agency) => agency.id === agencyId) ?? null,
-    [agencies, agencyId],
+    () =>
+      stable
+        ? (agencies.find((agency) => agency.id === stable.agencyId) ?? null)
+        : null,
+    [stable, agencies],
   );
-  const dateOption = useMemo<BookingDateOption>(() => {
-    const date = new Date(`${params.date}T12:00:00`);
+  const dateOption = useMemo<BookingDateOption | null>(() => {
+    if (!stable?.date) return null;
+    const date = new Date(`${stable.date}T12:00:00`);
     return {
-      id: params.date!,
-      day: weekdayFromIso(params.date!).slice(0, 3).toUpperCase(),
+      id: stable.date,
+      day: weekdayFromIso(stable.date).slice(0, 3).toUpperCase(),
       date: String(date.getDate()),
       monthLabel: date.toLocaleDateString("en-US", { month: "long" }),
       year: date.getFullYear(),
     };
-  }, [params.date]);
+  }, [stable?.date]);
 
-  if (!vehicleId || !serviceId || !agencyId || !params.date || !params.time) {
-    return <SafeAreaView className="flex-1 bg-background" edges={["top"]} />;
+  const goHome = () => {
+    console.log("Navigating to:", routes.main);
+    router.replace(routes.main);
+  };
+
+  if (!stable || !dateOption) {
+    return (
+      <SafeAreaView
+        className="flex-1 bg-background justify-center items-center px-6"
+        edges={["top"]}
+      >
+        <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+        <LoadingIndicator message="Loading confirmation…" />
+        <TouchableOpacity
+          className="mt-8 px-6 py-3 bg-white border border-border rounded-full"
+          onPress={goHome}
+        >
+          <Text className="font-manrope-bold text-foreground">
+            Return to Home
+          </Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
   }
 
-  const dateTimeSummary = `${formatBookingDateLabel(dateOption)} at ${params.time} · ${weekdayFromIso(dateOption.id)}`;
+  const dateTimeSummary = `${formatBookingDateLabel(dateOption)} at ${stable.time} · ${weekdayFromIso(dateOption.id)}`;
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
 
       <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-border">
         <TouchableOpacity
@@ -143,11 +197,7 @@ export default function BookingSuccessScreen() {
       <Stepper steps={STEPS} currentStep={5} />
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {isLoading && (
-          <Text className="mx-6 mt-4 text-sm font-manrope text-muted">
-            Loading booking details...
-          </Text>
-        )}
+        {isLoading && <LoadingIndicator message="Loading booking details…" />}
         {error && (
           <Text className="mx-6 mt-4 text-sm font-manrope text-primary">
             {error}
@@ -253,7 +303,10 @@ export default function BookingSuccessScreen() {
           className="flex-row items-center mx-6 mt-6 bg-elevated border border-border rounded-3xl p-5 active:opacity-90"
           style={cardShadowStyle}
           onPress={() =>
-            Alert.alert("Loyalty", "Points and rewards would appear here.")
+            showToast({
+              type: "info",
+              message: "Loyalty points and rewards will appear here.",
+            })
           }
         >
           <View className="bg-white p-2 rounded-full border border-border">
@@ -277,12 +330,12 @@ export default function BookingSuccessScreen() {
               router.push({
                 pathname: routes.booking.tracking,
                 params: {
-                  appointmentId: params.appointmentId ?? "",
-                  vehicleId: String(vehicleId),
-                  serviceId: String(serviceId),
-                  agencyId: String(agencyId),
+                  appointmentId: stable.appointmentId,
+                  vehicleId: String(stable.vehicleId),
+                  serviceId: String(stable.serviceId),
+                  agencyId: String(stable.agencyId),
                   date: dateOption.id,
-                  time: params.time ?? "",
+                  time: stable.time,
                 },
               })
             }

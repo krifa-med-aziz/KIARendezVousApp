@@ -1,6 +1,7 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
+import { useFocusEffect } from "@react-navigation/native";
 import { getServices } from "@/lib/api/kiaApi";
 import type { Service } from "@/lib/types";
 import { router } from "expo-router";
@@ -8,7 +9,7 @@ import * as LucideIcons from "lucide-react-native";
 import { Bell, ChevronLeft, CheckCircle2 } from "lucide-react-native";
 import { Stepper } from "@/components/Stepper";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,11 +24,19 @@ function resolveServiceIcon(title: string): string {
 }
 
 export default function SelectServiceScreen() {
-  const { selectedServiceId, setServiceId } = useBooking();
+  const { selectedVehicleId, selectedServiceId, setServiceId } = useBooking();
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!selectedVehicleId) {
+        router.replace(routes.booking.selectVehicle);
+      }
+    }, [selectedVehicleId]),
+  );
 
   useEffect(() => {
     let mounted = true;

@@ -1,19 +1,17 @@
 import { TimelineItem } from "@/components/TimelineItem";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { routes } from "@/constants/routes";
 import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
 import { getAgencies, getServices, getVehicles } from "@/lib/api/kiaApi";
-import {
-  formatBookingDateLabel,
-  weekdayFromIso,
-} from "@/lib/bookingFormat";
+import { paramFirst, parsePositiveInt } from "@/lib/routeParams";
+import { formatBookingDateLabel, weekdayFromIso } from "@/lib/bookingFormat";
 import type { Agency, BookingDateOption, Service, Vehicle } from "@/lib/types";
 import { ArrowLeft, Building2, Calendar, Car } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Alert,
   Linking,
   ScrollView,
   StatusBar,
@@ -35,23 +33,31 @@ const ACTIVE_INDEX = 2;
 
 export default function ServiceTrackingScreen() {
   const params = useLocalSearchParams<{
-    appointmentId?: string;
-    vehicleId?: string;
-    serviceId?: string;
-    agencyId?: string;
-    date?: string;
-    time?: string;
+    appointmentId?: string | string[];
+    vehicleId?: string | string[];
+    serviceId?: string | string[];
+    agencyId?: string | string[];
+    date?: string | string[];
+    time?: string | string[];
   }>();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const vehicleId = Number(params.vehicleId);
-  const serviceId = Number(params.serviceId);
-  const agencyId = Number(params.agencyId);
+  const [contactOpen, setContactOpen] = useState(false);
+
+  const vehicleId = parsePositiveInt(paramFirst(params.vehicleId));
+  const serviceId = parsePositiveInt(paramFirst(params.serviceId));
+  const agencyId = parsePositiveInt(paramFirst(params.agencyId));
+  const dateStr = paramFirst(params.date);
+  const timeStr = paramFirst(params.time);
   const hasContext =
-    !!vehicleId && !!serviceId && !!agencyId && !!params.date && !!params.time;
+    vehicleId !== null &&
+    serviceId !== null &&
+    agencyId !== null &&
+    !!dateStr &&
+    !!timeStr;
 
   useEffect(() => {
     if (!hasContext) return;
@@ -71,7 +77,9 @@ export default function ServiceTrackingScreen() {
         setAgencies(agenciesData);
       } catch (err) {
         if (mounted) {
-          setError(err instanceof Error ? err.message : "Failed to load details");
+          setError(
+            err instanceof Error ? err.message : "Failed to load details",
+          );
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -96,32 +104,23 @@ export default function ServiceTrackingScreen() {
     [agencies, agencyId],
   );
   const selectedDate = useMemo<BookingDateOption | null>(() => {
-    if (!params.date) return null;
-    const date = new Date(`${params.date}T12:00:00`);
+    if (!dateStr) return null;
+    const date = new Date(`${dateStr}T12:00:00`);
     return {
-      id: params.date,
-      day: weekdayFromIso(params.date).slice(0, 3).toUpperCase(),
+      id: dateStr,
+      day: weekdayFromIso(dateStr).slice(0, 3).toUpperCase(),
       date: String(date.getDate()),
       monthLabel: date.toLocaleDateString("en-US", { month: "long" }),
       year: date.getFullYear(),
     };
-  }, [params.date]);
-  const selectedTime = params.time ?? null;
+  }, [dateStr]);
+  const selectedTime = timeStr ?? null;
 
   const contactAgency = () => {
-    const phone = "tel:+18005550199";
-    Alert.alert(
-      "Contact agency",
-      `Call ${selectedAgency?.name ?? "your service center"}?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Call",
-          onPress: () => Linking.openURL(phone),
-        },
-      ],
-    );
+    setContactOpen(true);
   };
+
+  const phone = "tel:+18005550199";
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -156,7 +155,8 @@ export default function ServiceTrackingScreen() {
         )}
 
         {!hasContext ? (
-          <View className="mx-6 mt-8 p-6 bg-white rounded-3xl border border-border"
+          <View
+            className="mx-6 mt-8 p-6 bg-white rounded-3xl border border-border"
             style={cardShadowStyle}
           >
             <Text className="text-base font-manrope text-muted text-center leading-relaxed">
@@ -204,9 +204,7 @@ export default function ServiceTrackingScreen() {
                   {selectedDate && formatBookingDateLabel(selectedDate)}
                   {selectedDate && selectedTime ? " · " : ""}
                   {selectedTime}
-                  {selectedDate
-                    ? ` · ${weekdayFromIso(selectedDate.id)}`
-                    : ""}
+                  {selectedDate ? ` · ${weekdayFromIso(selectedDate.id)}` : ""}
                 </Text>
               </View>
             </View>
@@ -241,22 +239,23 @@ export default function ServiceTrackingScreen() {
           />
           <SecondaryButton
             label="View Appointment Details"
-            onPress={() =>
-              router.push({
-                pathname: routes.booking.success,
-                params: {
-                  appointmentId: params.appointmentId ?? "",
-                  vehicleId: String(vehicleId),
-                  serviceId: String(serviceId),
-                  agencyId: String(agencyId),
-                  date: params.date ?? "",
-                  time: params.time ?? "",
-                },
-              })
-            }
+            onPress={() => router.replace(routes.bookings)}
           />
         </View>
       )}
+
+      <ConfirmModal
+        visible={contactOpen}
+        title="Contact agency"
+        message={`Call ${selectedAgency?.name ?? "your service center"}?`}
+        confirmLabel="Call"
+        cancelLabel="Cancel"
+        onCancel={() => setContactOpen(false)}
+        onConfirm={() => {
+          setContactOpen(false);
+          Linking.openURL(phone);
+        }}
+      />
     </SafeAreaView>
   );
 }

@@ -1,6 +1,7 @@
 import { routes } from "@/constants/routes";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   getAfternoonTimeSlots,
   getMorningTimeSlots,
@@ -15,7 +16,7 @@ import {
   SunMoon,
 } from "lucide-react-native";
 import { router } from "expo-router";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Stepper } from "@/components/Stepper";
 import {
   ScrollView,
@@ -27,7 +28,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SelectAppointmentScreen() {
-  const { selectedDate, selectedTime, setDate, setTime } = useBooking();
+  const {
+    selectedVehicleId,
+    selectedServiceId,
+    selectedAgencyId,
+    selectedDate,
+    selectedTime,
+    setDate,
+    setTime,
+  } = useBooking();
   const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
   const dateOptions = useMemo(() => getNextBookingDateOptions(7), []);
   const morningTimes = useMemo(() => getMorningTimeSlots(), []);
@@ -37,6 +46,22 @@ export default function SelectAppointmentScreen() {
   const defaultTime = useMemo(
     () => morningTimes[0] ?? afternoonTimes[0] ?? null,
     [afternoonTimes, morningTimes],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!selectedVehicleId) {
+        router.replace(routes.booking.selectVehicle);
+        return;
+      }
+      if (!selectedServiceId) {
+        router.replace(routes.booking.selectService);
+        return;
+      }
+      if (!selectedAgencyId) {
+        router.replace(routes.booking.selectAgency);
+      }
+    }, [selectedVehicleId, selectedServiceId, selectedAgencyId]),
   );
 
   useEffect(() => {

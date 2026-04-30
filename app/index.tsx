@@ -7,14 +7,14 @@ import { useEffect, useRef } from "react";
 const SPLASH_MS = 3500;
 
 export default function Index() {
-  const { userEmail } = useAuth();
+  const { user } = useAuth();
   const redirected = useRef(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (redirected.current) return;
       redirected.current = true;
-      if (userEmail) {
+      if (user?.email) {
         router.replace(routes.main);
       } else {
         router.replace(routes.login);
@@ -22,7 +22,7 @@ export default function Index() {
     }, SPLASH_MS);
 
     return () => clearTimeout(timer);
-  }, [userEmail]);
+  }, [user?.email]);
 
   return <SplashScreen />;
 }

@@ -16,16 +16,19 @@ export const Input: React.FC<InputProps> = ({
   rightElement,
   ...props
 }) => {
+  const hasError = !!error;
   return (
-    <View className={`mb-6 ${containerClassName || ""}`}>
+    <View className={`mb-5 ${containerClassName || ""}`}>
       {!!label && (
         <Text className="text-xs font-manrope-bold text-muted mb-2 tracking-widest uppercase">
           {label}
         </Text>
       )}
       <View
-        className={`flex-row items-center min-h-[56px] bg-white border rounded-2xl overflow-hidden px-4 ${
-          error ? "border-primary" : "border-border"
+        className={`flex-row items-center min-h-[56px] border rounded-2xl overflow-hidden px-4 ${
+          hasError
+            ? "border-primary bg-badge-red/60"
+            : "border-border bg-white"
         }`}
         style={{
           shadowColor: "#000",
@@ -44,8 +47,8 @@ export const Input: React.FC<InputProps> = ({
           <View className="pl-2 justify-center items-center">{rightElement}</View>
         )}
       </View>
-      {error ? (
-        <Text className="text-xs font-manrope-semibold text-primary mt-1">
+      {hasError ? (
+        <Text className="text-xs font-manrope-semibold text-primary mt-1.5 ml-0.5">
           {error}
         </Text>
       ) : null}

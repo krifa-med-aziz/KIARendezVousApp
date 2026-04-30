@@ -1,8 +1,10 @@
+import { AppointmentsProvider } from "@/context/AppointmentsContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { BookingProvider } from "@/context/BookingContext";
+import { ToastProvider } from "@/context/ToastContext";
+import { VehicleProvider } from "@/context/VehicleContext";
 import "../global.css";
 import { Stack } from "expo-router";
-import { VehicleProvider } from "@/context/VehicleContext";
-import { BookingProvider } from "@/context/BookingContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
 import {
@@ -53,13 +55,17 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <VehicleProvider>
-          <BookingProvider>
-            <Stack screenOptions={{ headerShown: false }} />
-          </BookingProvider>
-        </VehicleProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <VehicleProvider>
+            <AppointmentsProvider>
+              <BookingProvider>
+                <Stack screenOptions={{ headerShown: false }} />
+              </BookingProvider>
+            </AppointmentsProvider>
+          </VehicleProvider>
+        </AuthProvider>
+      </ToastProvider>
     </SafeAreaProvider>
   );
 }

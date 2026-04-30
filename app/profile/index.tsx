@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { routes } from "@/constants/routes";
 import { cardShadowStyle } from "@/constants/shadows";
+import type { AuthUser } from "@/context/AuthContext";
 import { getVehicles } from "@/lib/api/kiaApi";
 import type { Vehicle } from "@/lib/types";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,8 +19,6 @@ import {
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Alert,
-  Image,
   ScrollView,
   StatusBar,
   Text,
@@ -26,9 +26,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const AVATAR_URI =
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 function displayNameFromEmail(email: string | null): string {
   if (!email) return "Member";
@@ -40,9 +38,17 @@ function displayNameFromEmail(email: string | null): string {
     .join(" ");
 }
 
+function displayName(user: AuthUser | null): string {
+  if (!user) return "Member";
+  if (user.name?.trim()) return user.name.trim();
+  if (user.preferredUsername?.trim()) return user.preferredUsername.trim();
+  return displayNameFromEmail(user.email);
+}
+
 export default function ProfileScreen() {
-  const { userEmail, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -73,23 +79,14 @@ export default function ProfileScreen() {
   const formattedTotalDistance =
     totalDistance > 0 ? `${totalDistance.toLocaleString("en-US")} km` : "—";
 
-  const handleSignOut = () => {
-    Alert.alert("Logout", "Are you sure you want to logout?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: () => {
-          signOut();
-          router.replace(routes.login);
-        },
-      },
-    ]);
-  };
+  const memberIdShort =
+    user?.sub && user.sub.length > 12
+      ? `${user.sub.slice(0, 8)}…${user.sub.slice(-4)}`
+      : (user?.sub ?? "—");
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
 
       <View className="flex-row items-center justify-center px-6 py-4 bg-white border-b border-border">
         <Text className="text-sm font-jakarta-bold text-foreground tracking-widest uppercase">
@@ -102,24 +99,32 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="items-center px-6 pt-8 pb-6">
+        <View className="px-6 pt-8 pb-6">
           <View
-            className="w-28 h-28 rounded-full border-4 border-white overflow-hidden bg-elevated"
+            className="bg-white rounded-3xl p-6 border border-border"
             style={cardShadowStyle}
           >
-            <Image
-              source={{ uri: AVATAR_URI }}
-              className="w-full h-full"
-              resizeMode="cover"
-            />
-          </View>
-          <Text className="text-2xl font-jakarta-extrabold text-foreground mt-5">
-            {displayNameFromEmail(userEmail)}
-          </Text>
-          <View className="mt-3 bg-foreground px-4 py-2 rounded-full border border-border">
-            <Text className="text-[10px] font-manrope-bold text-white tracking-widest">
-              PLATINUM MEMBER
+            <Text className="text-2xl font-jakarta-extrabold text-foreground">
+              {displayName(user)}
             </Text>
+            {user?.email ? (
+              <Text className="text-sm font-manrope text-muted mt-2">
+                {user.email}
+              </Text>
+            ) : null}
+            <View className="mt-4 pt-4 border-t border-border">
+              <Text className="text-[10px] font-manrope-bold text-label tracking-widest uppercase mb-1">
+                Member ID
+              </Text>
+              <Text className="text-xs font-manrope text-foreground">
+                {memberIdShort}
+              </Text>
+            </View>
+            <View className="mt-4 bg-foreground self-start px-4 py-2 rounded-full border border-border">
+              <Text className="text-[10px] font-manrope-bold text-white tracking-widest">
+                PLATINUM MEMBER
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -212,14 +217,28 @@ export default function ProfileScreen() {
         </Card>
 
         <View className="px-6 mt-8">
-          <Button
+          <PrimaryButton
             label="Logout"
-            variant="danger"
             className="w-full rounded-2xl"
-            onPress={handleSignOut}
+            onPress={() => setLogoutOpen(true)}
           />
         </View>
       </ScrollView>
+
+      <ConfirmModal
+        visible={logoutOpen}
+        title="Logout"
+        message="Are you sure you want to logout?"
+        confirmLabel="Logout"
+        cancelLabel="Cancel"
+        destructive
+        onCancel={() => setLogoutOpen(false)}
+        onConfirm={() => {
+          setLogoutOpen(false);
+          signOut();
+          router.replace(routes.login);
+        }}
+      />
     </SafeAreaView>
   );
 }

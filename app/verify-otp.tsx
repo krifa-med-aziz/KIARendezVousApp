@@ -51,14 +51,19 @@ export default function VerifyOtp() {
   };
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-background">
-      <ScrollView className="px-6 pt-8" keyboardShouldPersistTaps="handled">
-        <Text className="text-3xl font-jakarta-extrabold text-foreground mb-3">
-          Verify your number
-        </Text>
-        <Text className="text-base font-manrope text-muted mb-10">
-          Enter the 6-digit code sent to {phone}
-        </Text>
+    <SafeAreaView edges={["top", "bottom"]} className="flex-1 bg-background">
+      <ScrollView
+        contentContainerClassName="flex-grow justify-center px-6 pb-8"
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="items-center mb-8">
+          <Text className="text-3xl font-jakarta-extrabold text-foreground mb-3 text-center">
+            Verify your number
+          </Text>
+          <Text className="text-base font-manrope text-muted text-center">
+            Enter the 6-digit code sent to {phone}
+          </Text>
+        </View>
 
         <TextInput
           value={code}
