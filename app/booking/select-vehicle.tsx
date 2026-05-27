@@ -1,4 +1,5 @@
 import { routes } from "@/constants/routes";
+import { DEFAULT_VEHICLE_IMAGE, BOOKING_STEPS } from "@/constants/config";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { getVehicles } from "@/lib/api/kiaApi";
 import type { Vehicle } from "@/lib/types";
@@ -11,15 +12,12 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const DEFAULT_VEHICLE_IMAGE =
-  "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
 
 export default function SelectVehicleScreen() {
   const { selectedVehicleId, setVehicleId } = useBooking();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   useEffect(() => {
     let mounted = true;
@@ -72,7 +70,7 @@ export default function SelectVehicleScreen() {
         </TouchableOpacity>
       </View>
 
-      <Stepper steps={STEPS} currentStep={0} />
+      <Stepper steps={BOOKING_STEPS} currentStep={0} />
 
       <ScrollView
         contentContainerStyle={{

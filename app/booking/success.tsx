@@ -1,4 +1,5 @@
 import { routes } from "@/constants/routes";
+import { BOOKING_STEPS } from "@/constants/config";
 import { cardShadowStyle, primaryShadowStyle } from "@/constants/shadows";
 import { useToast } from "@/context/ToastContext";
 import { paramFirst } from "@/lib/routeParams";
@@ -71,17 +72,14 @@ export default function BookingSuccessScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   const stable = payload as BookingSuccessPayload | null;
 
   useEffect(() => {
     if (!stable) {
-      console.log("No valid booking payload found in params.");
       setIsLoading(false);
       return;
     }
-    console.log("Booking payload validated:", stable.appointmentId);
     let mounted = true;
     const load = async () => {
       setIsLoading(true);
@@ -146,7 +144,6 @@ export default function BookingSuccessScreen() {
   }, [stable?.date]);
 
   const goHome = () => {
-    console.log("Navigating to:", routes.main);
     router.replace(routes.main);
   };
 
@@ -194,7 +191,7 @@ export default function BookingSuccessScreen() {
         </TouchableOpacity>
       </View>
 
-      <Stepper steps={STEPS} currentStep={5} />
+      <Stepper steps={BOOKING_STEPS} currentStep={5} />
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {isLoading && <LoadingIndicator message="Loading booking details…" />}

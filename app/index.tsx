@@ -1,10 +1,9 @@
 import SplashScreen from "@/components/SplashScreen";
 import { routes } from "@/constants/routes";
+import { SPLASH_DURATION_MS } from "@/constants/config";
 import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
 import { useEffect, useRef } from "react";
-
-const SPLASH_MS = 3500;
 
 export default function Index() {
   const { user } = useAuth();
@@ -19,7 +18,7 @@ export default function Index() {
       } else {
         router.replace(routes.login);
       }
-    }, SPLASH_MS);
+    }, SPLASH_DURATION_MS);
 
     return () => clearTimeout(timer);
   }, [user?.email]);

@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { Check } from "lucide-react-native";
 
 interface StepperProps {
-  steps: string[];
+  steps: readonly string[] | string[];
   currentStep: number;
 }
 
@@ -45,9 +45,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
 
               <Text
                 className={`text-[10px] tracking-tight mt-1.5 absolute top-7 w-20 text-center font-manrope-bold ${
-                  isCompleted || isCurrent
-                    ? "text-foreground"
-                    : "text-muted"
+                  isCompleted || isCurrent ? "text-foreground" : "text-muted"
                 }`}
                 numberOfLines={1}
               >

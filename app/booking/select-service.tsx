@@ -1,4 +1,5 @@
 import { routes } from "@/constants/routes";
+import { BOOKING_STEPS } from "@/constants/config";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
 import { useFocusEffect } from "@react-navigation/native";
@@ -28,7 +29,6 @@ export default function SelectServiceScreen() {
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   useFocusEffect(
     useCallback(() => {
@@ -95,7 +95,7 @@ export default function SelectServiceScreen() {
         </TouchableOpacity>
       </View>
 
-      <Stepper steps={STEPS} currentStep={1} />
+      <Stepper steps={BOOKING_STEPS} currentStep={1} />
 
       <ScrollView
         contentContainerStyle={{ paddingBottom: 120 }}

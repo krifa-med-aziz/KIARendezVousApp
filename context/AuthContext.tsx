@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import * as SecureStore from "expo-secure-store";
 import { authService } from "@/services/authService";
+import { STORAGE_KEYS } from "@/constants/env";
 
 export type AuthUser = {
   email: string | null;
@@ -19,41 +20,30 @@ export type AuthUser = {
 
 export type AuthContextValue = {
   user: AuthUser | null;
-  /** @deprecated use user.email */
-  userEmail: string | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextValue | undefined>(
-  undefined,
-);
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function decodeUserFromAccessToken(token: string | null): AuthUser | null {
   if (!token) return null;
   try {
-    const payload = JSON.parse(atob(token.split(".")[1])) as Record<
-      string,
-      unknown
-    >;
+    const payload = JSON.parse(atob(token.split(".")[1])) as Record<string, unknown>;
     const email =
       typeof payload.email === "string"
         ? payload.email
         : typeof payload.preferred_username === "string"
           ? payload.preferred_username
           : null;
-    const given =
-      typeof payload.given_name === "string" ? payload.given_name : null;
-    const family =
-      typeof payload.family_name === "string" ? payload.family_name : null;
+    const given = typeof payload.given_name === "string" ? payload.given_name : null;
+    const family = typeof payload.family_name === "string" ? payload.family_name : null;
     const nameDirect = typeof payload.name === "string" ? payload.name : null;
-    const nameFromParts =
-      [given, family].filter(Boolean).join(" ").trim() || null;
-    const name = nameDirect ?? nameFromParts;
+    const nameFromParts = [given, family].filter(Boolean).join(" ").trim() || null;
     return {
       email,
-      name,
+      name: nameDirect ?? nameFromParts,
       preferredUsername:
         typeof payload.preferred_username === "string"
           ? payload.preferred_username
@@ -72,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    SecureStore.getItemAsync("access_token").then((token) => {
+    SecureStore.getItemAsync(STORAGE_KEYS.accessToken).then((token) => {
       setUser(decodeUserFromAccessToken(token));
       setIsLoading(false);
     });
@@ -80,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     await authService.login(email, password);
-    const token = await SecureStore.getItemAsync("access_token");
+    const token = await SecureStore.getItemAsync(STORAGE_KEYS.accessToken);
     setUser(decodeUserFromAccessToken(token));
   }, []);
 
@@ -90,13 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({
-      user,
-      userEmail: user?.email ?? null,
-      isLoading,
-      signIn,
-      signOut,
-    }),
+    () => ({ user, isLoading, signIn, signOut }),
     [user, isLoading, signIn, signOut],
   );
 

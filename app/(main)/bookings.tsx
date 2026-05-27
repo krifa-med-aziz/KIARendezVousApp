@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/Badge";
+import { DEFAULT_VEHICLE_IMAGE } from "@/constants/config";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LoadingIndicator } from "@/components/ui/LoadingIndicator";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
@@ -34,8 +35,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const DEFAULT_VEHICLE_IMAGE =
-  "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
 
 type Row = Appointment & {
   vehicle: Vehicle | null;

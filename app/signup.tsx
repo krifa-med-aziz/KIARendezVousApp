@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/Input";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { routes } from "@/constants/routes";
-import { useAuth } from "@/hooks/useAuth";
+import { TUNISIAN_PHONE_REGEX } from "@/constants/config";
 import { authService } from "@/services/authService";
 import { router } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
@@ -10,7 +10,6 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Signup() {
-  const { signIn } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -20,21 +19,12 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSignup = async () => {
-    if (
-      !name.trim() ||
-      !email.trim() ||
-      !phone.trim() ||
-      !password ||
-      !confirmPassword
-    ) {
+    if (!name.trim() || !email.trim() || !phone.trim() || !password || !confirmPassword) {
       Alert.alert("Details required", "Please fill in all fields.");
       return;
     }
-    if (!/^\+216\d{8}$/.test(phone.trim())) {
-      Alert.alert(
-        "Invalid phone",
-        "Enter a valid Tunisian number: +216XXXXXXXX",
-      );
+    if (!TUNISIAN_PHONE_REGEX.test(phone.trim())) {
+      Alert.alert("Invalid phone", "Enter a valid Tunisian number: +216XXXXXXXX");
       return;
     }
     if (password !== confirmPassword) {
@@ -44,13 +34,7 @@ export default function Signup() {
     try {
       const [firstName, ...rest] = name.trim().split(" ");
       const lastName = rest.join(" ") || "-";
-      await authService.register(
-        email.trim(),
-        password,
-        firstName,
-        lastName,
-        phone.trim(),
-      );
+      await authService.register(email.trim(), password, firstName, lastName, phone.trim());
       router.push({
         pathname: routes.verifyOtp as any,
         params: { phone: phone.trim(), email: email.trim(), password },
@@ -153,11 +137,7 @@ export default function Signup() {
           }
         />
 
-        <PrimaryButton
-          label="Sign up"
-          onPress={handleSignup}
-          className="mb-8"
-        />
+        <PrimaryButton label="Sign up" onPress={handleSignup} className="mb-8" />
 
         <View className="flex-row justify-center items-center pb-6">
           <Text className="text-sm font-manrope text-muted">
@@ -167,9 +147,7 @@ export default function Signup() {
             onPress={() => router.push(routes.login as any)}
             activeOpacity={0.7}
           >
-            <Text className="text-sm font-manrope-bold text-primary">
-              Log in
-            </Text>
+            <Text className="text-sm font-manrope-bold text-primary">Log in</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

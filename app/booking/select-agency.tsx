@@ -1,4 +1,5 @@
 import { routes } from "@/constants/routes";
+import { BOOKING_STEPS } from "@/constants/config";
 import { cardShadowStyle } from "@/constants/shadows";
 import { useBooking } from "@/context/BookingContext";
 import { useFocusEffect } from "@react-navigation/native";
@@ -42,7 +43,6 @@ export default function SelectAgencyScreen() {
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   useFocusEffect(
     useCallback(() => {
@@ -130,7 +130,7 @@ export default function SelectAgencyScreen() {
         </TouchableOpacity>
       </View>
 
-      <Stepper steps={STEPS} currentStep={2} />
+      <Stepper steps={BOOKING_STEPS} currentStep={2} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="h-[320px] bg-elevated relative border-b border-border">

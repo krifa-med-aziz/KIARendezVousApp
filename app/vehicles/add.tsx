@@ -39,8 +39,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { z } from "zod";
 
-const SCREEN_BG = "#F8F9FA";
-const KIA_RED = "#BB162B";
+import { theme } from "@/constants/theme";
 
 type FlowStep =
   | "entry"
@@ -197,7 +196,6 @@ export default function AddVehicleScreen() {
   );
 
   const submitManual = useCallback(async () => {
-    console.log("=== SUBMIT MANUAL ===");
     console.log("1. Form state before submit:", JSON.stringify(form, null, 2));
 
     try {
@@ -209,7 +207,6 @@ export default function AddVehicleScreen() {
         vin: (form.vin || "").trim() || undefined,
       };
       const parsed = manualAddVehicleSchema.safeParse(payload);
-      console.log("2. Validation success:", parsed.success);
 
       if (!parsed.success) {
         console.log(
@@ -230,8 +227,6 @@ export default function AddVehicleScreen() {
         });
         return;
       }
-
-      console.log("-> Validation passed!");
       console.log("3. API Payload:", JSON.stringify(parsed.data, null, 2));
       setSubmitting(true);
 
@@ -258,17 +253,14 @@ export default function AddVehicleScreen() {
       });
     } finally {
       setSubmitting(false);
-      console.log("=== SUBMIT MANUAL END ===");
     }
   }, [form, showToast]);
 
   const submitScanPreview = useCallback(async () => {
-    console.log("=== SUBMIT SCAN PREVIEW ===");
     console.log("1. Form state before submit:", JSON.stringify(form, null, 2));
 
     try {
       const parsed = scanConfirmVehicleSchema.safeParse(form);
-      console.log("2. Zod validation result success:", parsed.success);
 
       if (!parsed.success) {
         console.log(
@@ -292,8 +284,6 @@ export default function AddVehicleScreen() {
         });
         return;
       }
-
-      console.log("-> Validation passed!");
       const v = parsed.data;
       const name = buildSubmitName(v);
       const payload = {
@@ -329,7 +319,6 @@ export default function AddVehicleScreen() {
       });
     } finally {
       setSubmitting(false);
-      console.log("=== SUBMIT FLOW END ===");
     }
   }, [form, showToast]);
 
@@ -454,7 +443,7 @@ export default function AddVehicleScreen() {
           className="p-2 -ml-1 active:opacity-70"
           hitSlop={12}
         >
-          <ArrowLeft size={22} color={KIA_RED} strokeWidth={2} />
+          <ArrowLeft size={22} color={theme.colors.primaryHover} strokeWidth={2} />
         </TouchableOpacity>
         <Text className="flex-1 text-center mr-8 text-sm font-jakarta-bold text-foreground tracking-widest uppercase">
           {step === "entry"
@@ -517,7 +506,7 @@ export default function AddVehicleScreen() {
       className="rounded-full py-4 items-center justify-center mt-2 active:opacity-90"
       style={[
         primaryShadowStyle,
-        { backgroundColor: KIA_RED, opacity: disabled ? 0.55 : 1 },
+        { backgroundColor: theme.colors.primaryHover, opacity: disabled ? 0.55 : 1 },
       ]}
     >
       <Text className="font-manrope-bold text-white text-base">{label}</Text>
@@ -528,9 +517,9 @@ export default function AddVehicleScreen() {
     <SafeAreaView
       edges={["top"]}
       className="flex-1"
-      style={{ backgroundColor: SCREEN_BG }}
+      style={{ backgroundColor: theme.colors.elevated }}
     >
-      <StatusBar barStyle="dark-content" backgroundColor={SCREEN_BG} />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.elevated} />
       {header}
 
       <ScrollView
@@ -560,7 +549,7 @@ export default function AddVehicleScreen() {
               style={cardShadowStyle}
             >
               <View className="w-12 h-12 rounded-2xl bg-badge-red items-center justify-center mb-4">
-                <ScanLine size={26} color={KIA_RED} strokeWidth={2} />
+                <ScanLine size={26} color={theme.colors.primaryHover} strokeWidth={2} />
               </View>
               <Text className="text-lg font-jakarta-bold text-foreground mb-1">
                 Scan vehicle
@@ -620,7 +609,7 @@ export default function AddVehicleScreen() {
               ].map(({ Icon, text }, i) => (
                 <View key={i} className="flex-row gap-3 mb-4 last:mb-0">
                   <View className="w-10 h-10 rounded-xl bg-elevated items-center justify-center border border-border">
-                    <Icon size={20} color={KIA_RED} strokeWidth={2} />
+                    <Icon size={20} color={theme.colors.primaryHover} strokeWidth={2} />
                   </View>
                   <Text className="flex-1 text-sm font-manrope text-foreground leading-relaxed">
                     {text}
@@ -660,7 +649,7 @@ export default function AddVehicleScreen() {
                   <TouchableOpacity
                     onPress={() => pickImage("gallery")}
                     className="flex-1 py-3.5 rounded-2xl items-center active:opacity-90"
-                    style={{ backgroundColor: KIA_RED }}
+                    style={{ backgroundColor: theme.colors.primaryHover }}
                   >
                     <Text className="font-manrope-bold text-white">
                       Gallery
@@ -684,7 +673,7 @@ export default function AddVehicleScreen() {
                 </View>
                 {scanning ? (
                   <View className="flex-row items-center gap-3 py-6 justify-center">
-                    <ActivityIndicator color={KIA_RED} />
+                    <ActivityIndicator color={theme.colors.primaryHover} />
                     <Text className="font-manrope text-muted">
                       Reading document…
                     </Text>

@@ -1,10 +1,9 @@
 import * as SecureStore from "expo-secure-store";
+import { API_BASE_URL, STORAGE_KEYS } from "@/constants/env";
 import type { ScanResult } from "@/types/vehicle";
 
-const API_BASE = "http://192.168.100.74:3000";
-
 export async function scanCarteGrise(imageUri: string): Promise<ScanResult> {
-  const token = await SecureStore.getItemAsync("access_token");
+  const token = await SecureStore.getItemAsync(STORAGE_KEYS.accessToken);
   if (!token) throw new Error("Authentication token not found");
 
   const formData = new FormData();
@@ -14,7 +13,7 @@ export async function scanCarteGrise(imageUri: string): Promise<ScanResult> {
     name: "carte-grise.jpg",
   } as any);
 
-  const response = await fetch(`${API_BASE}/vehicles/scan-carte-grise`, {
+  const response = await fetch(`${API_BASE_URL}/vehicles/scan-carte-grise`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -42,10 +41,10 @@ export async function createVehicle(payload: {
   ownerName?: string;
   cin?: string;
 }): Promise<any> {
-  const token = await SecureStore.getItemAsync("access_token");
+  const token = await SecureStore.getItemAsync(STORAGE_KEYS.accessToken);
   if (!token) throw new Error("Authentication token not found");
 
-  const response = await fetch(`${API_BASE}/vehicles`, {
+  const response = await fetch(`${API_BASE_URL}/vehicles`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

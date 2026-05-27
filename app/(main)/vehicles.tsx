@@ -1,4 +1,5 @@
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { DEFAULT_VEHICLE_IMAGE } from "@/constants/config";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { useToast } from "@/context/ToastContext";
 import { routes } from "@/constants/routes";
@@ -17,8 +18,6 @@ import {
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const DEFAULT_VEHICLE_IMAGE =
-  "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
 
 export default function VehiclesScreen() {
   const { showToast } = useToast();

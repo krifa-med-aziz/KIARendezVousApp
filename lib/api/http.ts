@@ -1,7 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ?? "http://192.168.100.74:3000";
+import { API_BASE_URL, STORAGE_KEYS } from "@/constants/env";
 
 export class ApiError extends Error {
   status: number;
@@ -22,7 +20,7 @@ type ApiEnvelope<T> = {
 };
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = await SecureStore.getItemAsync("access_token");
+  const token = await SecureStore.getItemAsync(STORAGE_KEYS.accessToken);
 
   const headers = new Headers(init?.headers);
   if (!headers.has("Content-Type") && init?.body) {
@@ -40,8 +38,8 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   }
 
   if (response.status === 401) {
-    await SecureStore.deleteItemAsync("access_token");
-    await SecureStore.deleteItemAsync("refresh_token");
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.accessToken);
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.refreshToken);
     throw new ApiError("Session expired", 401);
   }
 
@@ -53,7 +51,11 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   }
 
   if (!response.ok || !payload?.success) {
-    throw new ApiError(payload?.message || `Request failed with status ${response.status}`, response.status, payload?.errors);
+    throw new ApiError(
+      payload?.message || `Request failed with status ${response.status}`,
+      response.status,
+      payload?.errors,
+    );
   }
 
   if (typeof payload.data === "undefined") {

@@ -1,4 +1,5 @@
 import { routes } from "@/constants/routes";
+import { DEFAULT_VEHICLE_IMAGE, BOOKING_STEPS } from "@/constants/config";
 import { primaryShadowStyle } from "@/constants/shadows";
 import { useAppointments } from "@/context/AppointmentsContext";
 import { useBooking } from "@/context/BookingContext";
@@ -33,8 +34,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const DEFAULT_VEHICLE_IMAGE =
-  "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=80";
 
 export default function BookingConfirmationScreen() {
   const {
@@ -55,7 +54,6 @@ export default function BookingConfirmationScreen() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const STEPS = ["Vehicle", "Service", "Agency", "Time", "Confirm"];
 
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -208,7 +206,7 @@ export default function BookingConfirmationScreen() {
         </Text>
       </View>
 
-      <Stepper steps={STEPS} currentStep={4} />
+      <Stepper steps={[...BOOKING_STEPS]} currentStep={4} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}

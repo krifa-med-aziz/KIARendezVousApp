@@ -1,17 +1,14 @@
 import * as SecureStore from "expo-secure-store";
-
-const KEYCLOAK_URL =
-  "http://192.168.100.74:8080/realms/kia-app/protocol/openid-connect/token";
-const API_BASE = "http://192.168.100.74:3000";
+import { API_BASE_URL, KEYCLOAK_CLIENT_ID, KEYCLOAK_TOKEN_URL, STORAGE_KEYS } from "@/constants/env";
 
 export const authService = {
   login: async (email: string, password: string) => {
-    const res = await fetch(KEYCLOAK_URL, {
+    const res = await fetch(KEYCLOAK_TOKEN_URL, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         grant_type: "password",
-        client_id: "kia-mobile",
+        client_id: KEYCLOAK_CLIENT_ID,
         username: email,
         password,
       }).toString(),
@@ -23,14 +20,14 @@ export const authService = {
     }
 
     const { access_token, refresh_token } = await res.json();
-    await SecureStore.setItemAsync("access_token", access_token);
-    await SecureStore.setItemAsync("refresh_token", refresh_token);
+    await SecureStore.setItemAsync(STORAGE_KEYS.accessToken, access_token);
+    await SecureStore.setItemAsync(STORAGE_KEYS.refreshToken, refresh_token);
     return { access_token };
   },
 
   logout: async () => {
-    await SecureStore.deleteItemAsync("access_token");
-    await SecureStore.deleteItemAsync("refresh_token");
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.accessToken);
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.refreshToken);
   },
 
   register: async (
@@ -40,7 +37,7 @@ export const authService = {
     lastName: string,
     phone: string,
   ) => {
-    const res = await fetch(`${API_BASE}/auth/send-otp`, {
+    const res = await fetch(`${API_BASE_URL}/auth/send-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, email, password, firstName, lastName }),
@@ -53,7 +50,7 @@ export const authService = {
   },
 
   verifyOtp: async (phone: string, code: string) => {
-    const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+    const res = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, code }),
